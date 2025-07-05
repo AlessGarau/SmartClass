@@ -5,5 +5,9 @@ export const SalleSchema = z.object({
   name: z.string(),
 });
 
-export type SalleParams = Omit<z.infer<typeof SalleSchema>, "id">;
+export const SalleCreateSchema = z.object({
+  name: z.string(),
+});
+
 export type Salle = z.infer<typeof SalleSchema>;
+export type SalleCreateParams = z.infer<typeof SalleCreateSchema>;

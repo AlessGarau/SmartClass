@@ -2,14 +2,13 @@ import { FastifyInstance } from "fastify";
 import { SalleController } from "./Controller";
 import { SalleRepository } from "./Repository";
 import { SalleInteractor } from "./Interactor";
+import Container from "typedi";
 
 export class SalleRoutes {
   private controller: SalleController;
 
   constructor(private server: FastifyInstance) {
-    const repository = new SalleRepository();
-    const interactor = new SalleInteractor(repository);
-    this.controller = new SalleController(interactor);
+    this.controller = Container.get(SalleController);
   }
 
   public registerRoutes() {

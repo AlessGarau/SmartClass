@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import Fastify from "fastify";
 import { SalleRoutes } from "./salles/Routes";
 

@@ -3,6 +3,8 @@
     "dotenv": "^17.0.1",
     "fastify": "^5.4.0",
     "pg": "^8.16.3",
+    "reflect-metadata": "^0.2.2",
+    "typedi": "^0.10.0",
     "zod": "^3.25.71"
   },
   "name": "server",

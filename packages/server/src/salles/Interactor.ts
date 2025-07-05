@@ -1,15 +1,16 @@
+import { Service } from "typedi";
 import { ISalleInteractor } from "./interface/IInteractor";
-import { ISalleRepository } from "./interface/IRepository";
-import { SalleParams, Salle } from "./validate";
+import { SalleCreateParams, Salle } from "./validate";
+import { SalleRepository } from "./Repository";
 
+@Service()
 export class SalleInteractor implements ISalleInteractor {
-  private repository: ISalleRepository;
+  constructor(private repository: SalleRepository) {}
 
-  constructor(repository: ISalleRepository) {
-    this.repository = repository;
-  }
-  async createSalle(CreateSalleParams: SalleParams): Promise<Salle> {
-    const salle = await this.repository.create(CreateSalleParams);
+  async createSalle(
+    CreateSalleCreateParams: SalleCreateParams
+  ): Promise<Salle> {
+    const salle = await this.repository.create(CreateSalleCreateParams);
     return salle;
   }
 }
