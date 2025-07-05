@@ -6,7 +6,7 @@ export const SalleSchema = z.object({
 });
 
 export const SalleCreateSchema = z.object({
-  name: z.string(),
+  name: z.string().min(6, "Le nom de la salle doit contenir au moins 6 caractères"),
 });
 
 export type Salle = z.infer<typeof SalleSchema>;

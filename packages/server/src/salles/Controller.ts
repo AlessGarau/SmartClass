@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { SalleCreateSchema, SalleSchema } from "./validate";
+import { SalleCreateSchema } from "./validate";
 import { SalleInteractor } from "./Interactor";
 import { Service } from "typedi";
 
@@ -9,15 +9,17 @@ export class SalleController {
 
   async createSalle(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const SalleCreateParams = SalleCreateSchema.parse(req.body);
+      
+      const salleCreateParams = SalleCreateSchema.parse(req.body);
 
-      const createdSalle = await this.interactor.createSalle(SalleCreateParams);
-      return reply.status(201).send(createdSalle);
-    } catch (error) {
-      console.error("Erreur lors de la création de la salle:", error);
-      return reply.status(500).send({
-        error: "Erreur interne du serveur lors de la création de la salle",
+      const createdSalle = await this.interactor.createSalle(salleCreateParams);
+      
+      return reply.status(201).send({
+        data: createdSalle,
+        message: "Salle créée avec succès"
       });
+    } catch (error) {
+      throw error;
     }
   }
 }
