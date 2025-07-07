@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import { ISalleInteractor } from "./interface/IInteractor";
 import { SalleCreateParams, Salle } from "./validate";
 import { SalleRepository } from "./Repository";
-import { SalleError } from "../error/salleError";
+import { SalleError } from "../errors/salleError";
 
 @Service()
 export class SalleInteractor implements ISalleInteractor {

@@ -1,7 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { SalleController } from "./Controller";
-import { SalleRepository } from "./Repository";
-import { SalleInteractor } from "./Interactor";
 import Container from "typedi";
 
 export class SalleRoutes {

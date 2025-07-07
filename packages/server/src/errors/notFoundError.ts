@@ -5,9 +5,9 @@ export default class NotFoundError extends Error {
   public readonly code: number;
 
   public constructor(errorParams: { message?: string; code?: number }) {
-    const { message, code } = errorParams;
+    const { message } = errorParams;
 
     super(message || ErrorMessageEnum.General.NOT_FOUND);
-    this.code =  NotFoundError._defaultCode;
+    this.code = NotFoundError._defaultCode;
   }
 }

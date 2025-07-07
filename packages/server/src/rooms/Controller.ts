@@ -9,14 +9,13 @@ export class SalleController {
 
   async createSalle(req: FastifyRequest, reply: FastifyReply) {
     try {
-      
       const salleCreateParams = SalleCreateSchema.parse(req.body);
 
       const createdSalle = await this.interactor.createSalle(salleCreateParams);
-      
+
       return reply.status(201).send({
         data: createdSalle,
-        message: "Salle créée avec succès"
+        message: "Salle créée avec succès",
       });
     } catch (error) {
       throw error;
