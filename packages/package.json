@@ -1,0 +1,13 @@
+{
+  "name": "monorepo",
+  "private": true,
+  "workspaces": [
+    "./*"
+  ],
+  "scripts": {
+    "build": "tsc -b packages/*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

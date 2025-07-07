@@ -4,13 +4,13 @@ WORKDIR /app
 FROM base AS deps
 COPY ../packages/package*.json ./
 COPY ../packages/common/package*.json ./common/
-COPY ../packages/server/package*.json ./server/
+COPY ../packages/client/package*.json ./client/
 RUN npm install
 
 FROM base AS dev
 WORKDIR /app
 COPY ../packages ./
 COPY --from=deps /app/node_modules ./node_modules
-EXPOSE 3000
-WORKDIR /app/server
+EXPOSE 5173
+WORKDIR /app/client
 CMD ["npm", "run", "dev"]

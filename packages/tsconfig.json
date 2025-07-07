@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@monorepo/common": ["common/src"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

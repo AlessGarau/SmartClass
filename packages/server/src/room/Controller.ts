@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { SalleCreateSchema } from "./validate";
 import { SalleInteractor } from "./Interactor";
 import { Service } from "typedi";
+import { SalleCreateSchema } from "@monorepo/common";
 
 @Service()
 export class SalleController {
