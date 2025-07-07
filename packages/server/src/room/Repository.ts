@@ -19,4 +19,8 @@ export class RoomRepository implements IRoomRepository {
     }).returning();
     return result[0];
   }
+  async getRooms(): Promise<Room[]> {
+    const result = await this.db.select().from(roomTable);
+    return result;
+  }
 }

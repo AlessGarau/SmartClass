@@ -6,7 +6,7 @@ CREATE TABLE "class" (
 --> statement-breakpoint
 CREATE TABLE "equipment" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"type" varchar(255) NOT NULL,
+	"type" varchar(10) DEFAULT 'heater' NOT NULL,
 	"is_functional" boolean DEFAULT true NOT NULL,
 	"is_running" boolean DEFAULT false NOT NULL,
 	"room_id" uuid
@@ -57,7 +57,8 @@ CREATE TABLE "room" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"capacity" integer NOT NULL,
-	"is_enabled" boolean DEFAULT true NOT NULL
+	"is_enabled" boolean DEFAULT true NOT NULL,
+	CONSTRAINT "capacity_check1" CHECK ("room"."capacity" > 0)
 );
 --> statement-breakpoint
 CREATE TABLE "sensor" (
@@ -92,7 +93,7 @@ CREATE TABLE "user" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"email" varchar(255) NOT NULL,
 	"password" varchar(255) NOT NULL,
-	"role" varchar(255) NOT NULL,
+	"role" varchar(10) NOT NULL,
 	"first_name" varchar(255) NOT NULL,
 	"last_name" varchar(255) NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,

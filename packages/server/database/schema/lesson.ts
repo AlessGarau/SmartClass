@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, bigint } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp } from "drizzle-orm/pg-core";
 import { roomTable } from "./room";
 import { classTable } from "./class";
 

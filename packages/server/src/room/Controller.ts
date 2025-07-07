@@ -21,4 +21,11 @@ export class RoomController {
       throw error;
     }
   }
+
+  async getRooms(req: FastifyRequest, reply: FastifyReply) {
+    const rooms = await this.interactor.getRooms();
+    return reply.status(200).send({
+      data: rooms,
+    });
+  }
 }

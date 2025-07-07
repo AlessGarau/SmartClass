@@ -1,5 +1,5 @@
 {
-  "id": "88a980cb-263d-4c80-943f-866468edd821",
+  "id": "13c6ff0c-0543-46a6-add5-9cc2a07ef721",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -49,9 +49,10 @@
         },
         "type": {
           "name": "type",
-          "type": "varchar(255)",
+          "type": "varchar(10)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'heater'"
         },
         "is_functional": {
           "name": "is_functional",
@@ -482,7 +483,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "capacity_check1": {
+          "name": "capacity_check1",
+          "value": "\"room\".\"capacity\" > 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.sensor": {
@@ -746,7 +752,7 @@
         },
         "role": {
           "name": "role",
-          "type": "varchar(255)",
+          "type": "varchar(10)",
           "primaryKey": false,
           "notNull": true
         },
