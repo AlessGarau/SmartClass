@@ -1,0 +1,13 @@
+export { userTable } from "./user";
+export { userMobileDeviceTable } from "./userMobileDevice";
+export { classTable } from "./class";
+export { roomTable } from "./room";
+export { lessonTable } from "./lesson";
+export { userLessonTable } from "./userLesson";
+export { equipmentTable } from "./equipment";
+export { reportingTable } from "./reporting";
+export { humidityTable } from "./humidity";
+export { temperatureTable } from "./temperature";
+export { movementTable } from "./movement";
+export { pressureTable } from "./pressure";
+export { sensorTable } from "./sensor"; 

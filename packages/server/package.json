@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "dotenv": "^17.0.1",
+    "drizzle-orm": "^0.44.2",
+    "drizzle-seed": "^0.3.1",
     "fastify": "^5.4.0",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
@@ -13,15 +15,21 @@
   "devDependencies": {
     "@types/node": "^24.0.10",
     "@types/pg": "^8.15.4",
+    "drizzle-kit": "^0.31.4",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "nodemon --watch src --exec ts-node src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx database/seed.ts"
   },
   "keywords": [],
   "author": "",

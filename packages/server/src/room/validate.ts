@@ -1,15 +1,19 @@
 import { z } from "zod";
 
-export const SalleSchema = z.object({
-  id: z.number(),
+export const RoomSchema = z.object({
+  id: z.string(),
   name: z.string(),
+  capacity: z.number(),
+  is_enabled: z.boolean(),
 });
 
-export const SalleCreateSchema = z.object({
+export const RoomCreateSchema = z.object({
   name: z
     .string()
     .min(6, "Le nom de la salle doit contenir au moins 6 caractères"),
+  capacity: z.number().min(1, "La capacité doit être supérieure à 0"),
+  is_enabled: z.boolean().default(true),
 });
 
-export type Salle = z.infer<typeof SalleSchema>;
-export type SalleCreateParams = z.infer<typeof SalleCreateSchema>;
+export type Room = z.infer<typeof RoomSchema>;
+export type RoomCreateParams = z.infer<typeof RoomCreateSchema>;

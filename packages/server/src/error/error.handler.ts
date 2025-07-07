@@ -2,10 +2,10 @@ import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 
 import { z } from "zod";
 import NotFoundError from "./notFoundError";
-import { SalleError } from "./salleError";
+import { RoomError } from "./roomError";
 
 export const ErrorMiddleware = (
-  error: FastifyError | NotFoundError | SalleError | z.ZodError,
+  error: FastifyError | NotFoundError | RoomError | z.ZodError,
   req: FastifyRequest,
   reply: FastifyReply
 ) => {
@@ -18,7 +18,7 @@ export const ErrorMiddleware = (
     });
   }
 
-  if (error instanceof SalleError) {
+  if (error instanceof RoomError) {
     return reply.status(error.statusCode).send({
       error: error.message,
       data: null,

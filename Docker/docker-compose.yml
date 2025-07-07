@@ -9,6 +9,8 @@ services:
       - ../packages/server:/app
     networks:
       - smart-class-network
+    environment:
+      - DATABASE_URL=postgresql://smartclass:root@db:5432/smart-class
 
   smart-class-db:
     image: postgres:latest
