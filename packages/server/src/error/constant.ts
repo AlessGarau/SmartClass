@@ -1,4 +1,4 @@
-import { SalleMessage } from "../rooms/message";
+import { SalleMessage } from "../room/message";
 
 export const ErrorMessageEnum = {
   General: {

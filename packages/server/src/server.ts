@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import Fastify from "fastify";
-import { SalleRoutes } from "./rooms/Routes";
-import { ErrorMiddleware } from "./errors/error.handler";
+import { SalleRoutes } from "./room/Routes";
+import { ErrorMiddleware } from "./error/error.handler";
 
 const server = Fastify();
 
