@@ -1,6 +1,5 @@
 services:
   smart-class-server-dev:
-    container_name: server
     build:
       context: ..
       dockerfile: Docker/Dockerfile.api.dev
@@ -13,7 +12,6 @@ services:
 
   smart-class-db-dev:
     image: postgres:latest
-    container_name: database
     volumes:
       - "smart-class-db-postgres-data:/var/lib/postgresql/data:rw"
     environment:
@@ -28,7 +26,6 @@ services:
       - smart-class-network
 
   smart-class-client-dev:
-    container_name: client
     build:
       context: ..
       dockerfile: Docker/Dockerfile.client.dev
