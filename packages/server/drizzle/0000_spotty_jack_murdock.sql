@@ -49,7 +49,7 @@ CREATE TABLE "reporting" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"equipment_id" uuid,
 	"description" varchar(255) NOT NULL,
-	"status" varchar(255) NOT NULL,
+	"status" varchar(255) DEFAULT 'pending' NOT NULL,
 	"created_date" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
