@@ -1,0 +1,16 @@
+FROM node:22-alpine AS base
+WORKDIR /app
+
+FROM base AS deps
+COPY packages/package*.json ./
+COPY packages/client/package*.json ./client/
+RUN npm install
+
+
+FROM base AS dev
+WORKDIR /app
+COPY packages ./
+COPY --from=deps /app/node_modules ./node_modules
+EXPOSE 5173
+WORKDIR /app/client
+CMD ["npm", "run", "dev"]
