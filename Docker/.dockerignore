@@ -1,0 +1,24 @@
+# Empêcher d'envoyer les modules installés (ils seront recréés dans l'image)
+**/node_modules
+**/npm-debug.log
+
+# Ignorer les fichiers de configuration locaux
+**/.env
+**/*.local
+
+# Ignorer Git
+**/.git
+**/.gitignore
+
+# Ignorer les fichiers de build
+**/dist
+**/build
+
+# Ignorer les fichiers systèmes ou d'éditeur
+**/.DS_Store
+**/.idea
+**/.vscode
+**/*.swp
+
+**/README.md
+**/makefile

@@ -1,0 +1,43 @@
+services:
+  smart-class-server-prod:
+    build:
+      context: ..
+      dockerfile: Docker/Dockerfile.api.prod
+    expose:
+      - "3000"
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@smart-class-db-prod:5432/${POSTGRES_DB}
+    networks:
+      - smart-class-network
+
+  smart-class-db-prod:
+    image: postgres:latest
+    volumes:
+      - "smart-class-db-postgres-data:/var/lib/postgresql/data:rw"
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+    expose:
+      - "5432"
+    restart: always
+    networks:
+      - smart-class-network
+
+  smart-class-client-prod:
+    build:
+      context: ..
+      dockerfile: Docker/Dockerfile.client.prod
+    expose:
+      - "5173"
+    restart: always
+    networks:
+      - smart-class-network
+
+volumes:
+  smart-class-db-postgres-data:
+
+networks:
+  smart-class-network:
+    driver: bridge
