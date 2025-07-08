@@ -7,7 +7,7 @@ import { RoomError } from "./roomError";
 export const ErrorMiddleware = (
   error: FastifyError | NotFoundError | RoomError | z.ZodError,
   req: FastifyRequest,
-  reply: FastifyReply,
+  reply: FastifyReply
 ) => {
   console.error(error);
 

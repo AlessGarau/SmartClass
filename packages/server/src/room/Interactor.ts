@@ -9,7 +9,7 @@ export class RoomInteractor implements IRoomInteractor {
   constructor(private repository: RoomRepository) {}
 
   async createRoom(
-    CreateRoomCreateParams: RoomCreateParams,
+    CreateRoomCreateParams: RoomCreateParams
   ): Promise<Room> {
     const room = await this.repository.create(CreateRoomCreateParams);
 
