@@ -4,7 +4,10 @@ COMPOSE_FILE = Docker/docker-compose.dev.yml
 PROJECT_NAME = smart-class
 
 install:
-	@echo "Installation des dépendances..."
+	@echo "Installation des dépendances Node.js..."
+	cd packages/server && npm install
+	cd packages/client && npm install
+	@echo "Installation des dépendances Docker..."
 	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) build
 	@echo "Installation terminée"
 
