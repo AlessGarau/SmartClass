@@ -12,18 +12,23 @@
   "version": "1.0.0",
   "main": "server.js",
   "devDependencies": {
+    "@eslint/js": "^9.30.1",
     "@types/node": "^24.0.10",
     "@types/pg": "^8.15.4",
     "drizzle-kit": "^0.31.4",
+    "eslint": "^9.30.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "globals": "^16.3.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.36.0"
   },
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon --watch src --exec ts-node src/server.ts",
+    "dev": "nodemon --watch src --exec ts-node src/server.ts & nodemon --watch src --ext js,ts --exec \"eslint . --ext .js,.ts --fix\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
