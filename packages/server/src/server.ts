@@ -1,11 +1,16 @@
 import "reflect-metadata";
 import Fastify from "fastify";
+import dotenv from "dotenv";
+import fjwt from "@fastify/jwt";
+import fCookie from "@fastify/cookie";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import { ErrorMiddleware } from "./middleware/error/error.handler";
 import { RoomRoutes } from "./feature/room/Routes";
 import { ReportingRoutes } from "./feature/reporting/Routes";
 import { EquipmentRoutes } from "./feature/equipment/Routes";
+import { UserRoutes } from "./user/Routes";
+dotenv.config();
 
 const setupServer = async () => {
   const server = Fastify();
@@ -50,6 +55,18 @@ const setupServer = async () => {
     },
   });
 
+  server.register(fjwt, {secret: process.env.JWT_SECRET!});
+
+  server.addHook("preHandler", (req, _res, next) => {
+    req.jwt = server.jwt;
+    return next();
+  });
+
+  server.register(fCookie, {
+    secret: process.env.COOKIE_SECRET!,
+    hook: "preHandler",
+  });
+
   server.get("/", async (_request, _reply) => {
     return "Wesh les bgs";
   });
@@ -62,9 +79,13 @@ const setupServer = async () => {
   reportingRoutes.registerRoutes();
   const equipmentRoutes = new EquipmentRoutes(server);
   equipmentRoutes.registerRoutes();
+  const userRoutes = new UserRoutes(server);
+  userRoutes.registerRoutes();
 
   return server;
 };
+
+
 
 const start = async () => {
   try {

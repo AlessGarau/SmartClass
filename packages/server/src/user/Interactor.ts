@@ -1,0 +1,31 @@
+import { Service } from "typedi";   
+import { UserRepository } from "./Repository";
+import bcrypt from "bcrypt";
+import { UserError } from "../error/userError";
+
+@Service()
+export class UserInteractor {
+  constructor(private repository: UserRepository) {}
+
+  async loginUser(email: string, password: string) {
+    const user = await this.repository.getUserByEmail(email);
+
+    if (!user) {
+      throw UserError.invalidPasswordOrEmail();
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      throw UserError.invalidPasswordOrEmail();
+    }
+
+    return user;
+  }
+
+  async registerUser(email: string, password: string, first_name: string, last_name: string, role: "teacher" | "admin") {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await this.repository.createUser(email, hashedPassword, first_name, last_name, role);
+    return user;
+  }
+}
