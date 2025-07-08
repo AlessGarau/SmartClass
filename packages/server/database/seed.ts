@@ -171,7 +171,7 @@ async function main() {
     { equipment_id: equipment[15].id, description: "Heater making unusual noise", status: "pending" },
     { equipment_id: equipment[0].id, description: "AC maintenance completed", status: "resolved" },
     { equipment_id: equipment[2].id, description: "Regular maintenance check", status: "resolved" },
-    { equipment_id: equipment[6].id, description: "Temperature not reaching set point", status: "open" },
+    { equipment_id: equipment[6].id, description: "Temperature not reaching set point", status: "pending" },
   ]).returning();
 
   console.log("Database seeded successfully!");

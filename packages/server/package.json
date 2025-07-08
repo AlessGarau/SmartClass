@@ -2,7 +2,6 @@
   "dependencies": {
     "dotenv": "^17.0.1",
     "drizzle-orm": "^0.44.2",
-    "drizzle-seed": "^0.3.1",
     "fastify": "^5.4.0",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",

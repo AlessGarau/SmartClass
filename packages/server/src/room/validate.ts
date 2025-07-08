@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const RoomSchema = z.object({
-  id: z.string(),
+  id: z.string().uuid(),
   name: z.string(),
   capacity: z.number(),
   is_enabled: z.boolean(),
