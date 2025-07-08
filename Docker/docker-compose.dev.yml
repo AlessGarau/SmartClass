@@ -12,9 +12,8 @@ services:
     environment:
       - DATABASE_URL=postgresql://smartclass:root@db:5432/smart-class
 
-  smart-class-db:
+  smart-class-db-dev:
     image: postgres:latest
-    container_name: db
     volumes:
       - "smart-class-db-postgres-data:/var/lib/postgresql/data:rw"
     environment:
@@ -25,6 +24,18 @@ services:
       - "5432:5432"
     expose:
       - "5432"
+    networks:
+      - smart-class-network
+
+  smart-class-client-dev:
+    build:
+      context: ..
+      dockerfile: Docker/Dockerfile.client.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../packages/client:/app/client
+      - /app/client/node_modules
     networks:
       - smart-class-network
 
