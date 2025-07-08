@@ -1,22 +1,27 @@
 import { Service } from "typedi";
-import { ISalleInteractor } from "./interface/IInteractor";
-import { SalleCreateParams, Salle } from "./validate";
-import { SalleRepository } from "./Repository";
-import { SalleError } from "../error/salleError";
+import { IRoomInteractor } from "./interface/IInteractor";
+import { RoomCreateParams, Room } from "./validate";
+import { RoomRepository } from "./Repository";
+import { RoomError } from "../error/roomError";
 
 @Service()
-export class SalleInteractor implements ISalleInteractor {
-  constructor(private repository: SalleRepository) {}
+export class RoomInteractor implements IRoomInteractor {
+  constructor(private repository: RoomRepository) {}
 
-  async createSalle(
-    CreateSalleCreateParams: SalleCreateParams
-  ): Promise<Salle> {
-    const salle = await this.repository.create(CreateSalleCreateParams);
+  async createRoom(
+    CreateRoomCreateParams: RoomCreateParams
+  ): Promise<Room> {
+    const room = await this.repository.create(CreateRoomCreateParams);
 
-    if (!salle) {
-      throw SalleError.creationFailed();
+    if (!room) {
+      throw RoomError.creationFailed();
     }
 
-    return salle;
+    return room;
+  }
+
+  async getRooms(): Promise<Room[]> {
+    const rooms = await this.repository.getRooms();
+    return rooms;
   }
 }

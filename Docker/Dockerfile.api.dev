@@ -3,7 +3,8 @@ WORKDIR /app
 
 FROM base AS deps
 COPY ../packages/server/package*.json ./
-RUN npm install
+RUN --mount=type=cache,id=npm,target=/root/.npm \
+    npm ci --omit=dev
 
 FROM base AS dev
 WORKDIR /app
@@ -11,4 +12,4 @@ COPY ../packages/server/package*.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY ../packages/server ./
 EXPOSE 3000
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "npm run dev"]

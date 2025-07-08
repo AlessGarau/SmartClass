@@ -1,24 +1,31 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { SalleCreateSchema } from "./validate";
-import { SalleInteractor } from "./Interactor";
+import { RoomCreateSchema } from "./validate";
+import { RoomInteractor } from "./Interactor";
 import { Service } from "typedi";
 
 @Service()
-export class SalleController {
-  constructor(private interactor: SalleInteractor) {}
+export class RoomController {
+  constructor(private interactor: RoomInteractor) {}
 
-  async createSalle(req: FastifyRequest, reply: FastifyReply) {
+  async createRoom(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const salleCreateParams = SalleCreateSchema.parse(req.body);
+      const roomCreateParams = RoomCreateSchema.parse(req.body);
 
-      const createdSalle = await this.interactor.createSalle(salleCreateParams);
+      const createdRoom = await this.interactor.createRoom(roomCreateParams);
 
       return reply.status(201).send({
-        data: createdSalle,
+        data: createdRoom,
         message: "Salle créée avec succès",
       });
     } catch (error) {
       throw error;
     }
+  }
+
+  async getRooms(req: FastifyRequest, reply: FastifyReply) {
+    const rooms = await this.interactor.getRooms();
+    return reply.status(200).send({
+      data: rooms,
+    });
   }
 }

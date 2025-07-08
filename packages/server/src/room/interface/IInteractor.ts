@@ -1,5 +1,5 @@
-import { Salle, SalleCreateParams } from "../validate";
+import { Room, RoomCreateParams } from "../validate";
 
-export interface ISalleInteractor {
-  createSalle(CreateSalleCreateParams: SalleCreateParams): Promise<Salle>;
+export interface IRoomInteractor {
+  createRoom(CreateRoomCreateParams: RoomCreateParams): Promise<Room>;
 }

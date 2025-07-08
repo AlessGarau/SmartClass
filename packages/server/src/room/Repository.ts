@@ -1,20 +1,26 @@
-import { Pool } from "pg";
-import { ISalleRepository } from "./interface/IRepository";
-import { SalleCreateParams, Salle } from "./validate";
+import { IRoomRepository } from "./interface/IRepository";
+import { RoomCreateParams, Room } from "./validate";
 import { database } from "../../database/database";
 import { Service } from "typedi";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { roomTable } from "../../database/schema/room";
 
 @Service()
-export class SalleRepository implements ISalleRepository {
-  private client: Pool;
+export class RoomRepository implements IRoomRepository {
+  private db: NodePgDatabase<Record<string, never>>;
   constructor() {
-    this.client = database;
+    this.db = database;
   }
-  async create(SalleCreateParams: SalleCreateParams): Promise<Salle> {
-    const query = "INSERT INTO salle (name) VALUES ($1) RETURNING id, name";
-    const values = [SalleCreateParams.name];
-
-    const result = await this.client.query(query, values);
-    return result.rows[0];
+  async create(RoomCreateParams: RoomCreateParams): Promise<Room> {
+    const result = await this.db.insert(roomTable).values({
+      name: RoomCreateParams.name,
+      capacity: 10,
+      is_enabled: true,
+    }).returning();
+    return result[0];
+  }
+  async getRooms(): Promise<Room[]> {
+    const result = await this.db.select().from(roomTable);
+    return result;
   }
 }

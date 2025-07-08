@@ -1,18 +1,22 @@
 import { FastifyInstance } from "fastify";
-import { SalleController } from "./Controller";
+import { RoomController } from "./Controller";
 import Container from "typedi";
 
-export class SalleRoutes {
-  private controller: SalleController;
+export class RoomRoutes {
+  private controller: RoomController;
 
   constructor(private server: FastifyInstance) {
-    this.controller = Container.get(SalleController);
+    this.controller = Container.get(RoomController);
   }
 
   public registerRoutes() {
     this.server.post(
-      "/salle",
-      this.controller.createSalle.bind(this.controller)
+      "/room",
+      this.controller.createRoom.bind(this.controller)
+    );
+    this.server.get(
+      "/room",
+      this.controller.getRooms.bind(this.controller)
     );
   }
 }
