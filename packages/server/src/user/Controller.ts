@@ -3,7 +3,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { UserInteractor } from "./Interactor";
 import { UserError } from "../error/userError";
 import { UserLoginSchema, UserRegisterSchema } from "./validate";
-import { UserMapper } from "./UserMapper";
+import { UserMapper } from "./Mapper";
 
 @Service()
 export class UserController {
