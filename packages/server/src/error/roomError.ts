@@ -12,7 +12,7 @@ export class RoomError extends Error {
     const { statusCode, cause } = errorParams;
     super(ErrorMessageEnum.Salle.CREATION_FAILED);
     this.statusCode = statusCode || 500;
-    this.name = "RoomError";
+    this.name = 'RoomError';
     this.cause = cause;
   }
 
