@@ -2,9 +2,10 @@ import { Service } from "typedi";
 import { UserRepository } from "./Repository";
 import bcrypt from "bcrypt";
 import { UserError } from "../error/userError";
+import { IInteractor } from "./interface/IInteractor";
 
 @Service()
-export class UserInteractor {
+export class UserInteractor implements IInteractor {
   constructor(private repository: UserRepository) {}
 
   async loginUser(email: string, password: string) {

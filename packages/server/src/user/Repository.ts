@@ -2,9 +2,10 @@ import { Service } from "typedi";
 import { User, userTable } from "../../database/schema/user";
 import { eq } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { IRepository } from "./interface/IRepository";
 
 @Service()
-export class UserRepository {
+export class UserRepository implements IRepository {
   constructor(private db: NodePgDatabase<Record<string, never>>) {}
 
   async getUserByEmail(email: string): Promise<User | null> {
