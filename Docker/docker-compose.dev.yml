@@ -10,7 +10,7 @@ services:
     networks:
       - smart-class-network
     environment:
-      - DATABASE_URL=postgresql://smartclass:root@db:5432/smart-class
+      - DATABASE_URL=postgresql://smartclass:root@smart-class-db-dev:5432/smart-class
 
   smart-class-db-dev:
     image: postgres:latest

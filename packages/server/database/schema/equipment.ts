@@ -7,4 +7,6 @@ export const equipmentTable = pgTable("equipment", {
   is_functional: boolean().notNull().default(true),
   is_running: boolean().notNull().default(false),
   room_id: uuid().references(() => roomTable.id),
-}); 
+});
+
+export type Equipment = typeof equipmentTable.$inferSelect; 
