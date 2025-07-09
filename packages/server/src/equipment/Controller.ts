@@ -2,6 +2,7 @@ import { Service } from "typedi";
 import { EquipmentInteractor } from "./Interactor";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { EquipmentMapper } from "./Mapper";
+import { equipmentParamsSchema } from "./validate";
 
 @Service()
 export class EquipmentController {
@@ -11,7 +12,8 @@ export class EquipmentController {
     req: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply,
   ) {
-    const roomId = req.params.id;
+    const { id: roomId } = equipmentParamsSchema.parse(req.params);
+    
     const equipments = await this.interactor.findAllByRoomId(roomId);
     const data = equipments.map(equipment => this.mapper.toResponse(equipment));
     reply.status(200).send({

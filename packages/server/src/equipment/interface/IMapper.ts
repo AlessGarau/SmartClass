@@ -1,12 +1,5 @@
 import { Equipment } from "../../../database/schema/equipment";
-
-export interface EquipmentByRoomResponse {
-  id: string;
-  type: string;
-  isFunctional: boolean;
-  isRunning: boolean;
-  roomId: string;
-}
+import { EquipmentByRoomResponse } from "../validate";
 
 export interface IEquipmentMapper {
   toResponse(equipment: Equipment): EquipmentByRoomResponse;
