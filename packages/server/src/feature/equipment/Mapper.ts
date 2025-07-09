@@ -1,6 +1,7 @@
 import { Service } from "typedi";
-import { IEquipmentMapper, EquipmentByRoomResponse } from "./interface/IMapper";
-import { Equipment } from "../../database/schema/equipment";
+import { IEquipmentMapper } from "./interface/IMapper";
+import { Equipment } from "../../../database/schema/equipment";
+import { EquipmentByRoomResponse } from "./validate";
 
 @Service()
 export class EquipmentMapper implements IEquipmentMapper {

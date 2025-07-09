@@ -1,5 +1,5 @@
-import { Equipment } from "../../../database/schema/equipment";
-import { Report } from "../../../database/schema/reporting";
+import { Equipment } from "../../../../database/schema/equipment";
+import { Report } from "../../../../database/schema/reporting";
 import { ReportingByRoomResponse } from "../validate";
 
 export { ReportingByRoomResponse };
