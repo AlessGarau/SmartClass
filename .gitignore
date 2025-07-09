@@ -25,3 +25,5 @@
 
 **/dist
 **/.env
+makefile-maria
+**/package-lock.json
