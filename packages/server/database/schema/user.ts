@@ -12,3 +12,5 @@ export const userTable = pgTable("user", {
 });
 
 export type User = typeof userTable.$inferSelect;
+
+export type UserAuth = Omit<User, "password" | "created_at" | "updated_at" | "first_name" | "last_name">;

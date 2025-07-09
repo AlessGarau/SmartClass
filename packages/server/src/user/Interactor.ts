@@ -3,6 +3,7 @@ import { UserRepository } from "./Repository";
 import bcrypt from "bcrypt";
 import { UserError } from "../error/userError";
 import { IInteractor } from "./interface/IInteractor";
+import { UserAuth } from "../../database/schema/user";
 
 @Service()
 export class UserInteractor implements IInteractor {
@@ -28,5 +29,13 @@ export class UserInteractor implements IInteractor {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await this.repository.createUser(email, hashedPassword, first_name, last_name, role);
     return user;
+  }
+
+  async getUserMe(user: UserAuth) {
+    const currentUser = await this.repository.getUserById(user.id);
+    if (!currentUser) {
+      throw UserError.notFound();
+    }
+    return currentUser;
   }
 }

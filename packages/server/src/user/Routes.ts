@@ -18,9 +18,12 @@ export class UserRoutes {
       "/user/register",
       this.controller.registerUser.bind(this.controller),
     );
-    // this.server.get(
-    //   "/user/me",
-    //   this.controller.getUserMe.bind(this.controller)
-    // );
+    this.server.get(
+      "/user/me",
+      {
+        onRequest: [this.server.authenticate],
+      },
+      this.controller.getUserMe.bind(this.controller),
+    );
   }
 }

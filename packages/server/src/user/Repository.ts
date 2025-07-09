@@ -17,4 +17,9 @@ export class UserRepository implements IRepository {
     const user = await this.db.insert(userTable).values({ email, password, first_name, last_name, role}).returning();
     return user[0];
   }
+
+  async getUserById(id: string): Promise<User | null> {
+    const user = await this.db.select().from(userTable).where(eq(userTable.id, id));
+    return user[0];
+  }
 }

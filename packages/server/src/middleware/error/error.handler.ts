@@ -3,6 +3,7 @@ import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import NotFoundError from "./notFoundError";
 import { RoomError } from "./roomError";
+import { UserError } from "./userError";
 
 export const ErrorMiddleware = (
   error: FastifyError | NotFoundError | RoomError | z.ZodError,
@@ -30,6 +31,13 @@ export const ErrorMiddleware = (
       error: "Validation error",
       details: error.errors,
       data: null,
+    });
+  }
+
+  if (error instanceof UserError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: error.cause,
     });
   }
 

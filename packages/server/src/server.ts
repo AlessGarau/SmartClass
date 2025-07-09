@@ -10,6 +10,9 @@ import { RoomRoutes } from "./feature/room/Routes";
 import { ReportingRoutes } from "./feature/reporting/Routes";
 import { EquipmentRoutes } from "./feature/equipment/Routes";
 import { UserRoutes } from "./user/Routes";
+import { adminMiddleware, authMiddleware, teacherMiddleware } from "./middleware/auth.middleware";
+import { UserAuth } from "../database/schema/user";
+
 dotenv.config();
 
 const setupServer = async () => {
@@ -55,17 +58,25 @@ const setupServer = async () => {
     },
   });
 
-  server.register(fjwt, {secret: process.env.JWT_SECRET!});
+  server.register(fjwt, {
+  secret: process.env.JWT_SECRET!,
+  cookie: {
+    cookieName: 'token',
+    signed: false
+  }
 
   server.addHook("preHandler", (req, _res, next) => {
     req.jwt = server.jwt;
     return next();
   });
 
-  server.register(fCookie, {
-    secret: process.env.COOKIE_SECRET!,
-    hook: "preHandler",
-  });
+server.decorate("authenticate", authMiddleware)
+server.decorate("admin", adminMiddleware)
+server.decorate("teacher", teacherMiddleware)
+
+server.register(fCookie, {
+  secret: process.env.COOKIE_SECRET!
+})
 
   server.get("/", async (_request, _reply) => {
     return "Wesh les bgs";

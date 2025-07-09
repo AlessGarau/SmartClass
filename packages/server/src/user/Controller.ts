@@ -4,6 +4,7 @@ import { UserInteractor } from "./Interactor";
 import { UserError } from "../error/userError";
 import { UserLoginSchema, UserRegisterSchema } from "./validate";
 import { UserMapper } from "./Mapper";
+import { UserAuth } from "../../database/schema/user";
 
 @Service()
 export class UserController {
@@ -20,7 +21,8 @@ export class UserController {
     if (!user) {
       throw UserError.loginFailed();
     }
-    const token = await reply.jwtSign({ id: user.id });
+
+    const token = await reply.jwtSign({ id: user.id, role: user.role });
 
     reply.setCookie("token", token, {
       httpOnly: true,
@@ -57,11 +59,11 @@ export class UserController {
     }
   }
 
-//   async getUserMe(req: FastifyRequest, reply: FastifyReply) {
-//     const user = await this.interactor.getUserMe(req.user.id);
-//     return reply.status(200).send({
-//       data: this.mapper.toResponse(user),
-//       message: "Utilisateur récupéré avec succès",
-//     });
-//   }
+  async getUserMe(req: FastifyRequest, reply: FastifyReply) {
+    const user = await this.interactor.getUserMe(req.user as UserAuth);
+    return reply.status(200).send({
+      data: this.mapper.toResponse(user),
+      message: "Utilisateur récupéré avec succès",
+    });
+  }
 }
