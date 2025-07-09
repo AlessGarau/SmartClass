@@ -26,20 +26,20 @@ export class RoomRoutes {
               type: "object",
               properties: {
                 data: zodToJsonSchema(RoomSchema),
-                message: { type: "string" }
-              }
+                message: { type: "string" },
+              },
             },
             400: {
               description: "Bad request",
               type: "object",
               properties: {
-                error: { type: "string" }
-              }
-            }
-          }
-        }
+                error: { type: "string" },
+              },
+            },
+          },
+        },
       },
-      this.controller.createRoom.bind(this.controller)
+      this.controller.createRoom.bind(this.controller),
     );
     
     this.server.get(
@@ -56,15 +56,15 @@ export class RoomRoutes {
               properties: {
                 data: {
                   type: "array",
-                  items: zodToJsonSchema(RoomSchema)
+                  items: zodToJsonSchema(RoomSchema),
                 },
-                message: { type: "string" }
-              }
-            }
-          }
-        }
+                message: { type: "string" },
+              },
+            },
+          },
+        },
       },
-      this.controller.getRooms.bind(this.controller)
+      this.controller.getRooms.bind(this.controller),
     );
   }
 }

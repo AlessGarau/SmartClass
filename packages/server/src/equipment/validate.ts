@@ -5,3 +5,13 @@ export const equipmentParamsSchema = z.object({
 });
 
 export type EquipmentParams = z.infer<typeof equipmentParamsSchema>;
+
+export const EquipmentByRoomResponseSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  isFunctional: z.boolean(),
+  isRunning: z.boolean(),
+  roomId: z.string(),
+});
+
+export type EquipmentByRoomResponse = z.infer<typeof EquipmentByRoomResponseSchema>;
