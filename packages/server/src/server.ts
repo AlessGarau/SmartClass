@@ -5,6 +5,7 @@ import fastifySwaggerUi from "@fastify/swagger-ui";
 import { RoomRoutes } from "./room/Routes";
 import { ErrorMiddleware } from "./error/error.handler";
 import { ReportingRoutes } from "./reporting/Routes";
+import { EquipmentRoutes } from "./equipment/Routes";
 
 const setupServer = async () => {
   const server = Fastify();
@@ -59,6 +60,8 @@ const setupServer = async () => {
   roomRoutes.registerRoutes();
   const reportingRoutes = new ReportingRoutes(server);
   reportingRoutes.registerRoutes();
+  const equipmentRoutes = new EquipmentRoutes(server);
+  equipmentRoutes.registerRoutes();
 
   return server;
 };
