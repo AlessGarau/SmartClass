@@ -1,5 +1,6 @@
 import { UserAuth } from "../database/schema/user";
 import { JWT } from "@fastify/jwt";
+import { FastifyReply } from "fastify";
 
 declare module "@fastify/jwt" {
     interface FastifyJWT {
