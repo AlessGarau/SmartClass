@@ -11,7 +11,7 @@ export class ReportingRoutes {
   public registerRoutes() {
     this.server.get(
       "/reporting/:id",
-      this.controller.findAllReportByRoomId.bind(this.controller)
+      this.controller.findAllReportByRoomId.bind(this.controller),
     );
   }
 }

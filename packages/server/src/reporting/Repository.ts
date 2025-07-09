@@ -19,7 +19,7 @@ export class ReportingRepository implements IReportingRepository {
       .from(reportingTable)
       .leftJoin(
         equipmentTable,
-        eq(reportingTable.equipment_id, equipmentTable.id)
+        eq(reportingTable.equipment_id, equipmentTable.id),
       )
       .where(eq(equipmentTable.room_id, roomId));
   }

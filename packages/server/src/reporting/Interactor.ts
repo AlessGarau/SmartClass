@@ -9,7 +9,7 @@ export class ReportingInteractor implements IReportingInteractor {
   constructor(private repository: ReportingRepository) {}
 
   async findAllByRoomId(
-    roomId: string
+    roomId: string,
   ): Promise<{ reporting: Report; equipment: Equipment | null }[]> {
     const reportings = await this.repository.findAllByRoomId(roomId);
 

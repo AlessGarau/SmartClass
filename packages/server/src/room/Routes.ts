@@ -12,11 +12,11 @@ export class RoomRoutes {
   public registerRoutes() {
     this.server.post(
       "/room",
-      this.controller.createRoom.bind(this.controller)
+      this.controller.createRoom.bind(this.controller),
     );
     this.server.get(
       "/room",
-      this.controller.getRooms.bind(this.controller)
+      this.controller.getRooms.bind(this.controller),
     );
   }
 }

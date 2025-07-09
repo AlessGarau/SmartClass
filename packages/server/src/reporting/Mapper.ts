@@ -14,12 +14,12 @@ export class ReportingMapper implements IMapper {
       },
       equipment: equipment
         ? {
-            id: equipment.id,
-            type: equipment.type,
-            isFunctional: equipment.is_functional,
-            isRunning: equipment.is_running,
-            roomId: equipment.room_id,
-          }
+          id: equipment.id,
+          type: equipment.type,
+          isFunctional: equipment.is_functional,
+          isRunning: equipment.is_running,
+          roomId: equipment.room_id,
+        }
         : null,
     };
   }

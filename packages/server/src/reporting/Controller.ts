@@ -9,7 +9,7 @@ export class ReportingController {
 
   async findAllReportByRoomId(
     req: FastifyRequest<{ Params: { id: string } }>,
-    reply: FastifyReply
+    reply: FastifyReply,
   ) {
     const roomId = req.params.id;
     const reportings = await this.interactor.findAllByRoomId(roomId);
