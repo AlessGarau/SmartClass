@@ -1,38 +1,35 @@
-import { Service } from "typedi";   
+import { Service } from "typedi";
 import { UserRepository } from "./Repository";
 import bcrypt from "bcrypt";
 import { UserError } from "../error/userError";
 import { IInteractor } from "./interface/IInteractor";
-<<<<<<< HEAD
 import { UserAuth } from "../../database/schema/user";
-=======
-import {UserAuth } from "../../database/schema/user";
->>>>>>> ae0be69 (ADD login for mobile with device token and refresh token)
+import { UserLoginParams, UserRegisterParams } from "./validate";
 
 @Service()
 export class UserInteractor implements IInteractor {
-  constructor(private repository: UserRepository) {}
+  constructor(private repository: UserRepository) { }
 
-  async loginUser(email: string, password: string) {
-    const user = await this.repository.getUserByEmail(email);
+  async loginUser(user: UserLoginParams) {
+    const userDb = await this.repository.getUserByEmail(user.email);
 
-    if (!user) {
+    if (!userDb) {
       throw UserError.invalidPasswordOrEmail();
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(user.password, userDb.password);
 
     if (!isMatch) {
       throw UserError.invalidPasswordOrEmail();
     }
 
-    return user;
+    return userDb;
   }
 
-  async registerUser(email: string, password: string, firstName: string, lastName: string, role: "teacher" | "admin") {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await this.repository.createUser(email, hashedPassword, firstName, lastName, role);
-    return user;
+  async registerUser(user: UserRegisterParams) {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const newUser = await this.repository.createUser(user, hashedPassword);
+    return newUser;
   }
 
   async getUserMe(user: UserAuth) {

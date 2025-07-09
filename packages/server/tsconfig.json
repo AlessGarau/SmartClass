@@ -9,5 +9,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*", "database/**/*"]
+  "include": ["src/**/*", "database/**/*", "src/fastify.d.ts"]
 }

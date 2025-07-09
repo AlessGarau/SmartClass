@@ -1,6 +1,8 @@
-import { User } from "../../../database/schema/user";
+import { User, UserAuth } from "../../../database/schema/user";
+import { UserLoginParams, UserRegisterParams } from "../validate";
 
 export interface IInteractor {
-  loginUser(email: string, password: string): Promise<User>;
-  registerUser(email: string, password: string, first_name: string, last_name: string, role: "teacher" | "admin"): Promise<User>;
+  loginUser(user: UserLoginParams): Promise<User>;
+  registerUser(user: UserRegisterParams): Promise<User>;
+  getUserMe(user: UserAuth): Promise<User>;
 }

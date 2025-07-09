@@ -1,7 +1,8 @@
 import { User } from "../../../database/schema/user";
+import { UserRegisterParams } from "../validate";
 
 export interface IRepository {
   getUserByEmail(email: string): Promise<User | null>;
-  createUser(email: string, password: string, first_name: string, last_name: string, role: "teacher" | "admin"): Promise<User>;
+  createUser(user: UserRegisterParams, hashedPassword: string): Promise<User>;
   getUserById(id: string): Promise<User | null>;
 }

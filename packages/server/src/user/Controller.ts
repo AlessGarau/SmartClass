@@ -10,25 +10,25 @@ import { UserMobileDeviceInteractor } from "../userMobileDevice/Interactor";
 @Service()
 export class UserController {
   constructor(
-        private interactor: UserInteractor,
-        private userMobileDeviceInteractor: UserMobileDeviceInteractor,
-        private responseMapper: UserResponseMapper,
+    private interactor: UserInteractor,
+    private userMobileDeviceInteractor: UserMobileDeviceInteractor,
+    private responseMapper: UserResponseMapper,
   ) { }
 
   async loginUser(req: FastifyRequest, reply: FastifyReply) {
     const { email, password, deviceToken } = UserLoginSchema.parse(req.body);
 
-    const user = await this.interactor.loginUser(email, password);
+    const user = await this.interactor.loginUser({ email, password });
 
     if (!user) {
       throw UserError.loginFailed();
     }
 
     const token = await reply.jwtSign({ id: user.id, role: user.role });
-        
+
     const isMobile = req.headers["user-agent"]?.includes("Mobile") ||
-        req.headers["x-client-type"] === "mobile" || req.headers["x-platform"] === "mobile";
-        
+      req.headers["x-client-type"] === "mobile" || req.headers["x-platform"] === "mobile";
+
     if (isMobile && deviceToken) {
       const refreshToken = await reply.jwtSign({ id: user.id, role: user.role }, { expiresIn: "60d" });
       await this.userMobileDeviceInteractor.saveDeviceToken(user.id, deviceToken, refreshToken);
@@ -50,7 +50,7 @@ export class UserController {
       maxAge: 60 * 60 * 24 * 30, // 30 days
       sameSite: "strict",
     });
-        
+
     return reply.status(201).send({
       data: {
         user: this.responseMapper.toLoginResponse(user),
@@ -64,7 +64,7 @@ export class UserController {
       const { email, password, firstName, lastName, role } = UserRegisterSchema.parse(req.body);
 
 
-      const user = await this.interactor.registerUser(email, password, firstName, lastName, role);
+      const user = await this.interactor.registerUser({ email, password, firstName, lastName, role });
 
       if (!user) {
         throw UserError.registerFailed();

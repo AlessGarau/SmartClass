@@ -7,11 +7,11 @@ import { ReportingByRoomResponseSchema } from "./validate";
 export class ReportingRoutes {
   private controller: ReportingController;
 
-  constructor(private server: FastifyInstance) {
+  constructor(private _server: FastifyInstance) {
     this.controller = Container.get(ReportingController);
   }
   public registerRoutes() {
-    this.server.get(
+    this._server.get(
       "/reporting/:id",
       {
         schema: {
