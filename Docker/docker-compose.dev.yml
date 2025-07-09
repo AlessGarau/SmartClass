@@ -6,8 +6,13 @@ services:
     ports:
       - "3000:3000"
     volumes:
+<<<<<<< HEAD
       - ../packages/server:/app/server
       - /app/server/node_modules
+=======
+      - ../packages/server:/app
+      - /app/node_modules
+>>>>>>> 9aff121 (fix: docker and install mqtt)
     networks:
       - smart-class-network
     environment:

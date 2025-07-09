@@ -8,7 +8,7 @@ install:
 	cd packages/server && npm install
 	cd packages/client && npm install
 	@echo "Installation des dépendances Docker..."
-	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) build
+	docker compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) build  --no-cache
 	@echo "Installation terminée"
 
 start:
