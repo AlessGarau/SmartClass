@@ -9,7 +9,7 @@ class MqttClient {
       console.log("Connecté à MQTT");
       this.client.subscribe(defaultTopic);
     });
-    this.client.on("message", async (topic, message) => {
+    this.client.on("message", async (topic: any, message: any) => {
       console.log(`Reçu sur ${topic} : ${message}`);
       this.latestData[topic] = message.toString();
     });
