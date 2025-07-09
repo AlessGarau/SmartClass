@@ -8,6 +8,7 @@
 **/lerna-debug.log*
 
 **/node_modules
+**/package-lock.json
 **/dist
 **/dist-ssr
 **/*.local
@@ -26,4 +27,3 @@
 **/dist
 **/.env
 makefile-maria
-**/package-lock.json
