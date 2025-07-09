@@ -1,5 +1,4 @@
 import mqtt from "mqtt";
-
 class MqttClient {
   private client: mqtt.MqttClient;
   private latestData: Record<string, string> = {};
@@ -10,7 +9,7 @@ class MqttClient {
       console.log("Connecté à MQTT");
       this.client.subscribe(defaultTopic);
     });
-    this.client.on("message", (topic, message) => {
+    this.client.on("message", async (topic, message) => {
       console.log(`Reçu sur ${topic} : ${message}`);
       this.latestData[topic] = message.toString();
     });
