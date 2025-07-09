@@ -1,5 +1,6 @@
 import { Service } from "typedi";
-import { IMapper, ReportingByRoomResponse } from "./interface/IMapper";
+import { IMapper } from "./interface/IMapper";
+import { ReportingByRoomResponse } from "./validate";
 
 @Service()
 export class ReportingMapper implements IMapper {

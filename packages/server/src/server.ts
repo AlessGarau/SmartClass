@@ -21,32 +21,32 @@ const setupServer = async () => {
       servers: [
         {
           url: "http://localhost:3000",
-          description: "Development server"
-        }
+          description: "Development server",
+        },
       ],
       components: {
         securitySchemes: {
           bearerAuth: {
             type: "http",
             scheme: "bearer",
-            bearerFormat: "JWT"
-          }
-        }
-      }
-    }
+            bearerFormat: "JWT",
+          },
+        },
+      },
+    },
   });
 
   await server.register(fastifySwaggerUi, {
     routePrefix: "/docs",
     uiConfig: {
       docExpansion: "full",
-      deepLinking: false
+      deepLinking: false,
     },
     staticCSP: true,
     transformStaticCSP: (header) => header,
     transformSpecification: (swaggerObject) => {
       return swaggerObject;
-    }
+    },
   });
 
   server.get("/", async (_request, _reply) => {

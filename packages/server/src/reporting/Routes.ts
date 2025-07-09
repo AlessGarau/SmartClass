@@ -24,10 +24,10 @@ export class ReportingRoutes {
               id: { 
                 type: "string", 
                 format: "uuid",
-                description: "Room ID" 
-              }
+                description: "Room ID", 
+              },
             },
-            required: ["id"]
+            required: ["id"],
           },
           response: {
             200: {
@@ -36,22 +36,22 @@ export class ReportingRoutes {
               properties: {
                 data: {
                   type: "array",
-                  items: zodToJsonSchema(ReportingByRoomResponseSchema)
+                  items: zodToJsonSchema(ReportingByRoomResponseSchema),
                 },
-                message: { type: "string" }
-              }
+                message: { type: "string" },
+              },
             },
             404: {
               description: "Room not found",
               type: "object",
               properties: {
-                error: { type: "string" }
-              }
-            }
-          }
-        }
+                error: { type: "string" },
+              },
+            },
+          },
+        },
       },
-      this.controller.findAllReportByRoomId.bind(this.controller)
+      this.controller.findAllReportByRoomId.bind(this.controller),
     );
   }
 }
