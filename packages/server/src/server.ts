@@ -5,6 +5,7 @@ import fastifySwaggerUi from "@fastify/swagger-ui";
 import { RoomRoutes } from "./room/Routes";
 import { ErrorMiddleware } from "./error/error.handler";
 import { ReportingRoutes } from "./reporting/Routes";
+import { EquipmentRoutes } from "./equipment/Routes";
 
 const setupServer = async () => {
   const server = Fastify();
@@ -21,32 +22,32 @@ const setupServer = async () => {
       servers: [
         {
           url: "http://localhost:3000",
-          description: "Development server"
-        }
+          description: "Development server",
+        },
       ],
       components: {
         securitySchemes: {
           bearerAuth: {
             type: "http",
             scheme: "bearer",
-            bearerFormat: "JWT"
-          }
-        }
-      }
-    }
+            bearerFormat: "JWT",
+          },
+        },
+      },
+    },
   });
 
   await server.register(fastifySwaggerUi, {
     routePrefix: "/docs",
     uiConfig: {
       docExpansion: "full",
-      deepLinking: false
+      deepLinking: false,
     },
     staticCSP: true,
     transformStaticCSP: (header) => header,
     transformSpecification: (swaggerObject) => {
       return swaggerObject;
-    }
+    },
   });
 
   server.get("/", async (_request, _reply) => {
@@ -59,6 +60,8 @@ const setupServer = async () => {
   roomRoutes.registerRoutes();
   const reportingRoutes = new ReportingRoutes(server);
   reportingRoutes.registerRoutes();
+  const equipmentRoutes = new EquipmentRoutes(server);
+  equipmentRoutes.registerRoutes();
 
   return server;
 };
