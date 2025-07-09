@@ -7,4 +7,6 @@ export const reportingTable = pgTable("reporting", {
   description: varchar({ length: 255 }).notNull(),
   status: varchar({ length: 255, enum: ['pending', 'resolved'] }).default('pending').notNull(),
   created_date: timestamp("created_date").notNull().defaultNow(),
-}); 
+});
+
+export type Report = typeof reportingTable.$inferSelect; 

@@ -2,6 +2,7 @@ import "reflect-metadata";
 import Fastify from "fastify";
 import { RoomRoutes } from "./room/Routes";
 import { ErrorMiddleware } from "./error/error.handler";
+import { ReportingRoutes } from "./reporting/Routes";
 
 const server = Fastify();
 
@@ -13,6 +14,8 @@ server.setErrorHandler(ErrorMiddleware);
 
 const roomRoutes = new RoomRoutes(server);
 roomRoutes.registerRoutes();
+const reportingRoutes = new ReportingRoutes(server);
+reportingRoutes.registerRoutes();
 
 const start = async () => {
   try {

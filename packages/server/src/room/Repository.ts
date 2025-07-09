@@ -12,11 +12,14 @@ export class RoomRepository implements IRoomRepository {
     this.db = database;
   }
   async create(RoomCreateParams: RoomCreateParams): Promise<Room> {
-    const result = await this.db.insert(roomTable).values({
-      name: RoomCreateParams.name,
-      capacity: 10,
-      is_enabled: true,
-    }).returning();
+    const result = await this.db
+      .insert(roomTable)
+      .values({
+        name: RoomCreateParams.name,
+        capacity: 10,
+        is_enabled: true,
+      })
+      .returning();
     return result[0];
   }
   async getRooms(): Promise<Room[]> {
