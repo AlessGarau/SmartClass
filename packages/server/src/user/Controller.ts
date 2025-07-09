@@ -7,7 +7,10 @@ import { UserMapper } from "./Mapper";
 
 @Service()
 export class UserController {
-  constructor(private interactor: UserInteractor) {}
+  constructor(
+    private interactor: UserInteractor,
+    private mapper: UserMapper,
+  ) {}
 
   async loginUser(req: FastifyRequest, reply: FastifyReply) {
     const { email, password } = UserLoginSchema.parse(req.body);
@@ -28,7 +31,7 @@ export class UserController {
 
     return reply.status(201).send({
       data: {
-        user: UserMapper.toLoginResponse(user),
+        user: this.mapper.toLoginResponse(user),
       },
       message: "Utilisateur connecté avec succès",
     });
@@ -46,11 +49,19 @@ export class UserController {
       }
 
       return reply.status(201).send({
-        data: UserMapper.toResponse(user),
+        data: this.mapper.toResponse(user),
         message: "Utilisateur créé avec succès",
       });
     } catch (error) {
       throw UserError.registerFailed();
     }
   }
+
+//   async getUserMe(req: FastifyRequest, reply: FastifyReply) {
+//     const user = await this.interactor.getUserMe(req.user.id);
+//     return reply.status(200).send({
+//       data: this.mapper.toResponse(user),
+//       message: "Utilisateur récupéré avec succès",
+//     });
+//   }
 }

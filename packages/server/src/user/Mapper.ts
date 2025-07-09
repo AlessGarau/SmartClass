@@ -1,25 +1,10 @@
+import { Service } from "typedi";
 import { User } from "../../database/schema/user";
+import { UserResponse, UserLoginResponse } from "./interface/IResponse";
 
-export interface UserResponse {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface UserLoginResponse {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-}
-
+@Service()
 export class UserMapper {
-  static toResponse(user: User): UserResponse {
+  toResponse(user: User): UserResponse {
     return {
       id: user.id,
       email: user.email,
@@ -31,7 +16,7 @@ export class UserMapper {
     };
   }
 
-  static toLoginResponse(user: User): UserLoginResponse {
+  toLoginResponse(user: User): UserLoginResponse {
     return {
       id: user.id,
       email: user.email,
