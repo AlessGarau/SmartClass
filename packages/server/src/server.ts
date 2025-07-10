@@ -2,10 +2,10 @@ import "reflect-metadata";
 import Fastify from "fastify";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
-import { RoomRoutes } from "./room/Routes";
-import { ErrorMiddleware } from "./error/error.handler";
-import { ReportingRoutes } from "./reporting/Routes";
-import { EquipmentRoutes } from "./equipment/Routes";
+import { ErrorMiddleware } from "./middleware/error/error.handler";
+import { RoomRoutes } from "./feature/room/Routes";
+import { ReportingRoutes } from "./feature/reporting/Routes";
+import { EquipmentRoutes } from "./feature/equipment/Routes";
 
 const setupServer = async () => {
   const server = Fastify();

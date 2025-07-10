@@ -2,11 +2,12 @@ import { Service } from "typedi";
 import { IRoomInteractor } from "./interface/IInteractor";
 import { RoomCreateParams, Room } from "./validate";
 import { RoomRepository } from "./Repository";
-import { RoomError } from "../error/roomError";
+import { RoomError } from "../../middleware/error/roomError";
+
 
 @Service()
 export class RoomInteractor implements IRoomInteractor {
-  constructor(private repository: RoomRepository) {}
+  constructor(private repository: RoomRepository) { }
 
   async createRoom(
     CreateRoomCreateParams: RoomCreateParams,

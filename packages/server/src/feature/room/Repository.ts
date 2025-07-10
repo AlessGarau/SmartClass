@@ -1,9 +1,9 @@
 import { IRoomRepository } from "./interface/IRepository";
 import { RoomCreateParams, Room } from "./validate";
-import { database } from "../../database/database";
+import { database } from "../../../database/database";
 import { Service } from "typedi";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { roomTable } from "../../database/schema/room";
+import { roomTable } from "../../../database/schema/room";
 
 @Service()
 export class RoomRepository implements IRoomRepository {

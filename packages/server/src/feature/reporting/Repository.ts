@@ -1,8 +1,8 @@
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { IReportingRepository } from "./interface/IRepository";
-import { database } from "../../database/database";
-import { reportingTable } from "../../database/schema/reporting";
-import { equipmentTable } from "../../database/schema/equipment";
+import { database } from "../../../database/database";
+import { reportingTable } from "../../../database/schema/reporting";
+import { equipmentTable } from "../../../database/schema/equipment";
 import { eq } from "drizzle-orm";
 import { Service } from "typedi";
 
