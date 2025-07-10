@@ -7,9 +7,8 @@ COPY packages/client/package*.json ./
 RUN npm install
 
 FROM base AS dev
-WORKDIR /app
-COPY packages/client ./client
-COPY --from=deps /app/client/node_modules ./client/node_modules
-EXPOSE 5173
 WORKDIR /app/client
+COPY packages/client ./
+COPY --from=deps /app/client/node_modules ./node_modules
+EXPOSE 5173
 CMD ["npm", "run", "dev"]

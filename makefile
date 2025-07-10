@@ -1,4 +1,4 @@
-.PHONY: install start stop restart clean logs
+.PHONY: install start migrate stop restart clean logs
 
 COMPOSE_FILE = Docker/docker-compose.dev.yml
 PROJECT_NAME = smart-class
@@ -17,6 +17,10 @@ start:
 	@echo "Services démarrés"
 	@echo "Statut des conteneurs:"
 	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) ps
+
+migrate:
+	@echo "Lancement des migrations dans le conteneur..."
+	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) exec smart-class-server-dev npm run db:migrate
 
 stop:
 	@echo "Arrêt des services..."
@@ -45,6 +49,7 @@ help:
 	@echo "Commandes disponibles:"
 	@echo "  make install  - Installation des dépendances"
 	@echo "  make start    - Démarrage des services"
+	@echo "  make migrate  - Exécution des migrations"
 	@echo "  make stop     - Arrêt des services"
 	@echo "  make restart  - Redémarrage des services"
 	@echo "  make clean    - Nettoyage complet"
