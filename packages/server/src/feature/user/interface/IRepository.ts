@@ -1,4 +1,4 @@
-import { User } from "../../../database/schema/user";
+import { User } from "../../../../database/schema/user";
 import { UserRegisterParams } from "../validate";
 
 export interface IRepository {

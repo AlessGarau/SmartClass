@@ -9,7 +9,7 @@ import { ErrorMiddleware } from "./middleware/error/error.handler";
 import { RoomRoutes } from "./feature/room/Routes";
 import { ReportingRoutes } from "./feature/reporting/Routes";
 import { EquipmentRoutes } from "./feature/equipment/Routes";
-import { UserRoutes } from "./user/Routes";
+import { UserRoutes } from "./feature/user/Routes";
 import { adminMiddleware, authMiddleware, teacherMiddleware } from "./middleware/auth.middleware";
 
 dotenv.config();

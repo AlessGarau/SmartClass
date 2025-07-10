@@ -1,10 +1,10 @@
 import { Service } from "typedi";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { UserInteractor } from "./Interactor";
-import { UserError } from "../error/userError";
+import { UserError } from "./../../middleware/error/userError";
 import { UserLoginSchema, UserRegisterSchema } from "./validate";
 import { UserResponseMapper } from "./Mapper";
-import { UserAuth } from "../../database/schema/user";
+import { UserAuth } from "../../../database/schema/user";
 import { UserMobileDeviceInteractor } from "../userMobileDevice/Interactor";
 
 @Service()

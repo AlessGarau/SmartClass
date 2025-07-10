@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import { UserMobileDeviceRegister } from "../../database/schema/userMobileDevice";
+import { UserMobileDeviceRegister } from "../../../database/schema/userMobileDevice";
 
 @Service()
 export class UserMobileDeviceDatabaseMapper {

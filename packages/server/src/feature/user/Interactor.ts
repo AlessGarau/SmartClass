@@ -1,9 +1,9 @@
 import { Service } from "typedi";
 import { UserRepository } from "./Repository";
 import bcrypt from "bcrypt";
-import { UserError } from "../error/userError";
+import { UserError } from "./../../middleware/error/userError";
 import { IInteractor } from "./interface/IInteractor";
-import { UserAuth } from "../../database/schema/user";
+import { UserAuth } from "../../../database/schema/user";
 import { UserLoginParams, UserRegisterParams } from "./validate";
 
 @Service()

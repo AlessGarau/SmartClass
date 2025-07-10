@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import { User, userTable } from "../../database/schema/user";
+import { User, userTable } from "../../../database/schema/user";
 import { eq } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { IRepository } from "./interface/IRepository";

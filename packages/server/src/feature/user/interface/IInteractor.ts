@@ -1,4 +1,4 @@
-import { User, UserAuth } from "../../../database/schema/user";
+import { User, UserAuth } from "../../../../database/schema/user";
 import { UserLoginParams, UserRegisterParams } from "../validate";
 
 export interface IInteractor {

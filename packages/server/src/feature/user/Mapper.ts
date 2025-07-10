@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import { User, UserRegister } from "../../database/schema/user";
+import { User, UserRegister } from "../../../database/schema/user";
 import { UserFullResponse, UserMeResponse, UserRegisterParams } from "./validate";
 
 @Service()

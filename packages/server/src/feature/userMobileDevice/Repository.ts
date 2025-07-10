@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import { userMobileDeviceTable } from "../../database/schema/userMobileDevice";
+import { userMobileDeviceTable } from "../../../database/schema/userMobileDevice";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { IRepository } from "./interface/IRepository";
 import { UserMobileDeviceDatabaseMapper } from "./Mapper";
@@ -9,7 +9,7 @@ export class UserMobileDeviceRepository implements IRepository {
   constructor(
     private db: NodePgDatabase<Record<string, never>>,
     private userMobileDeviceDatabaseMapper: UserMobileDeviceDatabaseMapper,
-  ) {}
+  ) { }
 
   async saveDeviceToken(userId: string, deviceToken: string, refreshToken: string): Promise<void> {
     await this.db.insert(userMobileDeviceTable).values(this.userMobileDeviceDatabaseMapper.toUserMobileDevice(userId, deviceToken, refreshToken)).onConflictDoUpdate({
