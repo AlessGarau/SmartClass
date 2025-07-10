@@ -1,5 +1,5 @@
 import { SalleMessage } from "../../feature/room/message";
-import { UserMessage } from "../user/message";
+import { UserMessage } from "../../feature/user/message";
 
 export const ErrorMessageEnum = {
   General: {

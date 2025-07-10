@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { UserError } from "../error/userError";
+import { UserError } from "./error/userError";
 import { UserAuth } from "../../database/schema/user";
 
 export const authMiddleware = async (request: FastifyRequest, _reply: FastifyReply) => {
