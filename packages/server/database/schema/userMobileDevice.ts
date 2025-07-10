@@ -9,3 +9,5 @@ export const userMobileDeviceTable = pgTable("user_mobile_device", {
   last_seen: timestamp("last_seen").notNull().defaultNow(),
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
+
+export type UserMobileDeviceRegister = typeof userMobileDeviceTable.$inferInsert;

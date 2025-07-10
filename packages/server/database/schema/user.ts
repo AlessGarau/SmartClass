@@ -10,3 +10,9 @@ export const userTable = pgTable("user", {
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow().$onUpdate(() => new Date()),
 });
+
+export type User = typeof userTable.$inferSelect;
+
+export type UserRegister = Omit<User, "id" | "created_at" | "updated_at">;
+
+export type UserAuth = Omit<User, "password" | "created_at" | "updated_at" | "first_name" | "last_name">;
