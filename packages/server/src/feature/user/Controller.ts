@@ -52,9 +52,7 @@ export class UserController {
     });
 
     return reply.status(201).send({
-      data: {
-        user: this.responseMapper.toLoginResponse(user),
-      },
+      data: this.responseMapper.toLoginResponse(user),
       message: "Utilisateur connecté avec succès",
     });
   }
@@ -84,6 +82,18 @@ export class UserController {
     return reply.status(200).send({
       data: this.responseMapper.toResponse(user),
       message: "Utilisateur récupéré avec succès",
+    });
+  }
+
+  async logoutUser(req: FastifyRequest, reply: FastifyReply) {
+    reply.setCookie("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      expires: new Date(0),
+    });
+    return reply.status(200).send({
+      message: "Utilisateur déconnecté avec succès",
     });
   }
 }

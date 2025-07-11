@@ -5,6 +5,7 @@ import fjwt from "@fastify/jwt";
 import fCookie from "@fastify/cookie";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
+import fastifyCors from "@fastify/cors";
 import { ErrorMiddleware } from "./middleware/error/error.handler";
 import { RoomRoutes } from "./feature/room/Routes";
 import { ReportingRoutes } from "./feature/reporting/Routes";
@@ -16,6 +17,14 @@ dotenv.config();
 
 const setupServer = async () => {
   const server = Fastify();
+
+  await server.register(fastifyCors, {
+    origin: [
+      "http://localhost:5173",
+      "http://smart-class-client-dev:5173",
+    ],
+    credentials: true,
+  });
 
   // Register OpenAPI/Swagger plugins
   await server.register(fastifySwagger, {

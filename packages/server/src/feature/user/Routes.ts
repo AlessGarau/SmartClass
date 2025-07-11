@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import { type FastifyInstance } from "fastify";
 import { UserController } from "./Controller";
 import Container from "typedi";
 import { UserMeResponseSchema } from "./validate";
@@ -41,6 +41,26 @@ export class UserRoutes {
         onRequest: [this.server.authenticate],
       },
       this.controller.getUserMe.bind(this.controller),
+    );
+    this.server.post(
+      "/user/logout",
+      {
+        schema: {
+          tags: ["User"],
+          summary: "Logout user",
+          description: "Logout user",
+          response: {
+            200: {
+              description: "User logged out",
+              type: "object",
+              properties: {
+                message: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.logoutUser.bind(this.controller),
     );
   }
 }
