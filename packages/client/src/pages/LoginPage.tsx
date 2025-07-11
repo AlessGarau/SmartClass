@@ -22,8 +22,8 @@ const LoginPage = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         loginMutation.mutate({ email, password }, {
-            onSuccess: () => {
-                queryClient.setQueryData(userQueryOptions.me().queryKey, { data: loginMutation.data });
+            onSuccess: (data) => {
+                queryClient.setQueryData(userQueryOptions.me().queryKey, { data: data.data });
                 navigate('/dashboard');
             }
         });
