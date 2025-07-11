@@ -19,6 +19,8 @@ start:
 	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) ps
 
 migrate:
+	@echo "Génération des fichiers de migrations..."
+	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) exec smart-class-server-dev npm run db:generate
 	@echo "Lancement des migrations dans le conteneur..."
 	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) exec smart-class-server-dev npm run db:migrate
 
