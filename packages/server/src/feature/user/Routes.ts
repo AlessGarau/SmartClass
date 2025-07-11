@@ -42,5 +42,25 @@ export class UserRoutes {
       },
       this.controller.getUserMe.bind(this.controller),
     );
+    this.server.post(
+      "/user/logout",
+      {
+        schema: {
+          tags: ["User"],
+          summary: "Logout user",
+          description: "Logout user",
+          response: {
+            200: {
+              description: "User logged out",
+              type: "object",
+              properties: {
+                message: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.logoutUser.bind(this.controller),
+    );
   }
 }
