@@ -52,9 +52,7 @@ export class UserController {
     });
 
     return reply.status(201).send({
-      data: {
-        user: this.responseMapper.toLoginResponse(user),
-      },
+      data: this.responseMapper.toLoginResponse(user),
       message: "Utilisateur connecté avec succès",
     });
   }

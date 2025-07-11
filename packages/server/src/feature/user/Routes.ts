@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import { type FastifyInstance } from "fastify";
 import { UserController } from "./Controller";
 import Container from "typedi";
 import { UserMeResponseSchema } from "./validate";
