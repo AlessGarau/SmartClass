@@ -6,7 +6,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ../packages/server:/app
+      - ../packages/server:/app/server
+      - /app/server/node_modules
     networks:
       - smart-class-network
     environment:
