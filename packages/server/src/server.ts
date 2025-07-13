@@ -114,21 +114,19 @@ const start = async () => {
     console.log("Serveur lancé sur http://localhost:3000");
     console.log("API Documentation disponible sur http://localhost:3000/docs");
     
-    // Démarrer le service de collecte de données MQTT
     const mqttBrokerUrl = process.env.MQTT_BROKER_URL || "mqtt://admin-hetic.arcplex.tech:8823";
     const sensorDataCollector = Container.get(SensorDataCollector);
     
     try {
       await sensorDataCollector.start(mqttBrokerUrl);
-      console.log("🚀 Service de collecte de données MQTT démarré");
+      console.log("Service de collecte de données MQTT démarré");
     } catch (mqttError) {
-      console.error("⚠️ Erreur lors du démarrage du service MQTT:", mqttError);
-      console.log("⚠️ Le serveur continue sans le service MQTT");
+      console.error("Erreur lors du démarrage du service MQTT:", mqttError);
+      console.log("Le serveur continue sans le service MQTT");
     }
     
-    // Gérer l'arrêt propre du service
     process.on("SIGINT", () => {
-      console.log("\n🛑 Arrêt du serveur...");
+      console.log("Arrêt du serveur...");
       sensorDataCollector.stop();
       process.exit(0);
     });
