@@ -103,6 +103,7 @@ async function main() {
     { room_id: rooms[6].id, physical_id: "TEMP_005" },
     { room_id: rooms[6].id, physical_id: "HUM_005" },
     { room_id: rooms[6].id, physical_id: "MOV_005" },
+    { room_id: rooms[6].id, physical_id: "MOV_005" },
   ]).returning();
 
   // Seed temperature data
