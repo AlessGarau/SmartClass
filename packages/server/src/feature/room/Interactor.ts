@@ -23,4 +23,10 @@ export class RoomInteractor implements IRoomInteractor {
     if (!room) { throw RoomError.notFound(); }
     return room;
   }
+
+  async deleteRoom(id: string): Promise<void> {
+    const room = await this._repository.getRoom(id);
+    if (!room) { throw RoomError.notFound(); }
+    await this._repository.deleteRoom(id);
+  }
 }

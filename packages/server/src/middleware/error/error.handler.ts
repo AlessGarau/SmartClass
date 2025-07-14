@@ -10,7 +10,7 @@ export const ErrorMiddleware = (
   req: FastifyRequest,
   reply: FastifyReply,
 ) => {
-  // console.error(error);
+  console.error(error);
 
   if (error instanceof NotFoundError) {
     return reply.status(404).send({
@@ -43,13 +43,13 @@ export const ErrorMiddleware = (
 
   if ("statusCode" in error) {
     return reply.status(error.statusCode || 500).send({
-      error: error.message || "Erreur interne du serveur",
+      error: error.message || "Internal server error",
       data: null,
     });
   }
 
   return reply.status(500).send({
-    error: "Erreur interne du serveur",
+    error: "Internal server error",
     data: null,
   });
 };

@@ -57,4 +57,10 @@ export class RoomRepository implements IRoomRepository {
       .limit(1);
     return result[0] || null;
   }
+
+  async deleteRoom(id: string): Promise<void> {
+    await this._db
+      .delete(roomTable)
+      .where(eq(roomTable.id, id));
+  }
 }

@@ -43,6 +43,13 @@ export class RoomRoutes {
                 error: { type: "string" },
               },
             },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
           },
         },
       },
@@ -71,6 +78,13 @@ export class RoomRoutes {
             },
             400: {
               description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
               type: "object",
               properties: {
                 error: { type: "string" },
@@ -112,10 +126,56 @@ export class RoomRoutes {
                 error: { type: "string" },
               },
             },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
           },
         },
       },
       this.controller.getRoom.bind(this.controller),
+    );
+
+    this.server.delete(
+      "/room/:id",
+      {
+        schema: {
+          tags: ["Room"],
+          summary: "Delete a room by ID",
+          description: "Delete a room using its ID",
+          params: zodToJsonSchema(GetRoomParamsSchema),
+          response: {
+            204: {
+              description: "Room deleted successfully",
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            404: {
+              description: "Room not found",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.deleteRoom.bind(this.controller),
     );
   }
 }

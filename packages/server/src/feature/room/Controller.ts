@@ -32,4 +32,10 @@ export class RoomController {
       data: room,
     });
   }
+
+  async deleteRoom(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = GetRoomParamsSchema.parse(req.params);
+    await this._interactor.deleteRoom(id);
+    return reply.status(204).send();
+  }
 }
