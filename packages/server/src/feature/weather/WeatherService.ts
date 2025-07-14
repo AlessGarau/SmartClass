@@ -1,6 +1,7 @@
 import { Service } from "typedi";
 import axios from "axios";
 import { OpenMeteoResponse, WeatherData } from "./types";
+import { WeatherError } from "../../middleware/error/weatherError";
 
 @Service()
 export class WeatherService {
@@ -22,7 +23,7 @@ export class WeatherService {
       const response = await axios.get<OpenMeteoResponse>(url);
       return this.transformResponse(response.data);
     } catch (error) {
-      throw new Error("Failed to fetch weather data");
+      throw WeatherError.apiFetchFailed(error as Error);
     }
   }
 
