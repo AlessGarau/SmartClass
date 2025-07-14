@@ -10,8 +10,8 @@ export class RoomError extends Error {
     statusCode?: number;
     cause?: Error;
   }) {
-    const { statusCode, cause } = errorParams;
-    super(ErrorMessageEnum.Room.CREATION_FAILED);
+    const { message, statusCode, cause } = errorParams;
+    super(message || ErrorMessageEnum.Room.CREATION_FAILED);
     this.statusCode = statusCode || 500;
     this.name = "RoomError";
     this.cause = cause;
@@ -19,14 +19,14 @@ export class RoomError extends Error {
 
   static notFound(message?: string): RoomError {
     return new RoomError({
-      message: ErrorMessageEnum.Room.NOT_FOUND,
+      message: message || ErrorMessageEnum.Room.NOT_FOUND,
       statusCode: 404,
     });
   }
 
   static creationFailed(message?: string, cause?: Error): RoomError {
     return new RoomError({
-      message: ErrorMessageEnum.Room.CREATION_FAILED,
+      message: message || ErrorMessageEnum.Room.CREATION_FAILED,
       statusCode: 500,
       cause,
     });
@@ -34,7 +34,7 @@ export class RoomError extends Error {
 
   static alreadyExists(message?: string): RoomError {
     return new RoomError({
-      message: ErrorMessageEnum.Room.ALREADY_EXISTS,
+      message: message || ErrorMessageEnum.Room.ALREADY_EXISTS,
       statusCode: 409,
     });
   }

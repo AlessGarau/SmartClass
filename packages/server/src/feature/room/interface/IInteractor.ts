@@ -1,6 +1,7 @@
-import { Room, RoomCreateParams, GetRoomsQueryParams } from "../validate";
+import { Room, CreateRoomParams, GetRoomsQueryParams } from "../validate";
 
 export interface IRoomInteractor {
-  createRoom(CreateRoomCreateParams: RoomCreateParams): Promise<Room>;
+  createRoom(CreateRoomCreateParams: CreateRoomParams): Promise<Room>;
   getRooms(params: GetRoomsQueryParams): Promise<Room[]>;
+  getRoom(id: string): Promise<Room | null>;
 }

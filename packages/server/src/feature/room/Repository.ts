@@ -1,9 +1,10 @@
 import { IRoomRepository } from "./interface/IRepository";
-import { RoomCreateParams, Room, GetRoomsQueryParams } from "./validate";
+import { CreateRoomParams, Room, GetRoomsQueryParams } from "./validate";
 import { database } from "../../../database/database";
 import { Service } from "typedi";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { roomTable } from "../../../database/schema/room";
+import { eq } from "drizzle-orm";
 
 @Service()
 export class RoomRepository implements IRoomRepository {
@@ -12,7 +13,7 @@ export class RoomRepository implements IRoomRepository {
     this._db = database;
   }
 
-  async create(RoomCreateParams: RoomCreateParams): Promise<Room> {
+  async create(RoomCreateParams: CreateRoomParams): Promise<Room> {
     const result = await this._db
       .insert(roomTable)
       .values({
@@ -37,5 +38,14 @@ export class RoomRepository implements IRoomRepository {
 
     const result = await query;
     return result;
+  }
+
+  async getRoom(id: string): Promise<Room | null> {
+    const result = await this._db
+      .select()
+      .from(roomTable)
+      .where(eq(roomTable.id, id))
+      .limit(1);
+    return result[0] || null;
   }
 }

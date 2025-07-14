@@ -7,7 +7,7 @@ export const RoomSchema = z.object({
   is_enabled: z.boolean(),
 });
 
-export const RoomCreateSchema = z.object({
+export const CreateRoomSchema = z.object({
   name: z
     .string()
     .min(4),
@@ -30,6 +30,14 @@ export const GetRoomsQuerySchema = z.object({
     .describe("Number of rooms to skip"),
 });
 
+export const GetRoomParamsSchema = z.object({
+  id: z
+    .string()
+    .uuid()
+    .describe("Room ID"),
+});
+
 export type Room = z.infer<typeof RoomSchema>;
-export type RoomCreateParams = z.infer<typeof RoomCreateSchema>;
+export type CreateRoomParams = z.infer<typeof CreateRoomSchema>;
 export type GetRoomsQueryParams = z.infer<typeof GetRoomsQuerySchema>;
+export type GetRoomParams = z.infer<typeof GetRoomParamsSchema>;
