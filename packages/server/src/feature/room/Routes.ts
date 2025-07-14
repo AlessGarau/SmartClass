@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { RoomController } from "./Controller";
 import Container from "typedi";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { RoomSchema, RoomCreateSchema } from "./validate";
+import { RoomSchema, RoomCreateSchema, GetRoomsQuerySchema } from "./validate";
 
 export class RoomRoutes {
   private controller: RoomController;
@@ -49,6 +49,7 @@ export class RoomRoutes {
           tags: ["Room"],
           summary: "Get all rooms",
           description: "Retrieve a list of all rooms",
+          querystring: zodToJsonSchema(GetRoomsQuerySchema),
           response: {
             200: {
               description: "List of rooms",

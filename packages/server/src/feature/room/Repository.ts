@@ -1,5 +1,5 @@
 import { IRoomRepository } from "./interface/IRepository";
-import { RoomCreateParams, Room } from "./validate";
+import { RoomCreateParams, Room, GetRoomsQueryParams } from "./validate";
 import { database } from "../../../database/database";
 import { Service } from "typedi";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -24,8 +24,18 @@ export class RoomRepository implements IRoomRepository {
     return result[0];
   }
 
-  async getRooms(): Promise<Room[]> {
-    const result = await this._db.select().from(roomTable);
+  async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
+    const query = this._db.select().from(roomTable);
+
+    if (params.limit !== undefined) {
+      query.limit(params.limit);
+    }
+
+    if (params.offset !== undefined) {
+      query.offset(params.offset);
+    }
+
+    const result = await query;
     return result;
   }
 }

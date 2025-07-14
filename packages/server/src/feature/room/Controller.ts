@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Service } from "typedi";
 import { RoomInteractor } from "./Interactor";
-import { Room, RoomCreateParams, RoomCreateSchema } from "./validate";
+import { Room, RoomCreateParams, RoomCreateSchema, GetRoomsQuerySchema } from "./validate";
 import { RoomMessage } from "./message";
 
 @Service()
@@ -18,7 +18,8 @@ export class RoomController {
   }
 
   async getRooms(req: FastifyRequest, reply: FastifyReply) {
-    const rooms = await this._interactor.getRooms();
+    const { limit, offset } = GetRoomsQuerySchema.parse(req.query);
+    const rooms = await this._interactor.getRooms({ limit, offset });
     return reply.status(200).send({
       data: rooms,
     });
