@@ -28,12 +28,6 @@ export class RoomController {
   async getRoom(req: FastifyRequest, reply: FastifyReply) {
     const { id } = GetRoomParamsSchema.parse(req.params);
     const room = await this._interactor.getRoom(id);
-    console.log("Room fetched:", !room);
-    if (!room) {
-      return reply.status(404).send({
-        error: RoomMessage.NOT_FOUND,
-      });
-    }
     return reply.status(200).send({
       data: room,
     });

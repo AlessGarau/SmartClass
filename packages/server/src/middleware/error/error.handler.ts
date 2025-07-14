@@ -10,7 +10,7 @@ export const ErrorMiddleware = (
   req: FastifyRequest,
   reply: FastifyReply,
 ) => {
-  console.error(error);
+  // console.error(error);
 
   if (error instanceof NotFoundError) {
     return reply.status(404).send({

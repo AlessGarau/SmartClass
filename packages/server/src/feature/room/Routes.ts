@@ -36,6 +36,13 @@ export class RoomRoutes {
                 error: { type: "string" },
               },
             },
+            409: {
+              description: "Already Exists",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
           },
         },
       },

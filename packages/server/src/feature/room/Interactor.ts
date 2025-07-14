@@ -18,7 +18,7 @@ export class RoomInteractor implements IRoomInteractor {
     return await this._repository.getRooms(params);
   }
 
-  async getRoom(id: string): Promise<Room | null> {
+  async getRoom(id: string): Promise<Room> {
     const room: Room | null = await this._repository.getRoom(id);
     if (!room) { throw RoomError.notFound(); }
     return room;

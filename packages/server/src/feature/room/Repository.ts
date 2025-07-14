@@ -5,6 +5,7 @@ import { Service } from "typedi";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { roomTable } from "../../../database/schema/room";
 import { eq } from "drizzle-orm";
+import { RoomError } from "../../middleware/error/roomError";
 
 @Service()
 export class RoomRepository implements IRoomRepository {
@@ -14,16 +15,24 @@ export class RoomRepository implements IRoomRepository {
   }
 
   async create(RoomCreateParams: CreateRoomParams): Promise<Room> {
-    const result = await this._db
-      .insert(roomTable)
-      .values({
-        name: RoomCreateParams.name,
-        capacity: RoomCreateParams.capacity,
-        is_enabled: true,
-      })
-      .returning();
-    return result[0];
+    try {
+      const result = await this._db
+        .insert(roomTable)
+        .values({
+          name: RoomCreateParams.name,
+          capacity: RoomCreateParams.capacity,
+          is_enabled: true,
+        })
+        .returning();
+      return result[0];
+    } catch (error: any) {
+      if (error.cause.code === "23505") {
+        throw RoomError.alreadyExists(`Room name "${RoomCreateParams.name}" already exists.`);
+      }
+      throw RoomError.creationFailed("Unexpected error during room creation", error);
+    }
   }
+
 
   async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
     const query = this._db.select().from(roomTable);
