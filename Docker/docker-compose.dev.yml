@@ -2,7 +2,7 @@ services:
   smart-class-server-dev:
     build:
       context: ..
-      dockerfile: Docker/Dockerfile.api.dev
+      dockerfile: Docker/Dockerfile.server.dev
     ports:
       - "3000:3000"
     volumes:
