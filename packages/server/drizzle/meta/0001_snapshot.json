@@ -81,12 +81,8 @@
           "name": "equipment_room_id_room_id_fk",
           "tableFrom": "equipment",
           "tableTo": "room",
-          "columnsFrom": [
-            "room_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["room_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -140,12 +136,8 @@
           "name": "humidity_room_id_room_id_fk",
           "tableFrom": "humidity",
           "tableTo": "room",
-          "columnsFrom": [
-            "room_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["room_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -153,12 +145,8 @@
           "name": "humidity_sensor_id_sensor_id_fk",
           "tableFrom": "humidity",
           "tableTo": "sensor",
-          "columnsFrom": [
-            "sensor_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sensor_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -217,12 +205,8 @@
           "name": "lesson_class_id_class_id_fk",
           "tableFrom": "lesson",
           "tableTo": "class",
-          "columnsFrom": [
-            "class_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["class_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -230,12 +214,8 @@
           "name": "lesson_room_id_room_id_fk",
           "tableFrom": "lesson",
           "tableTo": "room",
-          "columnsFrom": [
-            "room_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["room_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -288,12 +268,8 @@
           "name": "movement_room_id_room_id_fk",
           "tableFrom": "movement",
           "tableTo": "room",
-          "columnsFrom": [
-            "room_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["room_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -301,12 +277,8 @@
           "name": "movement_sensor_id_sensor_id_fk",
           "tableFrom": "movement",
           "tableTo": "sensor",
-          "columnsFrom": [
-            "sensor_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sensor_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -359,12 +331,8 @@
           "name": "pressure_room_id_room_id_fk",
           "tableFrom": "pressure",
           "tableTo": "room",
-          "columnsFrom": [
-            "room_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["room_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -372,12 +340,8 @@
           "name": "pressure_sensor_id_sensor_id_fk",
           "tableFrom": "pressure",
           "tableTo": "sensor",
-          "columnsFrom": [
-            "sensor_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sensor_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -432,12 +396,8 @@
           "name": "reporting_equipment_id_equipment_id_fk",
           "tableFrom": "reporting",
           "tableTo": "equipment",
-          "columnsFrom": [
-            "equipment_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["equipment_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -486,9 +446,7 @@
         "room_name_unique": {
           "name": "room_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -530,12 +488,8 @@
           "name": "sensor_room_id_room_id_fk",
           "tableFrom": "sensor",
           "tableTo": "room",
-          "columnsFrom": [
-            "room_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["room_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -589,12 +543,8 @@
           "name": "temperature_room_id_room_id_fk",
           "tableFrom": "temperature",
           "tableTo": "room",
-          "columnsFrom": [
-            "room_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["room_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -602,12 +552,8 @@
           "name": "temperature_sensor_id_sensor_id_fk",
           "tableFrom": "temperature",
           "tableTo": "sensor",
-          "columnsFrom": [
-            "sensor_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["sensor_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -641,12 +587,8 @@
           "name": "user_lesson_user_id_user_id_fk",
           "tableFrom": "user_lesson",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -654,12 +596,8 @@
           "name": "user_lesson_lesson_id_lesson_id_fk",
           "tableFrom": "user_lesson",
           "tableTo": "lesson",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -720,12 +658,8 @@
           "name": "user_mobile_device_user_id_user_id_fk",
           "tableFrom": "user_mobile_device",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -799,9 +733,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},

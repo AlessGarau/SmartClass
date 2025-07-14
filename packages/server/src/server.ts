@@ -11,6 +11,7 @@ import { RoomRoutes } from "./feature/room/Routes";
 import { ReportingRoutes } from "./feature/reporting/Routes";
 import { EquipmentRoutes } from "./feature/equipment/Routes";
 import { UserRoutes } from "./feature/user/Routes";
+import { WeatherRoutes } from "./feature/weather/Routes";
 import { adminMiddleware, authMiddleware, teacherMiddleware } from "./middleware/auth.middleware";
 import Container from "typedi";
 import { SensorDataCollector } from "./services/SensorDataCollector";
@@ -103,6 +104,8 @@ const setupServer = async () => {
   equipmentRoutes.registerRoutes();
   const userRoutes = new UserRoutes(server);
   userRoutes.registerRoutes();
+  const weatherRoutes = new WeatherRoutes(server);
+  weatherRoutes.registerRoutes();
 
   return server;
 };
