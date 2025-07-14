@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { RoomController } from "./Controller";
 import Container from "typedi";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { RoomSchema, CreateRoomSchema, GetRoomsQuerySchema, GetRoomParamsSchema, PutRoomSchema } from "./validate";
+import { RoomSchema, CreateRoomSchema, GetRoomsQuerySchema, RoomIdParamsSchema, PutRoomSchema, PatchRoomSchema } from "./validate";
 
 export class RoomRoutes {
   private controller: RoomController;
@@ -103,7 +103,7 @@ export class RoomRoutes {
           tags: ["Room"],
           summary: "Get room by ID",
           description: "Retrieve a room by its ID",
-          params: zodToJsonSchema(GetRoomParamsSchema),
+          params: zodToJsonSchema(RoomIdParamsSchema),
           response: {
             200: {
               description: "Room details",
@@ -146,7 +146,7 @@ export class RoomRoutes {
           tags: ["Room"],
           summary: "Update entire room by ID",
           description: "Update a room entirely using its ID",
-          params: zodToJsonSchema(GetRoomParamsSchema),
+          params: zodToJsonSchema(RoomIdParamsSchema),
           body: zodToJsonSchema(PutRoomSchema),
           response: {
             200: {
@@ -171,6 +171,13 @@ export class RoomRoutes {
                 error: { type: "string" },
               },
             },
+            409: {
+              description: "Conflict",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
             500: {
               description: "Internal server error",
               type: "object",
@@ -184,6 +191,58 @@ export class RoomRoutes {
       this.controller.putRoom.bind(this.controller),
     );
 
+    this.server.patch(
+      "/room/:id",
+      {
+        schema: {
+          tags: ["Room"],
+          summary: "Update room by ID",
+          description: "Update one or more fields of a room using its ID",
+          params: zodToJsonSchema(RoomIdParamsSchema),
+          body: zodToJsonSchema(PatchRoomSchema),
+          response: {
+            200: {
+              description: "Room updated successfully",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(RoomSchema),
+                message: { type: "string" },
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            404: {
+              description: "Room not found",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            409: {
+              description: "Conflict",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.patchRoom.bind(this.controller),
+    );
+
     this.server.delete(
       "/room/:id",
       {
@@ -191,7 +250,7 @@ export class RoomRoutes {
           tags: ["Room"],
           summary: "Delete a room by ID",
           description: "Delete a room using its ID",
-          params: zodToJsonSchema(GetRoomParamsSchema),
+          params: zodToJsonSchema(RoomIdParamsSchema),
           response: {
             204: {
               description: "Room deleted successfully",

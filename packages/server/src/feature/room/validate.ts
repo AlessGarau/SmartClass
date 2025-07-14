@@ -19,6 +19,11 @@ export const PutRoomSchema = z.object({
   is_enabled: z.boolean(),
 });
 
+export const PatchRoomSchema = z.object({
+  name: z.string().min(4).optional(),
+  capacity: z.number().min(1).optional(),
+  is_enabled: z.boolean().optional(),
+});
 
 export const GetRoomsQuerySchema = z.object({
   limit: z
@@ -35,7 +40,7 @@ export const GetRoomsQuerySchema = z.object({
     .describe("Number of rooms to skip"),
 });
 
-export const GetRoomParamsSchema = z.object({
+export const RoomIdParamsSchema = z.object({
   id: z
     .string()
     .uuid()
@@ -45,5 +50,6 @@ export const GetRoomParamsSchema = z.object({
 export type Room = z.infer<typeof RoomSchema>;
 export type CreateRoomParams = z.infer<typeof CreateRoomSchema>;
 export type GetRoomsQueryParams = z.infer<typeof GetRoomsQuerySchema>;
-export type GetRoomParams = z.infer<typeof GetRoomParamsSchema>;
+export type RoomIdParams = z.infer<typeof RoomIdParamsSchema>;
 export type PutRoomParams = z.infer<typeof PutRoomSchema>;
+export type PatchRoomParams = z.infer<typeof PatchRoomSchema>;

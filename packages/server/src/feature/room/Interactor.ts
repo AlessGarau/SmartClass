@@ -32,6 +32,14 @@ export class RoomInteractor implements IRoomInteractor {
     return updatedRoom;
   }
 
+  async patchRoom(id: string, patchRoomParams: Partial<PutRoomParams>): Promise<Room> {
+    const existingRoom: Room | null = await this._repository.getRoom(id);
+    if (!existingRoom) { throw RoomError.notFound(); }
+    const updatedRoom: Room = await this._repository.patchRoom(id, patchRoomParams);
+    if (!updatedRoom) { throw RoomError.updateFailed(); }
+    return updatedRoom;
+  }
+
   async deleteRoom(id: string): Promise<void> {
     const room = await this._repository.getRoom(id);
     if (!room) { throw RoomError.notFound(); }

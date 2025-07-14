@@ -33,7 +33,6 @@ export class RoomRepository implements IRoomRepository {
     }
   }
 
-
   async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
     const query = this._db.select().from(roomTable);
 
@@ -59,19 +58,47 @@ export class RoomRepository implements IRoomRepository {
   }
 
   async putRoom(id: string, roomUpdateParams: PutRoomParams): Promise<Room> {
-    const updatedRoom = await this._db
-      .update(roomTable)
-      .set({
-        name: roomUpdateParams.name,
-        capacity: roomUpdateParams.capacity,
-        is_enabled: roomUpdateParams.is_enabled,
-      })
-      .where(eq(roomTable.id, id))
-      .returning();
-    if (updatedRoom.length === 0) {
-      throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
+    try {
+      const updatedRoom = await this._db
+        .update(roomTable)
+        .set({
+          name: roomUpdateParams.name,
+          capacity: roomUpdateParams.capacity,
+          is_enabled: roomUpdateParams.is_enabled,
+        })
+        .where(eq(roomTable.id, id))
+        .returning();
+
+      if (updatedRoom.length === 0) {
+        throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
+      }
+      return updatedRoom[0];
+    } catch (error: any) {
+      if (error.cause.code === "23505") {
+        throw RoomError.alreadyExists(`Room name "${roomUpdateParams.name}" already exists.`);
+      }
+      throw RoomError.updateFailed("Unexpected error during room update", error);
     }
-    return updatedRoom[0];
+  }
+
+  async patchRoom(id: string, roomUpdateParams: Partial<PutRoomParams>): Promise<Room> {
+    try {
+      const result = await this._db
+        .update(roomTable)
+        .set(roomUpdateParams)
+        .where(eq(roomTable.id, id))
+        .returning();
+
+      if (result.length === 0) {
+        throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
+      }
+      return result[0];
+    } catch (error: any) {
+      if (error.cause.code === "23505") {
+        throw RoomError.alreadyExists(`Room name "${roomUpdateParams.name}" already exists.`);
+      }
+      throw RoomError.updateFailed("Unexpected error during room update", error);
+    }
   }
 
   async deleteRoom(id: string): Promise<void> {

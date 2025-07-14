@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Service } from "typedi";
 import { RoomInteractor } from "./Interactor";
-import { Room, CreateRoomParams, CreateRoomSchema, GetRoomsQuerySchema, GetRoomParamsSchema, PutRoomSchema } from "./validate";
+import { Room, CreateRoomParams, CreateRoomSchema, GetRoomsQuerySchema, RoomIdParamsSchema, PutRoomSchema, PatchRoomSchema } from "./validate";
 import { RoomMessage } from "./message";
 
 @Service()
@@ -26,7 +26,7 @@ export class RoomController {
   }
 
   async getRoom(req: FastifyRequest, reply: FastifyReply) {
-    const { id } = GetRoomParamsSchema.parse(req.params);
+    const { id } = RoomIdParamsSchema.parse(req.params);
     const room = await this._interactor.getRoom(id);
     return reply.status(200).send({
       data: room,
@@ -34,7 +34,7 @@ export class RoomController {
   }
 
   async putRoom(req: FastifyRequest, reply: FastifyReply) {
-    const { id } = GetRoomParamsSchema.parse(req.params);
+    const { id } = RoomIdParamsSchema.parse(req.params);
     const roomUpdateParams = PutRoomSchema.parse(req.body);
     const updatedRoom = await this._interactor.putRoom(id, roomUpdateParams);
     return reply.status(200).send({
@@ -43,8 +43,18 @@ export class RoomController {
     });
   }
 
+  async patchRoom(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = RoomIdParamsSchema.parse(req.params);
+    const roomUpdateParams = PatchRoomSchema.parse(req.body);
+    const updatedRoom = await this._interactor.patchRoom(id, roomUpdateParams);
+    return reply.status(200).send({
+      data: updatedRoom,
+      message: RoomMessage.UPDATE_SUCCESS,
+    });
+  }
+
   async deleteRoom(req: FastifyRequest, reply: FastifyReply) {
-    const { id } = GetRoomParamsSchema.parse(req.params);
+    const { id } = RoomIdParamsSchema.parse(req.params);
     await this._interactor.deleteRoom(id);
     return reply.status(204).send();
   }

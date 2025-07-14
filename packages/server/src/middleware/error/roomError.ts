@@ -32,10 +32,11 @@ export class RoomError extends Error {
     });
   }
 
-  static updateFailed(message?: string): RoomError {
+  static updateFailed(message?: string, cause?: Error): RoomError {
     return new RoomError({
       message: message || ErrorMessageEnum.Room.UPDATE_FAILED,
       statusCode: 500,
+      cause,
     });
   }
 
