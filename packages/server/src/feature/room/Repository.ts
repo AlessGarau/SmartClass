@@ -1,5 +1,5 @@
 import { IRoomRepository } from "./interface/IRepository";
-import { CreateRoomParams, Room, GetRoomsQueryParams } from "./validate";
+import { CreateRoomParams, Room, GetRoomsQueryParams, PutRoomParams } from "./validate";
 import { database } from "../../../database/database";
 import { Service } from "typedi";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -21,7 +21,7 @@ export class RoomRepository implements IRoomRepository {
         .values({
           name: RoomCreateParams.name,
           capacity: RoomCreateParams.capacity,
-          is_enabled: true,
+          is_enabled: RoomCreateParams.is_enabled,
         })
         .returning();
       return result[0];
@@ -56,6 +56,22 @@ export class RoomRepository implements IRoomRepository {
       .where(eq(roomTable.id, id))
       .limit(1);
     return result[0] || null;
+  }
+
+  async putRoom(id: string, roomUpdateParams: PutRoomParams): Promise<Room> {
+    const updatedRoom = await this._db
+      .update(roomTable)
+      .set({
+        name: roomUpdateParams.name,
+        capacity: roomUpdateParams.capacity,
+        is_enabled: roomUpdateParams.is_enabled,
+      })
+      .where(eq(roomTable.id, id))
+      .returning();
+    if (updatedRoom.length === 0) {
+      throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
+    }
+    return updatedRoom[0];
   }
 
   async deleteRoom(id: string): Promise<void> {

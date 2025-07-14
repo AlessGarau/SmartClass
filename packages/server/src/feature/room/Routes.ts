@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { RoomController } from "./Controller";
 import Container from "typedi";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { RoomSchema, CreateRoomSchema, GetRoomsQuerySchema, GetRoomParamsSchema } from "./validate";
+import { RoomSchema, CreateRoomSchema, GetRoomsQuerySchema, GetRoomParamsSchema, PutRoomSchema } from "./validate";
 
 export class RoomRoutes {
   private controller: RoomController;
@@ -137,6 +137,51 @@ export class RoomRoutes {
         },
       },
       this.controller.getRoom.bind(this.controller),
+    );
+
+    this.server.put(
+      "/room/:id",
+      {
+        schema: {
+          tags: ["Room"],
+          summary: "Update entire room by ID",
+          description: "Update a room entirely using its ID",
+          params: zodToJsonSchema(GetRoomParamsSchema),
+          body: zodToJsonSchema(PutRoomSchema),
+          response: {
+            200: {
+              description: "Room entirely updated successfully",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(RoomSchema),
+                message: { type: "string" },
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            404: {
+              description: "Room not found",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.putRoom.bind(this.controller),
     );
 
     this.server.delete(

@@ -8,12 +8,17 @@ export const RoomSchema = z.object({
 });
 
 export const CreateRoomSchema = z.object({
-  name: z
-    .string()
-    .min(4),
+  name: z.string().min(4),
   capacity: z.number().min(1),
   is_enabled: z.boolean().default(true),
 });
+
+export const PutRoomSchema = z.object({
+  name: z.string().min(4),
+  capacity: z.number().min(1),
+  is_enabled: z.boolean(),
+});
+
 
 export const GetRoomsQuerySchema = z.object({
   limit: z
@@ -41,3 +46,4 @@ export type Room = z.infer<typeof RoomSchema>;
 export type CreateRoomParams = z.infer<typeof CreateRoomSchema>;
 export type GetRoomsQueryParams = z.infer<typeof GetRoomsQuerySchema>;
 export type GetRoomParams = z.infer<typeof GetRoomParamsSchema>;
+export type PutRoomParams = z.infer<typeof PutRoomSchema>;

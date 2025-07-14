@@ -32,6 +32,13 @@ export class RoomError extends Error {
     });
   }
 
+  static updateFailed(message?: string): RoomError {
+    return new RoomError({
+      message: message || ErrorMessageEnum.Room.UPDATE_FAILED,
+      statusCode: 500,
+    });
+  }
+
   static alreadyExists(message?: string): RoomError {
     return new RoomError({
       message: message || ErrorMessageEnum.Room.ALREADY_EXISTS,

@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Service } from "typedi";
 import { RoomInteractor } from "./Interactor";
-import { Room, CreateRoomParams, CreateRoomSchema, GetRoomsQuerySchema, GetRoomParamsSchema } from "./validate";
+import { Room, CreateRoomParams, CreateRoomSchema, GetRoomsQuerySchema, GetRoomParamsSchema, PutRoomSchema } from "./validate";
 import { RoomMessage } from "./message";
 
 @Service()
@@ -30,6 +30,16 @@ export class RoomController {
     const room = await this._interactor.getRoom(id);
     return reply.status(200).send({
       data: room,
+    });
+  }
+
+  async putRoom(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = GetRoomParamsSchema.parse(req.params);
+    const roomUpdateParams = PutRoomSchema.parse(req.body);
+    const updatedRoom = await this._interactor.putRoom(id, roomUpdateParams);
+    return reply.status(200).send({
+      data: updatedRoom,
+      message: RoomMessage.UPDATE_SUCCESS,
     });
   }
 

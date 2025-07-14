@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import { IRoomInteractor } from "./interface/IInteractor";
-import { CreateRoomParams, Room, GetRoomsQueryParams } from "./validate";
+import { CreateRoomParams, Room, GetRoomsQueryParams, PutRoomParams } from "./validate";
 import { RoomRepository } from "./Repository";
 import { RoomError } from "../../middleware/error/roomError";
 
@@ -22,6 +22,14 @@ export class RoomInteractor implements IRoomInteractor {
     const room: Room | null = await this._repository.getRoom(id);
     if (!room) { throw RoomError.notFound(); }
     return room;
+  }
+
+  async putRoom(id: string, putRoomParams: PutRoomParams): Promise<Room> {
+    const existingRoom: Room | null = await this._repository.getRoom(id);
+    if (!existingRoom) { throw RoomError.notFound(); }
+    const updatedRoom: Room = await this._repository.putRoom(id, putRoomParams);
+    if (!updatedRoom) { throw RoomError.updateFailed(); }
+    return updatedRoom;
   }
 
   async deleteRoom(id: string): Promise<void> {
