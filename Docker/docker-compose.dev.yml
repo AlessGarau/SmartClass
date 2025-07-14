@@ -7,7 +7,7 @@ services:
       - "3000:3000"
     volumes:
       - ../packages/server:/app/server
-      - /app/server/node_modules
+      - sm_dev_server_node_modules:/app/server/node_modules
     networks:
       - smart-class-network
     environment:
@@ -38,12 +38,14 @@ services:
       - "5173:5173"
     volumes:
       - ../packages/client:/app/client
-      - /app/client/node_modules
+      - sm_dev_client_node_modules:/app/client/node_modules
     networks:
       - smart-class-network
 
 volumes:
+  sm_dev_server_node_modules:
   smart-class-db-postgres-data:
+  sm_dev_client_node_modules:
 
 networks:
   smart-class-network:
