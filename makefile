@@ -8,7 +8,7 @@ install:
 	cd packages/server && npm install
 	cd packages/client && npm install
 	@echo "Installation des dépendances Docker..."
-	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) build
+	docker compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) build --no-cache
 	@echo "Installation terminée"
 
 start:
@@ -23,6 +23,9 @@ migrate:
 	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) exec smart-class-server-dev npm run db:generate
 	@echo "Lancement des migrations dans le conteneur..."
 	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) exec smart-class-server-dev npm run db:migrate
+
+seed: 
+	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) exec smart-class-server-dev npm run db:seed
 
 stop:
 	@echo "Arrêt des services..."

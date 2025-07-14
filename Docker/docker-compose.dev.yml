@@ -14,6 +14,7 @@ services:
       - DATABASE_URL=postgresql://smartclass:root@smart-class-db-dev:5432/smart-class
       - JWT_SECRET=da024be3c25cc0134c2d5c207f1bad54
       - COOKIE_SECRET=secret-cookie-monster
+      - MQTT_BROKER_URL=mqtt://admin-hetic.arcplex.tech:8823
 
   smart-class-db-dev:
     image: postgres:latest

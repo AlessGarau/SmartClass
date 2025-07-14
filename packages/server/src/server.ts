@@ -12,6 +12,8 @@ import { ReportingRoutes } from "./feature/reporting/Routes";
 import { EquipmentRoutes } from "./feature/equipment/Routes";
 import { UserRoutes } from "./feature/user/Routes";
 import { adminMiddleware, authMiddleware, teacherMiddleware } from "./middleware/auth.middleware";
+import Container from "typedi";
+import { SensorDataCollector } from "./services/SensorDataCollector";
 
 dotenv.config();
 
@@ -105,14 +107,30 @@ const setupServer = async () => {
   return server;
 };
 
-
-
 const start = async () => {
   try {
     const server = await setupServer();
     await server.listen({ port: 3000, host: "0.0.0.0" });
     console.log("Serveur lancé sur http://localhost:3000");
     console.log("API Documentation disponible sur http://localhost:3000/docs");
+    
+    const mqttBrokerUrl = process.env.MQTT_BROKER_URL || "mqtt://admin-hetic.arcplex.tech:8823";
+    const sensorDataCollector = Container.get(SensorDataCollector);
+    
+    try {
+      await sensorDataCollector.start(mqttBrokerUrl);
+      console.log("Service de collecte de données MQTT démarré");
+    } catch (mqttError) {
+      console.error("Erreur lors du démarrage du service MQTT:", mqttError);
+      console.log("Le serveur continue sans le service MQTT");
+    }
+    
+    process.on("SIGINT", () => {
+      console.log("Arrêt du serveur...");
+      sensorDataCollector.stop();
+      process.exit(0);
+    });
+    
   } catch (err) {
     console.error(err);
     process.exit(1);
