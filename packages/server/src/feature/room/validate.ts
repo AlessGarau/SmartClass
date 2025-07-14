@@ -10,8 +10,8 @@ export const RoomSchema = z.object({
 export const RoomCreateSchema = z.object({
   name: z
     .string()
-    .min(6, "Le nom de la salle doit contenir au moins 6 caractères"),
-  capacity: z.number().min(1, "La capacité doit être supérieure à 0"),
+    .min(4),
+  capacity: z.number().min(1),
   is_enabled: z.boolean().default(true),
 });
 

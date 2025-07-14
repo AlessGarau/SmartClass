@@ -6,7 +6,7 @@ import { RoomError } from "./roomError";
 import { UserError } from "./userError";
 
 export const ErrorMiddleware = (
-  error: FastifyError | NotFoundError | RoomError | z.ZodError,
+  error: FastifyError | NotFoundError | RoomError | z.ZodError | UserError,
   req: FastifyRequest,
   reply: FastifyReply,
 ) => {

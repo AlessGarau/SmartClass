@@ -7,23 +7,25 @@ import { roomTable } from "../../../database/schema/room";
 
 @Service()
 export class RoomRepository implements IRoomRepository {
-  private db: NodePgDatabase<Record<string, never>>;
+  private _db: NodePgDatabase<Record<string, never>>;
   constructor() {
-    this.db = database;
+    this._db = database;
   }
+
   async create(RoomCreateParams: RoomCreateParams): Promise<Room> {
-    const result = await this.db
+    const result = await this._db
       .insert(roomTable)
       .values({
         name: RoomCreateParams.name,
-        capacity: 10,
+        capacity: RoomCreateParams.capacity,
         is_enabled: true,
       })
       .returning();
     return result[0];
   }
+
   async getRooms(): Promise<Room[]> {
-    const result = await this.db.select().from(roomTable);
+    const result = await this._db.select().from(roomTable);
     return result;
   }
 }

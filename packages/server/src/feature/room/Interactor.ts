@@ -7,22 +7,16 @@ import { RoomError } from "../../middleware/error/roomError";
 
 @Service()
 export class RoomInteractor implements IRoomInteractor {
-  constructor(private repository: RoomRepository) { }
+  constructor(private _repository: RoomRepository) { }
 
-  async createRoom(
-    CreateRoomCreateParams: RoomCreateParams,
-  ): Promise<Room> {
-    const room = await this.repository.create(CreateRoomCreateParams);
-
-    if (!room) {
-      throw RoomError.creationFailed();
-    }
-
+  async createRoom(CreateRoomCreateParams: RoomCreateParams): Promise<Room> {
+    const room: Room = await this._repository.create(CreateRoomCreateParams);
+    if (!room) { throw RoomError.creationFailed(); }
     return room;
   }
 
   async getRooms(): Promise<Room[]> {
-    const rooms = await this.repository.getRooms();
+    const rooms = await this._repository.getRooms();
     return rooms;
   }
 }

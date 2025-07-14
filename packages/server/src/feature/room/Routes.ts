@@ -41,7 +41,7 @@ export class RoomRoutes {
       },
       this.controller.createRoom.bind(this.controller),
     );
-    
+
     this.server.get(
       "/room",
       {
