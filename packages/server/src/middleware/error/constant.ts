@@ -1,5 +1,6 @@
 import { SalleMessage } from "../../feature/room/message";
 import { UserMessage } from "../../feature/user/message";
+import { WeatherMessage } from "../../feature/weather/message";
 
 export const ErrorMessageEnum = {
   General: {
@@ -10,5 +11,8 @@ export const ErrorMessageEnum = {
   },
   User: {
     ...UserMessage,
+  },
+  Weather: {
+    ...WeatherMessage,
   },
 } as const;

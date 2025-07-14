@@ -6,7 +6,7 @@ import { RoomError } from "./roomError";
 import { UserError } from "./userError";
 
 export const ErrorMiddleware = (
-  error: FastifyError | NotFoundError | RoomError | z.ZodError,
+  error: FastifyError | NotFoundError | RoomError | UserError | WeatherError | z.ZodError,
   req: FastifyRequest,
   reply: FastifyReply,
 ) => {
@@ -38,6 +38,13 @@ export const ErrorMiddleware = (
     return reply.status(error.statusCode).send({
       error: error.message,
       data: error.cause,
+    });
+  }
+
+  if (error instanceof WeatherError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: null,
     });
   }
 
