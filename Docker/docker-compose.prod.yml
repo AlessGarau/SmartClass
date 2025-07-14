@@ -2,7 +2,7 @@ services:
   smart-class-server-prod:
     build:
       context: ..
-      dockerfile: Docker/Dockerfile.api.prod
+      dockerfile: Docker/Dockerfile.server.prod
     expose:
       - "3000"
     restart: always
