@@ -16,19 +16,31 @@ import {
 const queryClient = new QueryClient()
 
 import ReactDOM from "react-dom/client";
+import Navbar from './layout/Navbar/Navbar.tsx';
+import PlanningPage from './pages/PlanningPage.tsx';
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <ProtectedRoute><App /></ProtectedRoute>,
-  },
   {
     path: "/login",
     element: <LoginPage />,
   },
   {
-    path: "/dashboard",
-    element: <ProtectedRoute><DashboardTestPage /></ProtectedRoute>,
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <Navbar />,
+        children: [
+          {
+            path: "/dashboard",
+            element: <DashboardTestPage />,
+          },
+          {
+            path: "/planning",
+            element: <PlanningPage />,
+          },
+        ],
+      },
+    ],
   },
 ]);
 
