@@ -38,6 +38,10 @@ export const GetRoomsQuerySchema = z.object({
     .nonnegative()
     .optional()
     .describe("Number of rooms to skip"),
+  search: z
+    .string()
+    .optional()
+    .describe("Search term for room names"),
 });
 
 export const RoomIdParamsSchema = z.object({

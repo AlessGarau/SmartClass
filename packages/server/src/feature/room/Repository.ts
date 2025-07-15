@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
@@ -35,6 +35,9 @@ export class RoomRepository implements IRoomRepository {
 
   async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
     const query = this._db.select().from(roomTable);
+    if (params.search) {
+      query.where(ilike(roomTable.name, `%${params.search}%`));
+    }
 
     if (params.limit !== undefined) {
       query.limit(params.limit);
