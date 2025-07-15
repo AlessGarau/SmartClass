@@ -15,7 +15,7 @@ export class RoomInteractor implements IRoomInteractor {
   }
 
   async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
-    return await this._repository.getRooms(params);
+    return this._repository.getRooms(params);
   }
 
   async getRoom(id: string): Promise<Room> {
