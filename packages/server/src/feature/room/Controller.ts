@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Service } from "typedi";
 import { RoomInteractor } from "./Interactor";
-import { Room, CreateRoomParams, CreateRoomSchema, GetRoomsQuerySchema, RoomIdParamsSchema, PutRoomSchema, PatchRoomSchema } from "./validate";
 import { RoomMessage } from "./message";
+import { CreateRoomParams, CreateRoomSchema, GetRoomsQuerySchema, PatchRoomSchema, PutRoomSchema, Room, RoomIdParamsSchema } from "./validate";
 
 @Service()
 export class RoomController {

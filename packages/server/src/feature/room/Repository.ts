@@ -1,11 +1,11 @@
-import { IRoomRepository } from "./interface/IRepository";
-import { CreateRoomParams, Room, GetRoomsQueryParams, PutRoomParams } from "./validate";
-import { database } from "../../../database/database";
-import { Service } from "typedi";
-import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { roomTable } from "../../../database/schema/room";
 import { eq } from "drizzle-orm";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { Service } from "typedi";
+import { database } from "../../../database/database";
+import { roomTable } from "../../../database/schema/room";
 import { RoomError } from "../../middleware/error/roomError";
+import { IRoomRepository } from "./interface/IRepository";
+import { CreateRoomParams, GetRoomsQueryParams, PutRoomParams, Room } from "./validate";
 
 @Service()
 export class RoomRepository implements IRoomRepository {

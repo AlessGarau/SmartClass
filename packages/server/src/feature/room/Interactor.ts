@@ -1,8 +1,8 @@
 import { Service } from "typedi";
-import { IRoomInteractor } from "./interface/IInteractor";
-import { CreateRoomParams, Room, GetRoomsQueryParams, PutRoomParams } from "./validate";
-import { RoomRepository } from "./Repository";
 import { RoomError } from "../../middleware/error/roomError";
+import { IRoomInteractor } from "./interface/IInteractor";
+import { RoomRepository } from "./Repository";
+import { CreateRoomParams, GetRoomsQueryParams, PutRoomParams, Room } from "./validate";
 
 @Service()
 export class RoomInteractor implements IRoomInteractor {

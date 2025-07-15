@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { RoomController } from "./Controller";
 import Container from "typedi";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { RoomSchema, CreateRoomSchema, GetRoomsQuerySchema, RoomIdParamsSchema, PutRoomSchema, PatchRoomSchema } from "./validate";
+import { RoomController } from "./Controller";
+import { CreateRoomSchema, GetRoomsQuerySchema, PatchRoomSchema, PutRoomSchema, RoomIdParamsSchema, RoomSchema } from "./validate";
 
 export class RoomRoutes {
   private controller: RoomController;
