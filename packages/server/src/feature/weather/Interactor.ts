@@ -2,14 +2,15 @@ import { Service } from "typedi";
 import { IWeatherInteractor } from "./interface/IInteractor";
 import { WeatherRepository } from "./Repository";
 import { WeatherService } from "./WeatherService";
+import { WeatherMapper } from "./Mapper";
 import { WeatherData } from "./types";
-import { WeatherInsert } from "../../../database/schema/weather";
 
 @Service()
 export class WeatherInteractor implements IWeatherInteractor {
   constructor(
     private weatherRepository: WeatherRepository,
     private weatherService: WeatherService,
+    private weatherMapper: WeatherMapper,
   ) {}
 
   async getWeeklyWeather(): Promise<WeatherData[]> {
@@ -20,7 +21,7 @@ export class WeatherInteractor implements IWeatherInteractor {
     const cachedData = await this.weatherRepository.findByDateRange(today, nextWeek);
     
     if (cachedData.length >= 7) {
-      return this.transformDbDataToResponse(cachedData);
+      return cachedData.map(weather => this.weatherMapper.toResponse(weather));
     }
 
     await this.weatherRepository.deleteExpired();
@@ -35,7 +36,7 @@ export class WeatherInteractor implements IWeatherInteractor {
       console.error("Failed to fetch fresh weather data:", error);
       
       if (cachedData.length > 0) {
-        return this.transformDbDataToResponse(cachedData);
+        return cachedData.map(weather => this.weatherMapper.toResponse(weather));
       }
       
       throw error;
@@ -47,30 +48,10 @@ export class WeatherInteractor implements IWeatherInteractor {
     expiresAt.setHours(expiresAt.getHours() + 6);
 
     for (const data of weatherData) {
-      const weatherInsert: WeatherInsert = {
-        date: data.date,
-        temperature_min: data.temperatureMin,
-        temperature_max: data.temperatureMax,
-        condition: data.condition,
-        description: data.description,
-        humidity: data.humidity,
-        wind_speed: data.windSpeed.toString(),
-        expires_at: expiresAt,
-      };
-
+      const weatherInsert = this.weatherMapper.toWeatherInsert(data, expiresAt);
       await this.weatherRepository.create(weatherInsert);
     }
   }
 
-  private transformDbDataToResponse(dbData: any[]): WeatherData[] {
-    return dbData.map(weather => ({
-      date: weather.date,
-      temperatureMin: weather.temperature_min,
-      temperatureMax: weather.temperature_max,
-      condition: weather.condition,
-      description: weather.description || "",
-      humidity: weather.humidity || 0,
-      windSpeed: parseFloat(weather.wind_speed || "0"),
-    }));
-  }
+
 } 

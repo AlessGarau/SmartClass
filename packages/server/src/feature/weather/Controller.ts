@@ -1,10 +1,14 @@
 import { Service } from "typedi";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { WeatherInteractor } from "./Interactor";
+import { WeatherMapper } from "./Mapper";
 
 @Service()
 export class WeatherController {
-  constructor(private weatherInteractor: WeatherInteractor) {}
+  constructor(
+    private weatherInteractor: WeatherInteractor,
+    private weatherMapper: WeatherMapper,
+  ) {}
 
   async getWeeklyWeather(req: FastifyRequest, reply: FastifyReply) {
     try {
