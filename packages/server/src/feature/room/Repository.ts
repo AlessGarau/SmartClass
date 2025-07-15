@@ -1,11 +1,11 @@
-import { eq, ilike } from "drizzle-orm";
+import { eq, ilike, sql } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
 import { roomTable } from "../../../database/schema/room";
 import { RoomError } from "../../middleware/error/roomError";
 import { IRoomRepository } from "./interface/IRepository";
-import { CreateRoomParams, GetRoomsQueryParams, PutRoomParams, Room } from "./validate";
+import { CreateRoomParams, GetRoomsQueryParams, PutRoomParams, Room, RoomSearchParams } from "./validate";
 
 @Service()
 export class RoomRepository implements IRoomRepository {
@@ -49,6 +49,19 @@ export class RoomRepository implements IRoomRepository {
 
     const result = await query;
     return result;
+  }
+
+  async getRoomsCount(params?: RoomSearchParams): Promise<number> {
+    const query = this._db
+      .select({ count: sql<number>`count(*)` })
+      .from(roomTable);
+
+    if (params?.search) {
+      query.where(ilike(roomTable.name, `%${params.search}%`));
+    }
+
+    const result = await query;
+    return Number(result[0].count);
   }
 
   async getRoom(id: string): Promise<Room | null> {

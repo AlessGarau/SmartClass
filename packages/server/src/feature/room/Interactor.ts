@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import { RoomError } from "../../middleware/error/roomError";
 import { IRoomInteractor } from "./interface/IInteractor";
 import { RoomRepository } from "./Repository";
-import { CreateRoomParams, GetRoomsQueryParams, PutRoomParams, Room } from "./validate";
+import { CreateRoomParams, GetRoomsQueryParams, PutRoomParams, Room, RoomSearchParams } from "./validate";
 
 @Service()
 export class RoomInteractor implements IRoomInteractor {
@@ -16,6 +16,10 @@ export class RoomInteractor implements IRoomInteractor {
 
   async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
     return this._repository.getRooms(params);
+  }
+
+  async getRoomsCount(params: RoomSearchParams): Promise<number> {
+    return this._repository.getRoomsCount(params);
   }
 
   async getRoom(id: string): Promise<Room> {

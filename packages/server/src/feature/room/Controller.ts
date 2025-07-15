@@ -3,7 +3,7 @@ import { Service } from "typedi";
 import { RoomInteractor } from "./Interactor";
 import { RoomMapper } from "./Mapper";
 import { RoomMessage } from "./message";
-import { CreateRoomParams, CreateRoomSchema, GetRoomsQuerySchema, PatchRoomSchema, PutRoomSchema, Room, RoomIdParamsSchema } from "./validate";
+import { CreateRoomParams, CreateRoomSchema, GetRoomsQuerySchema, PatchRoomSchema, PutRoomSchema, Room, RoomIdParamsSchema, RoomSearchSchema } from "./validate";
 
 @Service()
 export class RoomController {
@@ -51,6 +51,14 @@ export class RoomController {
     return reply.status(200).send({
       data: this._mapper.toGetRoomResponse(updatedRoom),
       message: RoomMessage.UPDATE_SUCCESS,
+    });
+  }
+
+  async getRoomsCount(req: FastifyRequest, reply: FastifyReply) {
+    const { search } = RoomSearchSchema.parse(req.query);
+    const total = await this._interactor.getRoomsCount({ search: search });
+    return reply.status(200).send({
+      data: this._mapper.toGetTotalRoomsResponse(total),
     });
   }
 

@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import Container from "typedi";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { RoomController } from "./Controller";
-import { CreateRoomSchema, GetRoomsQuerySchema, PatchRoomSchema, PutRoomSchema, RoomIdParamsSchema, RoomSchema } from "./validate";
+import { CreateRoomSchema, GetRoomsQuerySchema, PatchRoomSchema, PutRoomSchema, RoomCountSchema, RoomIdParamsSchema, RoomSchema, RoomSearchSchema } from "./validate";
 
 export class RoomRoutes {
   private controller: RoomController;
@@ -94,6 +94,28 @@ export class RoomRoutes {
         },
       },
       this.controller.getRooms.bind(this.controller),
+    );
+
+    this.server.get(
+      "/room/count",
+      {
+        schema: {
+          tags: ["Room"],
+          summary: "Get total count of rooms",
+          description: "Retrieve total number of rooms matching optional search",
+          querystring: zodToJsonSchema(RoomSearchSchema),
+          response: {
+            200: {
+              description: "Total count",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(RoomCountSchema),
+              },
+            },
+          },
+        },
+      },
+      this.controller.getRoomsCount.bind(this.controller),
     );
 
     this.server.get(

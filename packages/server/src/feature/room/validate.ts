@@ -51,9 +51,16 @@ export const RoomIdParamsSchema = z.object({
     .describe("Room ID"),
 });
 
+export const RoomSearchSchema = GetRoomsQuerySchema.pick({ search: true });
+export const RoomCountSchema = z.object({
+  count: z.number().int().nonnegative(),
+});
+
 export type Room = z.infer<typeof RoomSchema>;
+export type Count = z.infer<typeof RoomCountSchema>;
 export type CreateRoomParams = z.infer<typeof CreateRoomSchema>;
 export type GetRoomsQueryParams = z.infer<typeof GetRoomsQuerySchema>;
+export type RoomSearchParams = z.infer<typeof RoomSearchSchema>;
 export type RoomIdParams = z.infer<typeof RoomIdParamsSchema>;
 export type PutRoomParams = z.infer<typeof PutRoomSchema>;
 export type PatchRoomParams = z.infer<typeof PatchRoomSchema>;
