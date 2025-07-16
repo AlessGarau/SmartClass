@@ -10,4 +10,5 @@ export { humidityTable } from "./humidity";
 export { temperatureTable } from "./temperature";
 export { movementTable } from "./movement";
 export { pressureTable } from "./pressure";
-export { sensorTable } from "./sensor"; 
+export { sensorTable } from "./sensor";
+export { weatherTable } from "./weather"; 

@@ -1,6 +1,6 @@
 {
-  "id": "a98d5d2c-b5b6-4681-8658-e504078b1cc7",
-  "prevId": "a7bf5b56-d83b-4198-b7bc-94749a36ed8d",
+  "id": "1d5abd9a-cdc9-48a7-842e-e98d02830e81",
+  "prevId": "a98d5d2c-b5b6-4681-8658-e504078b1cc7",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -81,8 +81,12 @@
           "name": "equipment_room_id_room_id_fk",
           "tableFrom": "equipment",
           "tableTo": "room",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -136,8 +140,12 @@
           "name": "humidity_room_id_room_id_fk",
           "tableFrom": "humidity",
           "tableTo": "room",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -145,8 +153,12 @@
           "name": "humidity_sensor_id_sensor_id_fk",
           "tableFrom": "humidity",
           "tableTo": "sensor",
-          "columnsFrom": ["sensor_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "sensor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -205,8 +217,12 @@
           "name": "lesson_class_id_class_id_fk",
           "tableFrom": "lesson",
           "tableTo": "class",
-          "columnsFrom": ["class_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "class_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -214,8 +230,12 @@
           "name": "lesson_room_id_room_id_fk",
           "tableFrom": "lesson",
           "tableTo": "room",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -268,8 +288,12 @@
           "name": "movement_room_id_room_id_fk",
           "tableFrom": "movement",
           "tableTo": "room",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -277,8 +301,12 @@
           "name": "movement_sensor_id_sensor_id_fk",
           "tableFrom": "movement",
           "tableTo": "sensor",
-          "columnsFrom": ["sensor_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "sensor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -331,8 +359,12 @@
           "name": "pressure_room_id_room_id_fk",
           "tableFrom": "pressure",
           "tableTo": "room",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -340,8 +372,12 @@
           "name": "pressure_sensor_id_sensor_id_fk",
           "tableFrom": "pressure",
           "tableTo": "sensor",
-          "columnsFrom": ["sensor_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "sensor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -396,8 +432,12 @@
           "name": "reporting_equipment_id_equipment_id_fk",
           "tableFrom": "reporting",
           "tableTo": "equipment",
-          "columnsFrom": ["equipment_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "equipment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -446,7 +486,9 @@
         "room_name_unique": {
           "name": "room_name_unique",
           "nullsNotDistinct": false,
-          "columns": ["name"]
+          "columns": [
+            "name"
+          ]
         }
       },
       "policies": {},
@@ -488,8 +530,12 @@
           "name": "sensor_room_id_room_id_fk",
           "tableFrom": "sensor",
           "tableTo": "room",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -543,8 +589,12 @@
           "name": "temperature_room_id_room_id_fk",
           "tableFrom": "temperature",
           "tableTo": "room",
-          "columnsFrom": ["room_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "room_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -552,8 +602,12 @@
           "name": "temperature_sensor_id_sensor_id_fk",
           "tableFrom": "temperature",
           "tableTo": "sensor",
-          "columnsFrom": ["sensor_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "sensor_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -587,8 +641,12 @@
           "name": "user_lesson_user_id_user_id_fk",
           "tableFrom": "user_lesson",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -596,8 +654,12 @@
           "name": "user_lesson_lesson_id_lesson_id_fk",
           "tableFrom": "user_lesson",
           "tableTo": "lesson",
-          "columnsFrom": ["lesson_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "lesson_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -658,8 +720,12 @@
           "name": "user_mobile_device_user_id_user_id_fk",
           "tableFrom": "user_mobile_device",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -733,9 +799,86 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.weather": {
+      "name": "weather",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "temperature_min": {
+          "name": "temperature_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "temperature_max": {
+          "name": "temperature_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "condition": {
+          "name": "condition",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "humidity": {
+          "name": "humidity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wind_speed": {
+          "name": "wind_speed",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fetched_at": {
+          "name": "fetched_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
