@@ -16,7 +16,7 @@ const LoginPage = () => {
     const navigate = useNavigate();
 
     if (isAuthenticated) {
-        return <Navigate to="/dashboard" replace />;
+        return <Navigate to="/" replace />;
     }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -24,7 +24,7 @@ const LoginPage = () => {
         loginMutation.mutate({ email, password }, {
             onSuccess: (data) => {
                 queryClient.setQueryData(userQueryOptions.me().queryKey, { data: data.data });
-                navigate('/dashboard');
+                navigate('/');
             }
         });
     };

@@ -15,8 +15,8 @@ const PlanningPage = () => {
             <Button label="Importer une feuille" icon={PlusIcon} />
         </div>
         <FilterContainer>
-            <Select options={[{ label: "Classe", value: "1" }]} name="classe" id="classe" />
-            <Select options={[{ label: "Classe", value: "1" }]} name="classe" id="classe" />
+            <Select options={[{ label: "Classe", value: "1" }, { label: "Classe 2", value: "2" }, { label: "Classe 3", value: "3" }]} value="1" label="Classe" />
+            <Select options={[{ label: "Classe", value: "1" }]} value="1" label="Classe" />
         </FilterContainer>
     </div>;
 };
