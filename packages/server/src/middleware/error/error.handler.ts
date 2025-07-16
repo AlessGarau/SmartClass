@@ -5,6 +5,7 @@ import NotFoundError from "./notFoundError";
 import { RoomError } from "./roomError";
 import { UserError } from "./userError";
 import { WeatherError } from "./weatherError";
+import { MqttError } from "./mqttError";
 
 export const ErrorMiddleware = (
   error:
@@ -13,9 +14,10 @@ export const ErrorMiddleware = (
     | RoomError
     | UserError
     | WeatherError
+    | MqttError
     | z.ZodError,
   req: FastifyRequest,
-  reply: FastifyReply,
+  reply: FastifyReply
 ) => {
   console.error(error);
 
@@ -52,6 +54,13 @@ export const ErrorMiddleware = (
     return reply.status(error.statusCode).send({
       error: error.message,
       data: null,
+    });
+  }
+
+  if (error instanceof MqttError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: error.cause,
     });
   }
 
