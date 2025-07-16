@@ -33,8 +33,3 @@ export interface WeatherData {
   humidity: number;
   windSpeed: number;
 }
-
-export interface WeatherWeekResponse {
-  data: WeatherData[];
-  message: string;
-} 

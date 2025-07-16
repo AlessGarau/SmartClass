@@ -1,8 +1,12 @@
 import { Service } from "typedi";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { and, eq, gte, lte, lt } from "drizzle-orm";
+import { and, eq, gte, lt } from "drizzle-orm";
 import { database } from "../../../database/database";
-import { Weather, WeatherInsert, weatherTable } from "../../../database/schema/weather";
+import {
+  Weather,
+  WeatherInsert,
+  weatherTable,
+} from "../../../database/schema/weather";
 import { IWeatherRepository } from "./interface/IRepository";
 
 @Service()
@@ -16,14 +20,14 @@ export class WeatherRepository implements IWeatherRepository {
   async findByDateRange(startDate: Date, endDate: Date): Promise<Weather[]> {
     const startDateStr = startDate.toISOString().split("T")[0];
     const endDateStr = endDate.toISOString().split("T")[0];
-    
+
     return this.db
       .select()
       .from(weatherTable)
       .where(
         and(
           gte(weatherTable.date, startDateStr),
-          lte(weatherTable.date, endDateStr),
+          lt(weatherTable.date, endDateStr),
           gte(weatherTable.expires_at, new Date()),
         ),
       );
@@ -31,7 +35,7 @@ export class WeatherRepository implements IWeatherRepository {
 
   async findByDate(date: Date): Promise<Weather | null> {
     const dateStr = date.toISOString().split("T")[0];
-    
+
     const result = await this.db
       .select()
       .from(weatherTable)
@@ -60,4 +64,4 @@ export class WeatherRepository implements IWeatherRepository {
       .delete(weatherTable)
       .where(lt(weatherTable.expires_at, new Date()));
   }
-} 
+}
