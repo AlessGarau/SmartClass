@@ -6,7 +6,7 @@ import { RoomError } from "./roomError";
 import { UserError } from "./userError";
 
 export const ErrorMiddleware = (
-  error: FastifyError | NotFoundError | RoomError | z.ZodError,
+  error: FastifyError | NotFoundError | RoomError | z.ZodError | UserError,
   req: FastifyRequest,
   reply: FastifyReply,
 ) => {
@@ -43,13 +43,13 @@ export const ErrorMiddleware = (
 
   if ("statusCode" in error) {
     return reply.status(error.statusCode || 500).send({
-      error: error.message || "Erreur interne du serveur",
+      error: error.message || "Internal server error",
       data: null,
     });
   }
 
   return reply.status(500).send({
-    error: "Erreur interne du serveur",
+    error: "Internal server error",
     data: null,
   });
 };
