@@ -42,7 +42,7 @@ const LoginPage = () => {
                     )}
                     <Input label="Mail :" name="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                     <Input label="Mot de passe :" name="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                    <Button label={isLoading ? "Connexion..." : "Se connecter"} className="w-full cursor-pointer hover:bg-primary/80" type="submit" disabled={isLoading} />
+                    <Button label={isLoading ? "Connexion..." : "Se connecter"} className="w-full " type="submit" disabled={isLoading} />
                 </form>
             </div>
             <img src={classroom} alt="" className="w-0 sm:w-1/2 h-screen rounded-l-lg p-5 hidden sm:block" />

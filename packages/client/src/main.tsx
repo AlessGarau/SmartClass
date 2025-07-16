@@ -1,4 +1,3 @@
-import App from './App.tsx'
 import './index.css'
 import {
   createBrowserRouter,
