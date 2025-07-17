@@ -1,6 +1,7 @@
 import { RoomMessage } from "../../feature/room/message";
 import { UserMessage } from "../../feature/user/message";
 import { WeatherMessage } from "../../feature/weather/message";
+import { MqttMessage } from "../../services/message";
 
 export const ErrorMessageEnum = {
   General: {
@@ -14,5 +15,8 @@ export const ErrorMessageEnum = {
   },
   Weather: {
     ...WeatherMessage,
+  },
+  Mqtt: {
+    ...MqttMessage,
   },
 } as const;
