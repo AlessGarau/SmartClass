@@ -2,7 +2,16 @@ import { FastifyInstance } from "fastify";
 import Container from "typedi";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { RoomController } from "./Controller";
-import { CreateRoomSchema, GetRoomsQuerySchema, PatchRoomSchema, PutRoomSchema, RoomCountSchema, RoomIdParamsSchema, RoomSchema, RoomSearchSchema } from "./validate";
+import {
+  CreateRoomSchema,
+  GetRoomsQuerySchema,
+  PatchRoomSchema,
+  PutRoomSchema,
+  RoomCountSchema,
+  RoomFilterSchema,
+  RoomIdParamsSchema,
+  RoomSchema,
+} from "./validate";
 
 export class RoomRoutes {
   private controller: RoomController;
@@ -102,8 +111,9 @@ export class RoomRoutes {
         schema: {
           tags: ["Room"],
           summary: "Get total count of rooms",
-          description: "Retrieve total number of rooms matching optional search",
-          querystring: zodToJsonSchema(RoomSearchSchema),
+          description:
+            "Retrieve total number of rooms matching optional filter",
+          querystring: zodToJsonSchema(RoomFilterSchema),
           response: {
             200: {
               description: "Total count",

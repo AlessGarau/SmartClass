@@ -3,15 +3,29 @@ import { Service } from "typedi";
 import { RoomInteractor } from "./Interactor";
 import { RoomMapper } from "./Mapper";
 import { RoomMessage } from "./message";
-import { CreateRoomParams, CreateRoomSchema, GetRoomsQuerySchema, PatchRoomSchema, PutRoomSchema, Room, RoomIdParamsSchema, RoomSearchSchema } from "./validate";
+import {
+  CreateRoomParams,
+  CreateRoomSchema,
+  GetRoomsQuerySchema,
+  PatchRoomSchema,
+  PutRoomSchema,
+  Room,
+  RoomFilterSchema,
+  RoomIdParamsSchema,
+} from "./validate";
 
 @Service()
 export class RoomController {
-  constructor(private _interactor: RoomInteractor, private _mapper: RoomMapper) { }
+  constructor(
+    private _interactor: RoomInteractor,
+    private _mapper: RoomMapper,
+  ) {}
 
   async createRoom(req: FastifyRequest, reply: FastifyReply) {
     const roomCreateParams: CreateRoomParams = CreateRoomSchema.parse(req.body);
-    const createdRoom: Room = await this._interactor.createRoom(roomCreateParams);
+    const createdRoom: Room = await this._interactor.createRoom(
+      roomCreateParams,
+    );
     return reply.status(201).send({
       data: this._mapper.toGetRoomResponse(createdRoom),
       message: RoomMessage.CREATION_SUCCESS,
@@ -19,8 +33,12 @@ export class RoomController {
   }
 
   async getRooms(req: FastifyRequest, reply: FastifyReply) {
-    const { limit, offset, search } = GetRoomsQuerySchema.parse(req.query);
-    const rooms = await this._interactor.getRooms({ limit, offset, search });
+    const { limit, offset, filter } = GetRoomsQuerySchema.parse(req.query);
+    const rooms = await this._interactor.getRooms({
+      limit,
+      offset,
+      filter,
+    });
     return reply.status(200).send({
       data: this._mapper.toGetRoomsResponse(rooms),
     });
@@ -55,8 +73,8 @@ export class RoomController {
   }
 
   async getRoomsCount(req: FastifyRequest, reply: FastifyReply) {
-    const { search } = RoomSearchSchema.parse(req.query);
-    const total = await this._interactor.getRoomsCount({ search: search });
+    const filter = RoomFilterSchema.parse(req.query);
+    const total = await this._interactor.getRoomsCount(filter);
     return reply.status(200).send({
       data: this._mapper.toGetTotalRoomsResponse(total),
     });

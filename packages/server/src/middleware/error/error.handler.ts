@@ -17,7 +17,7 @@ export const ErrorMiddleware = (
     | MqttError
     | z.ZodError,
   req: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   console.error(error);
 
