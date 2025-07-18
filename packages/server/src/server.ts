@@ -19,11 +19,14 @@ import {
 } from "./middleware/auth.middleware";
 import Container from "typedi";
 import { SensorDataCollector } from "./services/SensorDataCollector";
+import qs from "qs";
 
 dotenv.config();
 
 const setupServer = async () => {
-  const server = Fastify();
+  const server = Fastify({
+    querystringParser: str => qs.parse(str),
+  }); 
 
   await server.register(fastifyCors, {
     origin: ["http://localhost:5173", "http://smart-class-client-dev:5173"],

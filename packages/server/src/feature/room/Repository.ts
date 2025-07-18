@@ -5,7 +5,13 @@ import { database } from "../../../database/database";
 import { roomTable } from "../../../database/schema/room";
 import { RoomError } from "../../middleware/error/roomError";
 import { IRoomRepository } from "./interface/IRepository";
-import { CreateRoomParams, GetRoomsQueryParams, PutRoomParams, Room, RoomSearchParams } from "./validate";
+import {
+  CreateRoomParams,
+  GetRoomsQueryParams,
+  PutRoomParams,
+  Room,
+  RoomFilter,
+} from "./validate";
 
 @Service()
 export class RoomRepository implements IRoomRepository {
@@ -27,16 +33,37 @@ export class RoomRepository implements IRoomRepository {
       return result[0];
     } catch (error: any) {
       if (error.cause.code === "23505") {
-        throw RoomError.alreadyExists(`Room name "${RoomCreateParams.name}" already exists.`);
+        throw RoomError.alreadyExists(
+          `Room name "${RoomCreateParams.name}" already exists.`
+        );
       }
-      throw RoomError.creationFailed("Unexpected error during room creation", error);
+      throw RoomError.creationFailed(
+        "Unexpected error during room creation",
+        error
+      );
+    }
+  }
+
+  private applyFilter(filter: RoomFilter, query: any) {
+    if (!filter) {
+      return;
+    }
+
+    if (filter.search) {
+      query.where(ilike(roomTable.name, `%${filter.search}%`));
+    }
+
+    if (filter.isEnabled !== undefined) {
+      query.where(eq(roomTable.is_enabled, filter.isEnabled));
     }
   }
 
   async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
     const query = this._db.select().from(roomTable);
-    if (params.search) {
-      query.where(ilike(roomTable.name, `%${params.search}%`));
+    const { filter } = params;
+
+    if (filter) {
+      this.applyFilter(filter, query);
     }
 
     if (params.limit !== undefined) {
@@ -51,14 +78,12 @@ export class RoomRepository implements IRoomRepository {
     return result;
   }
 
-  async getRoomsCount(params?: RoomSearchParams): Promise<number> {
+  async getRoomsCount(filter: RoomFilter): Promise<number> {
     const query = this._db
       .select({ count: sql<number>`count(*)` })
       .from(roomTable);
 
-    if (params?.search) {
-      query.where(ilike(roomTable.name, `%${params.search}%`));
-    }
+    this.applyFilter(filter, query);
 
     const result = await query;
     return Number(result[0].count);
@@ -91,13 +116,21 @@ export class RoomRepository implements IRoomRepository {
       return updatedRoom[0];
     } catch (error: any) {
       if (error.cause.code === "23505") {
-        throw RoomError.alreadyExists(`Room name "${roomUpdateParams.name}" already exists.`);
+        throw RoomError.alreadyExists(
+          `Room name "${roomUpdateParams.name}" already exists.`
+        );
       }
-      throw RoomError.updateFailed("Unexpected error during room update", error);
+      throw RoomError.updateFailed(
+        "Unexpected error during room update",
+        error
+      );
     }
   }
 
-  async patchRoom(id: string, roomUpdateParams: Partial<PutRoomParams>): Promise<Room> {
+  async patchRoom(
+    id: string,
+    roomUpdateParams: Partial<PutRoomParams>
+  ): Promise<Room> {
     try {
       const result = await this._db
         .update(roomTable)
@@ -111,15 +144,18 @@ export class RoomRepository implements IRoomRepository {
       return result[0];
     } catch (error: any) {
       if (error.cause.code === "23505") {
-        throw RoomError.alreadyExists(`Room name "${roomUpdateParams.name}" already exists.`);
+        throw RoomError.alreadyExists(
+          `Room name "${roomUpdateParams.name}" already exists.`
+        );
       }
-      throw RoomError.updateFailed("Unexpected error during room update", error);
+      throw RoomError.updateFailed(
+        "Unexpected error during room update",
+        error
+      );
     }
   }
 
   async deleteRoom(id: string): Promise<void> {
-    await this._db
-      .delete(roomTable)
-      .where(eq(roomTable.id, id));
+    await this._db.delete(roomTable).where(eq(roomTable.id, id));
   }
 }
