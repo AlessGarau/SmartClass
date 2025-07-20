@@ -2,7 +2,7 @@ name: ci/cd
 
 on:
   push:
-    branches: [main]
+    branches: [main, DP-201-CI/CD]
 
 jobs:
   docker:
