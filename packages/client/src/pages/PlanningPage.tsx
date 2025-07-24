@@ -2,6 +2,7 @@ import Button from "../components/Button/Button";
 import PlusIcon from "../assets/icons/add_icon.svg"
 import FilterContainer from "../components/FilterContainer/FilterContainer";
 import Select from "../components/Select/SelectContainer";
+import PlanningContainer from "../components/Planning/PlanningContainer/PlanningContainer";
 
 const PlanningPage = () => {
     return <div className="flex flex-col gap-4">
@@ -18,6 +19,7 @@ const PlanningPage = () => {
             <Select options={[{ label: "Classe", value: "1" }, { label: "Classe 2", value: "2" }, { label: "Classe 3", value: "3" }]} value="1" label="Classe" />
             <Select options={[{ label: "Classe", value: "1" }]} value="1" label="Classe" />
         </FilterContainer>
+        <PlanningContainer />
     </div>;
 };
 
