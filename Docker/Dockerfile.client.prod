@@ -4,14 +4,22 @@ FROM base AS deps
 WORKDIR /app
 COPY packages/client/package*.json ./
 RUN --mount=type=cache,id=npm,target=/root/.npm \
-    npm ci --omit=dev
+    if [ -f package-lock.json ]; then \
+        npm ci --omit=dev; \
+    else \
+        npm install --omit=dev; \
+    fi
 
 FROM base AS build
 WORKDIR /app
 COPY packages/client/package*.json ./
 COPY packages/client/tsconfig*.json ./
 RUN --mount=type=cache,id=npm,target=/root/.npm \
-    npm ci
+    if [ -f package-lock.json ]; then \
+        npm ci; \
+    else \
+        npm install; \
+    fi
 COPY packages/client/ ./
 RUN npm run build
 

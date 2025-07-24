@@ -4,9 +4,18 @@ import { z } from "zod";
 import NotFoundError from "./notFoundError";
 import { RoomError } from "./roomError";
 import { UserError } from "./userError";
+import { WeatherError } from "./weatherError";
+import { MqttError } from "./mqttError";
 
 export const ErrorMiddleware = (
-  error: FastifyError | NotFoundError | RoomError | z.ZodError,
+  error:
+    | FastifyError
+    | NotFoundError
+    | RoomError
+    | UserError
+    | WeatherError
+    | MqttError
+    | z.ZodError,
   req: FastifyRequest,
   reply: FastifyReply,
 ) => {
@@ -41,15 +50,29 @@ export const ErrorMiddleware = (
     });
   }
 
+  if (error instanceof WeatherError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: null,
+    });
+  }
+
+  if (error instanceof MqttError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: error.cause,
+    });
+  }
+
   if ("statusCode" in error) {
     return reply.status(error.statusCode || 500).send({
-      error: error.message || "Erreur interne du serveur",
+      error: error.message || "Internal server error",
       data: null,
     });
   }
 
   return reply.status(500).send({
-    error: "Erreur interne du serveur",
+    error: "Internal server error",
     data: null,
   });
 };

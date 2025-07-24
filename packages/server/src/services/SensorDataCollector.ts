@@ -1,6 +1,7 @@
 import { Service } from "typedi";
 import mqtt from "mqtt";
 import { SensorDataRepository } from "./SensorDataRepository";
+import { MqttError } from "../middleware/error/mqttError";
 
 export interface SensorTopicConfig {
   topic: string;
@@ -78,6 +79,10 @@ export class SensorDataCollector {
   }
 
   public async start(brokerUrl: string): Promise<void> {
+    if (!brokerUrl || !brokerUrl.startsWith("mqtt://")) {
+      throw MqttError.invalidBrokerUrl(brokerUrl);
+    }
+
     return new Promise((resolve, reject) => {
       this.client = mqtt.connect(brokerUrl);
 
@@ -87,7 +92,7 @@ export class SensorDataCollector {
         this.sensorConfigs.forEach(config => {
           this.client!.subscribe(config.topic, (err) => {
             if (err) {
-              console.error(`Erreur lors de l'abonnement au topic ${config.topic}:`, err);
+              MqttError.subscriptionFailed(config.topic, err);
             } else {
               console.log(`Abonné au topic ${config.topic} (${config.type})`);
             }
@@ -99,8 +104,7 @@ export class SensorDataCollector {
       });
 
       this.client.on("error", (err) => {
-        console.error("Erreur MQTT:", err);
-        reject(err);
+        reject(MqttError.connectionFailed(err));
       });
 
       this.client.on("message", (topic, message) => {
@@ -114,8 +118,7 @@ export class SensorDataCollector {
             console.log(`Données ${sensorConfig.type} reçues:`, JSON.stringify(parsedMessage.data, null, 2));
           }
         } catch (error) {
-          console.error(`Erreur lors du parsing JSON pour le topic ${topic}:`, error);
-          console.error(`Message reçu: ${message.toString()}`);
+          MqttError.messageParsingFailed(topic, error as Error);
         }
       });
     });
@@ -130,75 +133,71 @@ export class SensorDataCollector {
   }
 
   private async collectAndSaveData(): Promise<void> {
-    try {
-      let savedCount = 0;
+    let savedCount = 0;
 
-      for (const config of this.sensorConfigs) {
-        const mqttMessage = this.latestData[config.topic];
+    for (const config of this.sensorConfigs) {
+      const mqttMessage = this.latestData[config.topic];
         
-        if (mqttMessage) {
-          const timestamp = new Date(mqttMessage.tx_time_ms_epoch);
+      if (mqttMessage) {
+        const timestamp = new Date(mqttMessage.tx_time_ms_epoch);
           
-          const sensorData = {
-            room_id: config.roomId,
-            sensor_id: config.sensorId,
-            data: JSON.stringify(mqttMessage.data),
-            saved_at: timestamp,
-          };
+        const sensorData = {
+          room_id: config.roomId,
+          sensor_id: config.sensorId,
+          data: JSON.stringify(mqttMessage.data),
+          saved_at: timestamp,
+        };
 
-          try {
-            switch (config.type) {
-            case "temperature":
-              const tempData = mqttMessage.data as TemperatureData;
-              console.log(`Température: ${tempData.temperature}°C`);
-              const tempSensorData = {
-                ...sensorData,
-                data: tempData.temperature.toString(),
-              };
-              await this.repository.insertTemperature(tempSensorData);
-              break;
-            case "humidity":
-              const humidityData = mqttMessage.data as HumidityData;
-              console.log(`Humidité: ${humidityData.humidity}%`);
-              const humiditySensorData = {
-                ...sensorData,
-                data: humidityData.humidity.toString(),
-              };
-              await this.repository.insertHumidity(humiditySensorData);
-              break;
-            case "pressure":
-              const pressureData = mqttMessage.data as PressureData;
-              console.log(`Pression: ${pressureData.pressure || "N/A"}`);
-              const pressureSensorData = {
-                ...sensorData,
-                data: pressureData.pressure?.toString() || "N/A",
-              };
-              await this.repository.insertPressure(pressureSensorData);
-              break;
-            case "movement":
-              const movementData = mqttMessage.data as MovementData;
-              console.log(`Mouvement: ${movementData.state} (x:${movementData.x_axis}, y:${movementData.y_axis}, z:${movementData.z_axis})`);
-              const movementSensorData = {
-                ...sensorData,
-                data: movementData.state,
-              };
-              await this.repository.insertMovement(movementSensorData);
-              break;
-            }
-            savedCount++;
-          } catch (error) {
-            console.error(`Erreur lors de l'insertion des données ${config.type}:`, error);
+        try {
+          switch (config.type) {
+          case "temperature":
+            const tempData = mqttMessage.data as TemperatureData;
+            console.log(`Température: ${tempData.temperature}°C`);
+            const tempSensorData = {
+              ...sensorData,
+              data: tempData.temperature.toString(),
+            };
+            await this.repository.insertTemperature(tempSensorData);
+            break;
+          case "humidity":
+            const humidityData = mqttMessage.data as HumidityData;
+            console.log(`Humidité: ${humidityData.humidity}%`);
+            const humiditySensorData = {
+              ...sensorData,
+              data: humidityData.humidity.toString(),
+            };
+            await this.repository.insertHumidity(humiditySensorData);
+            break;
+          case "pressure":
+            const pressureData = mqttMessage.data as PressureData;
+            console.log(`Pression: ${pressureData.pressure || "N/A"}`);
+            const pressureSensorData = {
+              ...sensorData,
+              data: pressureData.pressure?.toString() || "N/A",
+            };
+            await this.repository.insertPressure(pressureSensorData);
+            break;
+          case "movement":
+            const movementData = mqttMessage.data as MovementData;
+            console.log(`Mouvement: ${movementData.state} (x:${movementData.x_axis}, y:${movementData.y_axis}, z:${movementData.z_axis})`);
+            const movementSensorData = {
+              ...sensorData,
+              data: movementData.state,
+            };
+            await this.repository.insertMovement(movementSensorData);
+            break;
           }
+          savedCount++;
+        } catch (error) {
+          MqttError.dataInsertionFailed(config.type, error as Error);
         }
       }
+    }
 
-      if (savedCount > 0) {
-        console.log(`${savedCount} données sauvegardées à ${new Date().toISOString()}`);
-      } else {
-        console.log("Aucune nouvelle donnée à sauvegarder");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la collecte des données:", error);
+    if (savedCount > 0) {
+      console.log(`${savedCount} données sauvegardées à ${new Date().toISOString()}`);
+    } else {
+      console.log("Aucune nouvelle donnée à sauvegarder");
     }
   }
 

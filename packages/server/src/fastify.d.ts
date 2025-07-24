@@ -13,6 +13,7 @@ declare module "@fastify/jwt" {
       authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
       admin: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
       teacher: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+      setQuerystringParser: (parser: (queryString: string) => object) => void;
     }
     
     interface FastifyRequest {
