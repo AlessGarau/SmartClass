@@ -1,6 +1,6 @@
 import React from "react";
 import Button from "../../Button/Button";
-import { getCurrentWeekNumber } from "../../../utils/dates";
+import { getCurrentWeekNumber, getWeeksInYear } from "../../../utils/dates";
 
 interface WeekSelectorProps {
     currentWeekNumber: number;
@@ -13,12 +13,15 @@ const WeekSelector = ({ currentWeekNumber, currentYear, onWeekChange }: WeekSele
         if (currentWeekNumber > 1) {
             onWeekChange(currentWeekNumber - 1, currentYear);
         } else {
-            onWeekChange(52, currentYear - 1);
+            const previousYear = currentYear - 1;
+            const weeksInPreviousYear = getWeeksInYear(previousYear);
+            onWeekChange(weeksInPreviousYear, previousYear);
         }
     };
 
     const handleNextWeek = () => {
-        if (currentWeekNumber < 52) {
+        const weeksInCurrentYear = getWeeksInYear(currentYear);
+        if (currentWeekNumber < weeksInCurrentYear) {
             onWeekChange(currentWeekNumber + 1, currentYear);
         } else {
             onWeekChange(1, currentYear + 1);

@@ -1,4 +1,4 @@
-import { getISOWeek, setISOWeek, format, addDays, startOfISOWeek } from 'date-fns';
+import { getISOWeek, setISOWeek, format, addDays, startOfISOWeek, getISOWeeksInYear } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 export const getDatesOfWeek = (weekNumber: number, year: number) => {
@@ -20,4 +20,8 @@ export const getDatesOfWeek = (weekNumber: number, year: number) => {
 export const getCurrentWeekNumber = () => {
     const now = new Date();
     return getISOWeek(now);
+};
+
+export const getWeeksInYear = (year: number): number => {
+    return getISOWeeksInYear(new Date(year, 0, 1));
 };

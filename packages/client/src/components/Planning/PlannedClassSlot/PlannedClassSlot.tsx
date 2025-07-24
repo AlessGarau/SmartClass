@@ -1,15 +1,6 @@
 import React from "react";
 import { calculateDuration } from "../../../utils/planning";
-
-interface PlannedClass {
-    id: string;
-    subject: string;
-    teacher: string;
-    startTime: string;
-    endTime: string;
-    room: string;
-    dayOfWeek: string;
-}
+import type { PlannedClass } from "../../../types/Planning";
 
 interface PlannedClassSlotProps {
     plannedClass?: PlannedClass;
@@ -27,7 +18,7 @@ const PlannedClassSlot: React.FC<PlannedClassSlotProps> = ({ plannedClass, isEmp
     if (isEmpty || !plannedClass) {
         return (
             <div
-                className="flex flex-col items-center justify-center p-2 bg-lightGreen border border-greenBorder border-2 rounded-md mx-2"
+                className="flex flex-col items-center justify-center p-2 bg-lightGreen border-greenBorder border-2 rounded-md mx-2"
                 style={{ flexGrow: flexGrowValue }}
             >
                 <span className="text-sm font-semibold text-greenText">Disponible</span>
@@ -40,7 +31,7 @@ const PlannedClassSlot: React.FC<PlannedClassSlotProps> = ({ plannedClass, isEmp
 
     return (
         <div
-            className="flex flex-col items-center justify-center p-2 bg-slotFilled/10 border border-slotFilled/26 border-2 rounded-md mx-2"
+            className="flex flex-col items-center justify-center p-2 bg-slotFilled/10 border-slotFilled/26 border-2 rounded-md mx-2"
             style={{ flexGrow: flexGrowValue }}
         >
             <div className="font-semibold text-sm text-slotFilled">{plannedClass.subject}</div>

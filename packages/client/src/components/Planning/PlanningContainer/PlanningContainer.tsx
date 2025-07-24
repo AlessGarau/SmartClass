@@ -1,36 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getCurrentWeekNumber, getDatesOfWeek } from "../../../utils/dates";
 import { getTimeSlotsForDay } from "../../../utils/planning";
+import type { Classroom, WeekPlanningData, WeekDate } from "../../../types/Planning";
 import WeekSelector from "../WeekSelector/WeekSelector";
 import PlannedClassSlot from "../PlannedClassSlot/PlannedClassSlot";
 
-// Types for the mock data
-interface PlannedClass {
-    id: string;
-    subject: string;
-    teacher: string;
-    startTime: string;
-    endTime: string;
-    room: string;
-    dayOfWeek: 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN';
-}
-
-interface Classroom {
-    id: string;
-    name: string;
-    capacity: number;
-    building: string;
-    floor: number;
-    plannedClasses: PlannedClass[];
-}
-
-interface WeekPlanningData {
-    weekNumber: number;
-    year: number;
-    classrooms: Classroom[];
-}
-
-// Mock data
+// Temporary mock data until back is ready
 const mockWeekPlanningData: WeekPlanningData = {
     weekNumber: 1,
     year: 2024,
@@ -250,7 +225,7 @@ const fetchWeekPlanning = async (weekNumber: number, year: number): Promise<Week
 };
 
 const PlanningContainer = () => {
-    const [currentWeek, setCurrentWeek] = useState<{ day: string, date: string, fullDate: Date }[]>([]);
+    const [currentWeek, setCurrentWeek] = useState<WeekDate[]>([]);
     const [currentWeekNumber, setCurrentWeekNumber] = useState<number>(getCurrentWeekNumber());
     const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
     const [weekPlanningData, setWeekPlanningData] = useState<WeekPlanningData | null>(null);
@@ -328,7 +303,7 @@ const PlanningContainer = () => {
                                     const plannedClasses = getClassesForDay(classroom, day.day);
                                     const timeSlots = getTimeSlotsForDay(plannedClasses);
                                     return (
-                                        <td key={day.day} className="flex-1 h-96">
+                                        <td key={day.day} className={`flex-1 h-96`}>
                                             <div className="flex flex-col gap-2 h-full">
                                                 {timeSlots.map((slot, index) => (
                                                     <PlannedClassSlot

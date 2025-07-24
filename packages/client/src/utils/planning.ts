@@ -1,28 +1,9 @@
-interface PlannedClass {
-    id: string;
-    subject: string;
-    teacher: string;
-    startTime: string;
-    endTime: string;
-    room: string;
-    dayOfWeek: string;
-}
-
-export interface TimeSlot {
-    startTime: string;
-    endTime: string;
-    plannedClass?: PlannedClass;
-    isEmpty: boolean;
-}
-
-export interface DayScheduleConfig {
-    dayStart: string;
-    dayEnd: string;
-}
+import { PLANNING_CONFIG } from '../constants/planning';
+import type { DayScheduleConfig, PlannedClass, TimeSlot } from '../types/Planning';
 
 const DEFAULT_DAY_SCHEDULE: DayScheduleConfig = {
-    dayStart: "09:00",
-    dayEnd: "17:00"
+    dayStart: PLANNING_CONFIG.DAY_START_TIME,
+    dayEnd: PLANNING_CONFIG.DAY_END_TIME
 };
 
 export const getTimeSlotsForDay = (
@@ -85,10 +66,6 @@ export const getTimeSlotsForDay = (
     return timeSlots;
 };
 
-export const formatTimeRange = (startTime: string, endTime: string): string => {
-    return `${startTime} - ${endTime}`;
-};
-
 export const calculateDuration = (startTime: string, endTime: string): number => {
     const [startHours, startMinutes] = startTime.split(':').map(Number);
     const [endHours, endMinutes] = endTime.split(':').map(Number);
@@ -97,17 +74,4 @@ export const calculateDuration = (startTime: string, endTime: string): number =>
     const endTotalMinutes = endHours * 60 + endMinutes;
 
     return (endTotalMinutes - startTotalMinutes);
-};
-
-export const formatDuration = (minutes: number): string => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-
-    if (hours === 0) {
-        return `${mins}min`;
-    } else if (mins === 0) {
-        return `${hours}h`;
-    } else {
-        return `${hours}h${mins}min`;
-    }
 };
