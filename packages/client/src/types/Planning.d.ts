@@ -40,3 +40,10 @@ export interface DayScheduleConfig {
     dayStart: string;
     dayEnd: string;
 }
+
+export interface PlanningFilters {
+    weekNumber: number;
+    year: number;
+    building?: string;
+    floor?: number;
+}

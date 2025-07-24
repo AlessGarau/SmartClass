@@ -28,7 +28,7 @@ const Select = ({
     placeholder = "Select an option",
     multiple = false,
     disabled = false,
-    maxHeight = "200px",
+    maxHeight = "300px",
     label
 }: SelectProps) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -138,10 +138,12 @@ const Select = ({
 
                 {isOpen && (
                     <div
-                        className="absolute top-full left-0 w-full bg-white border border-grayBorder border-solid rounded-md mt-1 z-10 shadow-lg max-h-[200px]"
-                        style={{ maxHeight }}
+                        className="absolute top-full left-0 w-full bg-white border border-grayBorder border-solid rounded-md mt-1 z-10 shadow-lg"
                     >
-                        <div className="overflow-y-auto max-h-full">
+                        <div className="overflow-y-auto relative" style={{ maxHeight }}>
+                            {options.length > 7 && (
+                                <div className="sticky top-0 h-2 bg-gradient-to-b from-gray-100 to-transparent pointer-events-none z-10" />
+                            )}
                             {options.map((option) => (
                                 <SelectOption
                                     key={option.value}
@@ -152,6 +154,9 @@ const Select = ({
                                     onClick={() => handleOptionClick(option.value)}
                                 />
                             ))}
+                            {options.length > 7 && (
+                                <div className="sticky bottom-0 h-2 bg-gradient-to-t from-gray-100 to-transparent pointer-events-none z-10" />
+                            )}
                         </div>
                     </div>
                 )}

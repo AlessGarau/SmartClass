@@ -1,246 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { getCurrentWeekNumber, getDatesOfWeek } from "../../../utils/dates";
+import { getDatesOfWeek } from "../../../utils/dates";
 import { getTimeSlotsForDay } from "../../../utils/planning";
 import type { Classroom, WeekPlanningData, WeekDate } from "../../../types/Planning";
-import WeekSelector from "../WeekSelector/WeekSelector";
 import PlannedClassSlot from "../PlannedClassSlot/PlannedClassSlot";
+import { getBuildingDisplayName, fetchWeekPlanning } from "../../../api/mockPlanningApi";
 
-// Temporary mock data until back is ready
-const mockWeekPlanningData: WeekPlanningData = {
-    weekNumber: 1,
-    year: 2024,
-    classrooms: [
-        {
-            id: "classroom-1",
-            name: "Salle 101",
-            capacity: 30,
-            building: "Bâtiment A",
-            floor: 1,
-            plannedClasses: [
-                {
-                    id: "class-1",
-                    subject: "Mathématiques",
-                    teacher: "Prof. Dupont",
-                    startTime: "09:00",
-                    endTime: "11:00",
-                    room: "Salle 101",
-                    dayOfWeek: "LUN"
-                },
-                {
-                    id: "class-1b",
-                    subject: "Algèbre",
-                    teacher: "Prof. Dupont",
-                    startTime: "14:00",
-                    endTime: "16:00",
-                    room: "Salle 101",
-                    dayOfWeek: "LUN"
-                },
-                {
-                    id: "class-2",
-                    subject: "Physique",
-                    teacher: "Prof. Martin",
-                    startTime: "10:00",
-                    endTime: "12:00",
-                    room: "Salle 101",
-                    dayOfWeek: "MAR"
-                },
-                {
-                    id: "class-2b",
-                    subject: "TP Physique",
-                    teacher: "Prof. Martin",
-                    startTime: "14:00",
-                    endTime: "17:00",
-                    room: "Salle 101",
-                    dayOfWeek: "MAR"
-                },
-                {
-                    id: "class-3",
-                    subject: "Informatique",
-                    teacher: "Prof. Bernard",
-                    startTime: "10:00",
-                    endTime: "12:00",
-                    room: "Salle 101",
-                    dayOfWeek: "JEU"
-                }
-            ]
-        },
-        {
-            id: "classroom-2",
-            name: "Salle 102",
-            capacity: 25,
-            building: "Bâtiment A",
-            floor: 1,
-            plannedClasses: [
-                {
-                    id: "class-4",
-                    subject: "Anglais",
-                    teacher: "Prof. Wilson",
-                    startTime: "09:00",
-                    endTime: "11:00",
-                    room: "Salle 102",
-                    dayOfWeek: "LUN"
-                },
-                {
-                    id: "class-4b",
-                    subject: "Conversation Anglaise",
-                    teacher: "Prof. Wilson",
-                    startTime: "13:00",
-                    endTime: "15:00",
-                    room: "Salle 102",
-                    dayOfWeek: "LUN"
-                },
-                {
-                    id: "class-5",
-                    subject: "Histoire",
-                    teacher: "Prof. Rousseau",
-                    startTime: "09:00",
-                    endTime: "11:00",
-                    room: "Salle 102",
-                    dayOfWeek: "MER"
-                },
-                {
-                    id: "class-5b",
-                    subject: "Histoire Moderne",
-                    teacher: "Prof. Rousseau",
-                    startTime: "14:00",
-                    endTime: "16:00",
-                    room: "Salle 102",
-                    dayOfWeek: "MER"
-                },
-                {
-                    id: "class-6",
-                    subject: "Géographie",
-                    teacher: "Prof. Dubois",
-                    startTime: "16:00",
-                    endTime: "18:00",
-                    room: "Salle 102",
-                    dayOfWeek: "VEN"
-                }
-            ]
-        },
-        {
-            id: "classroom-3",
-            name: "Labo Informatique",
-            capacity: 20,
-            building: "Bâtiment B",
-            floor: 2,
-            plannedClasses: [
-                {
-                    id: "class-7",
-                    subject: "Programmation",
-                    teacher: "Prof. Garcia",
-                    startTime: "09:00",
-                    endTime: "12:00",
-                    room: "Labo Informatique",
-                    dayOfWeek: "MAR"
-                },
-                {
-                    id: "class-7b",
-                    subject: "Algorithmes",
-                    teacher: "Prof. Garcia",
-                    startTime: "14:00",
-                    endTime: "16:00",
-                    room: "Labo Informatique",
-                    dayOfWeek: "MAR"
-                },
-                {
-                    id: "class-8",
-                    subject: "Base de données",
-                    teacher: "Prof. Garcia",
-                    startTime: "09:00",
-                    endTime: "12:00",
-                    room: "Labo Informatique",
-                    dayOfWeek: "JEU"
-                },
-                {
-                    id: "class-8b",
-                    subject: "SQL Avancé",
-                    teacher: "Prof. Garcia",
-                    startTime: "14:00",
-                    endTime: "17:00",
-                    room: "Labo Informatique",
-                    dayOfWeek: "JEU"
-                }
-            ]
-        },
-        {
-            id: "classroom-4",
-            name: "Amphithéâtre",
-            capacity: 100,
-            building: "Bâtiment C",
-            floor: 1,
-            plannedClasses: [
-                {
-                    id: "class-9",
-                    subject: "Conférence Générale",
-                    teacher: "Prof. Directeur",
-                    startTime: "10:00",
-                    endTime: "12:00",
-                    room: "Amphithéâtre",
-                    dayOfWeek: "LUN"
-                },
-                {
-                    id: "class-9b",
-                    subject: "Présentation Projets",
-                    teacher: "Prof. Directeur",
-                    startTime: "14:00",
-                    endTime: "16:00",
-                    room: "Amphithéâtre",
-                    dayOfWeek: "LUN"
-                },
-                {
-                    id: "class-10",
-                    subject: "Séminaire",
-                    teacher: "Prof. Expert",
-                    startTime: "10:00",
-                    endTime: "12:00",
-                    room: "Amphithéâtre",
-                    dayOfWeek: "VEN"
-                },
-                {
-                    id: "class-10b",
-                    subject: "Workshop",
-                    teacher: "Prof. Expert",
-                    startTime: "14:00",
-                    endTime: "17:00",
-                    room: "Amphithéâtre",
-                    dayOfWeek: "VEN"
-                }
-            ]
-        }
-    ]
-};
+interface PlanningContainerProps {
+    weekNumber: number;
+    year: number;
+    buildingFilter?: string;
+    floorFilter?: number;
+}
 
-// Mock function to simulate API call
-const fetchWeekPlanning = async (weekNumber: number, year: number): Promise<WeekPlanningData> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // Return mock data with updated week and year
-    return {
-        ...mockWeekPlanningData,
-        weekNumber,
-        year
-    };
-};
-
-const PlanningContainer = () => {
+const PlanningContainer: React.FC<PlanningContainerProps> = ({
+    weekNumber,
+    year,
+    buildingFilter,
+    floorFilter
+}) => {
     const [currentWeek, setCurrentWeek] = useState<WeekDate[]>([]);
-    const [currentWeekNumber, setCurrentWeekNumber] = useState<number>(getCurrentWeekNumber());
-    const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
     const [weekPlanningData, setWeekPlanningData] = useState<WeekPlanningData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        setCurrentWeek(getDatesOfWeek(currentWeekNumber, currentYear));
-    }, [currentWeekNumber, currentYear]);
+        setCurrentWeek(getDatesOfWeek(weekNumber, year));
+    }, [weekNumber, year]);
 
     // useEffect will be replaced by tanstack query when server route is ready
     useEffect(() => {
         const loadWeekPlanning = async () => {
             setIsLoading(true);
             try {
-                const data = await fetchWeekPlanning(currentWeekNumber, currentYear);
+                const data = await fetchWeekPlanning(weekNumber, year, buildingFilter, floorFilter);
                 setWeekPlanningData(data);
             } catch (error) {
                 console.error('Error loading week planning:', error);
@@ -250,12 +41,7 @@ const PlanningContainer = () => {
         };
 
         loadWeekPlanning();
-    }, [currentWeekNumber, currentYear]);
-
-    const handleWeekChange = (weekNumber: number, year: number) => {
-        setCurrentWeekNumber(weekNumber);
-        setCurrentYear(year);
-    };
+    }, [weekNumber, year, buildingFilter, floorFilter]);
 
     const getClassesForDay = (classroom: Classroom, dayOfWeek: string) => {
         return classroom.plannedClasses.filter(cls => cls.dayOfWeek === dayOfWeek);
@@ -263,11 +49,6 @@ const PlanningContainer = () => {
 
     return (
         <div className="w-full">
-            <WeekSelector
-                currentWeekNumber={currentWeekNumber}
-                currentYear={currentYear}
-                onWeekChange={handleWeekChange}
-            />
 
             {isLoading ? (
                 <div className="flex justify-center items-center p-8">
@@ -295,7 +76,7 @@ const PlanningContainer = () => {
                                     <div className="flex flex-col">
                                         <span className="font-semibold">{classroom.name}</span>
                                         <span className="text-xs text-gray-500">
-                                            {classroom.building} - Étage {classroom.floor} ({classroom.capacity} places)
+                                            {getBuildingDisplayName(classroom.building)} - Étage {classroom.floor} ({classroom.capacity} places)
                                         </span>
                                     </div>
                                 </td>
