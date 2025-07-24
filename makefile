@@ -43,7 +43,7 @@ migrate:
 	@echo "Lancement des migrations dans le conteneur..."
 	docker-compose -f $(COMPOSE_FILE) -p $(PROJECT_NAME) exec smart-class-server-dev npm run db:migrate
 
-build: clean install start
+build: clean install start migrate
 
 status:
 	@echo "Statut des conteneurs:"
