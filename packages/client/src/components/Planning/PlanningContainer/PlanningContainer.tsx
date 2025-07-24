@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getCurrentWeekNumber, getDatesOfWeek } from "../../../utils/dates";
-import Button from "../../Button/Button";
+import { getTimeSlotsForDay } from "../../../utils/planning";
+import WeekSelector from "../WeekSelector/WeekSelector";
+import PlannedClassSlot from "../PlannedClassSlot/PlannedClassSlot";
 
 // Types for the mock data
 interface PlannedClass {
@@ -44,8 +46,17 @@ const mockWeekPlanningData: WeekPlanningData = {
                     id: "class-1",
                     subject: "Mathématiques",
                     teacher: "Prof. Dupont",
-                    startTime: "08:00",
-                    endTime: "10:00",
+                    startTime: "09:00",
+                    endTime: "11:00",
+                    room: "Salle 101",
+                    dayOfWeek: "LUN"
+                },
+                {
+                    id: "class-1b",
+                    subject: "Algèbre",
+                    teacher: "Prof. Dupont",
+                    startTime: "14:00",
+                    endTime: "16:00",
                     room: "Salle 101",
                     dayOfWeek: "LUN"
                 },
@@ -53,8 +64,17 @@ const mockWeekPlanningData: WeekPlanningData = {
                     id: "class-2",
                     subject: "Physique",
                     teacher: "Prof. Martin",
+                    startTime: "10:00",
+                    endTime: "12:00",
+                    room: "Salle 101",
+                    dayOfWeek: "MAR"
+                },
+                {
+                    id: "class-2b",
+                    subject: "TP Physique",
+                    teacher: "Prof. Martin",
                     startTime: "14:00",
-                    endTime: "16:00",
+                    endTime: "17:00",
                     room: "Salle 101",
                     dayOfWeek: "MAR"
                 },
@@ -86,11 +106,29 @@ const mockWeekPlanningData: WeekPlanningData = {
                     dayOfWeek: "LUN"
                 },
                 {
+                    id: "class-4b",
+                    subject: "Conversation Anglaise",
+                    teacher: "Prof. Wilson",
+                    startTime: "13:00",
+                    endTime: "15:00",
+                    room: "Salle 102",
+                    dayOfWeek: "LUN"
+                },
+                {
                     id: "class-5",
                     subject: "Histoire",
                     teacher: "Prof. Rousseau",
-                    startTime: "13:00",
-                    endTime: "15:00",
+                    startTime: "09:00",
+                    endTime: "11:00",
+                    room: "Salle 102",
+                    dayOfWeek: "MER"
+                },
+                {
+                    id: "class-5b",
+                    subject: "Histoire Moderne",
+                    teacher: "Prof. Rousseau",
+                    startTime: "14:00",
+                    endTime: "16:00",
                     room: "Salle 102",
                     dayOfWeek: "MER"
                 },
@@ -116,8 +154,17 @@ const mockWeekPlanningData: WeekPlanningData = {
                     id: "class-7",
                     subject: "Programmation",
                     teacher: "Prof. Garcia",
-                    startTime: "08:00",
+                    startTime: "09:00",
                     endTime: "12:00",
+                    room: "Labo Informatique",
+                    dayOfWeek: "MAR"
+                },
+                {
+                    id: "class-7b",
+                    subject: "Algorithmes",
+                    teacher: "Prof. Garcia",
+                    startTime: "14:00",
+                    endTime: "16:00",
                     room: "Labo Informatique",
                     dayOfWeek: "MAR"
                 },
@@ -125,8 +172,17 @@ const mockWeekPlanningData: WeekPlanningData = {
                     id: "class-8",
                     subject: "Base de données",
                     teacher: "Prof. Garcia",
+                    startTime: "09:00",
+                    endTime: "12:00",
+                    room: "Labo Informatique",
+                    dayOfWeek: "JEU"
+                },
+                {
+                    id: "class-8b",
+                    subject: "SQL Avancé",
+                    teacher: "Prof. Garcia",
                     startTime: "14:00",
-                    endTime: "18:00",
+                    endTime: "17:00",
                     room: "Labo Informatique",
                     dayOfWeek: "JEU"
                 }
@@ -149,10 +205,28 @@ const mockWeekPlanningData: WeekPlanningData = {
                     dayOfWeek: "LUN"
                 },
                 {
+                    id: "class-9b",
+                    subject: "Présentation Projets",
+                    teacher: "Prof. Directeur",
+                    startTime: "14:00",
+                    endTime: "16:00",
+                    room: "Amphithéâtre",
+                    dayOfWeek: "LUN"
+                },
+                {
                     id: "class-10",
                     subject: "Séminaire",
                     teacher: "Prof. Expert",
-                    startTime: "15:00",
+                    startTime: "10:00",
+                    endTime: "12:00",
+                    room: "Amphithéâtre",
+                    dayOfWeek: "VEN"
+                },
+                {
+                    id: "class-10b",
+                    subject: "Workshop",
+                    teacher: "Prof. Expert",
+                    startTime: "14:00",
                     endTime: "17:00",
                     room: "Amphithéâtre",
                     dayOfWeek: "VEN"
@@ -175,62 +249,6 @@ const fetchWeekPlanning = async (weekNumber: number, year: number): Promise<Week
     };
 };
 
-interface WeekSelectorProps {
-    currentWeekNumber: number;
-    currentYear: number;
-    onWeekChange: (weekNumber: number, year: number) => void;
-}
-
-const WeekSelector = ({ currentWeekNumber, currentYear, onWeekChange }: WeekSelectorProps) => {
-    const handlePreviousWeek = () => {
-        if (currentWeekNumber > 1) {
-            onWeekChange(currentWeekNumber - 1, currentYear);
-        } else {
-            onWeekChange(52, currentYear - 1);
-        }
-    };
-
-    const handleNextWeek = () => {
-        if (currentWeekNumber < 52) {
-            onWeekChange(currentWeekNumber + 1, currentYear);
-        } else {
-            onWeekChange(1, currentYear + 1);
-        }
-    };
-
-    const handleCurrentWeek = () => {
-        const now = new Date();
-        const currentWeek = getCurrentWeekNumber();
-        const currentYear = now.getFullYear();
-        onWeekChange(currentWeek, currentYear);
-    };
-
-    return (
-        <div className="flex items-center justify-between w-full mb-4">
-            <Button
-                label="Semaine précédente"
-                onClick={handlePreviousWeek}
-                className="px-3 py-1 text-white rounded"
-            />
-
-            <div className="flex items-center gap-2">
-                <span className="font-semibold">Semaine {currentWeekNumber} - {currentYear}</span>
-                <Button
-                    label="Cette semaine"
-                    onClick={handleCurrentWeek}
-                    className="px-2 py-1 text-white rounded text-sm"
-                />
-            </div>
-
-            <Button
-                label="Semaine suivante"
-                onClick={handleNextWeek}
-                className="px-3 py-1 text-white rounded"
-            />
-        </div>
-    );
-};
-
 const PlanningContainer = () => {
     const [currentWeek, setCurrentWeek] = useState<{ day: string, date: string, fullDate: Date }[]>([]);
     const [currentWeekNumber, setCurrentWeekNumber] = useState<number>(getCurrentWeekNumber());
@@ -242,6 +260,7 @@ const PlanningContainer = () => {
         setCurrentWeek(getDatesOfWeek(currentWeekNumber, currentYear));
     }, [currentWeekNumber, currentYear]);
 
+    // useEffect will be replaced by tanstack query when server route is ready
     useEffect(() => {
         const loadWeekPlanning = async () => {
             setIsLoading(true);
@@ -263,8 +282,8 @@ const PlanningContainer = () => {
         setCurrentYear(year);
     };
 
-    const getClassForDay = (classroom: Classroom, dayOfWeek: string) => {
-        return classroom.plannedClasses.find(cls => cls.dayOfWeek === dayOfWeek);
+    const getClassesForDay = (classroom: Classroom, dayOfWeek: string) => {
+        return classroom.plannedClasses.filter(cls => cls.dayOfWeek === dayOfWeek);
     };
 
     return (
@@ -306,22 +325,21 @@ const PlanningContainer = () => {
                                     </div>
                                 </td>
                                 {currentWeek.map((day) => {
-                                    const plannedClass = getClassForDay(classroom, day.day);
+                                    const plannedClasses = getClassesForDay(classroom, day.day);
+                                    const timeSlots = getTimeSlotsForDay(plannedClasses);
                                     return (
-                                        <td key={day.day} className="flex-1">
-                                            {plannedClass ? (
-                                                <div className="flex flex-col items-center p-2 bg-blue-50 rounded border border-blue-200">
-                                                    <div className="font-semibold text-sm">{plannedClass.subject}</div>
-                                                    <div className="text-xs text-gray-600">{plannedClass.teacher}</div>
-                                                    <div className="text-xs text-blue-600">
-                                                        {plannedClass.startTime} - {plannedClass.endTime}
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col items-center p-2 text-gray-400">
-                                                    <span className="text-xs">Libre</span>
-                                                </div>
-                                            )}
+                                        <td key={day.day} className="flex-1 h-96">
+                                            <div className="flex flex-col gap-2 h-full">
+                                                {timeSlots.map((slot, index) => (
+                                                    <PlannedClassSlot
+                                                        key={`${day.day}-${index}`}
+                                                        plannedClass={slot.plannedClass}
+                                                        isEmpty={slot.isEmpty}
+                                                        startTime={slot.startTime}
+                                                        endTime={slot.endTime}
+                                                    />
+                                                ))}
+                                            </div>
                                         </td>
                                     );
                                 })}
