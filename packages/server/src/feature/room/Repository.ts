@@ -34,12 +34,12 @@ export class RoomRepository implements IRoomRepository {
     } catch (error: any) {
       if (error.cause.code === "23505") {
         throw RoomError.alreadyExists(
-          `Room name "${RoomCreateParams.name}" already exists.`
+          `Room name "${RoomCreateParams.name}" already exists.`,
         );
       }
       throw RoomError.creationFailed(
         "Unexpected error during room creation",
-        error
+        error,
       );
     }
   }
@@ -117,19 +117,19 @@ export class RoomRepository implements IRoomRepository {
     } catch (error: any) {
       if (error.cause.code === "23505") {
         throw RoomError.alreadyExists(
-          `Room name "${roomUpdateParams.name}" already exists.`
+          `Room name "${roomUpdateParams.name}" already exists.`,
         );
       }
       throw RoomError.updateFailed(
         "Unexpected error during room update",
-        error
+        error,
       );
     }
   }
 
   async patchRoom(
     id: string,
-    roomUpdateParams: Partial<PutRoomParams>
+    roomUpdateParams: Partial<PutRoomParams>,
   ): Promise<Room> {
     try {
       const result = await this._db
@@ -145,12 +145,12 @@ export class RoomRepository implements IRoomRepository {
     } catch (error: any) {
       if (error.cause.code === "23505") {
         throw RoomError.alreadyExists(
-          `Room name "${roomUpdateParams.name}" already exists.`
+          `Room name "${roomUpdateParams.name}" already exists.`,
         );
       }
       throw RoomError.updateFailed(
         "Unexpected error during room update",
-        error
+        error,
       );
     }
   }
