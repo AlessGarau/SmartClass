@@ -61,9 +61,7 @@ export class UserController {
     try {
       const { email, password, firstName, lastName, role } = UserRegisterSchema.parse(req.body);
 
-
       const user = await this.interactor.registerUser({ email, password, firstName, lastName, role });
-
       if (!user) {
         throw UserError.registerFailed();
       }
@@ -73,7 +71,7 @@ export class UserController {
         message: "Utilisateur créé avec succès",
       });
     } catch (error) {
-      throw UserError.registerFailed();
+      throw UserError.registerFailed(error as Error);
     }
   }
 
