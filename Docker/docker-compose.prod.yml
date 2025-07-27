@@ -26,10 +26,10 @@ services:
   smart-class-client-prod:
     image: ${DOCKERHUB_USERNAME}/smart-class-client:latest
     ports:
-      - "80:80"
+      - "8080:80"
     restart: always
     environment:
-      - VITE_API_URL=https://06.hetic.arcplex.dev:3000
+      - VITE_API_URL=https://06.hetic.arcplex.dev/api
     networks:
       - smart-class-network
 
