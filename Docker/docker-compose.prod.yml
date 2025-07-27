@@ -6,6 +6,9 @@ services:
     restart: always
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@smart-class-db-prod:5432/${POSTGRES_DB}
+      - JWT_SECRET=${JWT_SECRET}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - MQTT_BROKER_URL=${MQTT_BROKER_URL}
     networks:
       - smart-class-network
 

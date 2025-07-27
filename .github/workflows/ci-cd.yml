@@ -27,6 +27,8 @@ jobs:
           file: ./Docker/Dockerfile.client.prod
           push: true
           tags: ${{ vars.DOCKERHUB_USERNAME }}/smart-class-client:latest
+          build-args: |
+            VITE_API_URL=https://06.hetic.arcplex.dev/api
 
       - name: Build and push server image
         uses: docker/build-push-action@v6
