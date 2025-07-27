@@ -5,24 +5,32 @@ export const RoomSchema = z.object({
   name: z.string(),
   capacity: z.number(),
   is_enabled: z.boolean(),
+  building: z.string(),
+  floor: z.number(),
 });
 
 export const CreateRoomSchema = z.object({
   name: z.string().min(4),
   capacity: z.number().min(1),
   is_enabled: z.boolean().default(true),
+  building: z.string().default('batA'),
+  floor: z.number().min(0).default(0),
 });
 
 export const PutRoomSchema = z.object({
   name: z.string().min(4),
   capacity: z.number().min(1),
   is_enabled: z.boolean(),
+  building: z.string(),
+  floor: z.number().min(0),
 });
 
 export const PatchRoomSchema = z.object({
   name: z.string().min(4).optional(),
   capacity: z.number().min(1).optional(),
   is_enabled: z.boolean().optional(),
+  building: z.string().optional(),
+  floor: z.number().min(0).optional(),
 });
 
 export const RoomFilterSchema = z.object({

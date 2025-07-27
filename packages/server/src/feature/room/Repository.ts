@@ -28,6 +28,8 @@ export class RoomRepository implements IRoomRepository {
           name: RoomCreateParams.name,
           capacity: RoomCreateParams.capacity,
           is_enabled: RoomCreateParams.is_enabled,
+          building: RoomCreateParams.building,
+          floor: RoomCreateParams.floor,
         })
         .returning();
       return result[0];
@@ -106,6 +108,8 @@ export class RoomRepository implements IRoomRepository {
           name: roomUpdateParams.name,
           capacity: roomUpdateParams.capacity,
           is_enabled: roomUpdateParams.is_enabled,
+          building: roomUpdateParams.building,
+          floor: roomUpdateParams.floor,
         })
         .where(eq(roomTable.id, id))
         .returning();
