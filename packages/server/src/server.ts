@@ -29,7 +29,7 @@ const setupServer = async () => {
   }); 
 
   await server.register(fastifyCors, {
-    origin: ["http://localhost:5173", "http://smart-class-client-dev:5173", "https://06.hetic.arcplex.dev:3000"],
+    origin: ["http://localhost:5173", "http://smart-class-client-dev:5173", "https://06.hetic.arcplex.dev"],
     credentials: true,
   });
 
