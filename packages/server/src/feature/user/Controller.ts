@@ -49,6 +49,7 @@ export class UserController {
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 30, // 30 days
       sameSite: "strict",
+      path: "/",
     });
 
     return reply.status(201).send({
@@ -89,6 +90,7 @@ export class UserController {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       expires: new Date(0),
+      path: "/",
     });
     return reply.status(200).send({
       message: "Utilisateur déconnecté avec succès",
