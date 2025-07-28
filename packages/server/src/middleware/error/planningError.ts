@@ -51,4 +51,12 @@ export class PlanningError extends Error {
       cause,
     });
   }
+
+  static templateRetrievalFailed(cause?: Error): PlanningError {
+    return new PlanningError({
+      message: ErrorMessageEnum.Planning.TEMPLATE_RETRIEVAL_FAILED,
+      statusCode: 500,
+      cause,
+    });
+  }
 }

@@ -1,8 +1,8 @@
 import { Service } from "typedi";
 import type { IPlanningMapper } from "./interface/IMapper";
 import type { LessonWithRelations } from "../lesson/interface/IRepository";
-import type { Classroom, PlannedClass, WeekPlanningData } from "./interface/IInteractor";
 import type { Room } from "../room/validate";
+import { PlannedClass, RoomWithPlannedClasses, WeeklyPlanningResult } from "./validate";
 
 @Service()
 export class PlanningMapper implements IPlanningMapper {
@@ -11,7 +11,7 @@ export class PlanningMapper implements IPlanningMapper {
     rooms: Room[],
     weekNumber: number,
     year: number,
-  ): WeekPlanningData {
+  ): WeeklyPlanningResult {
 
     const roomLessonsMap = new Map<string, LessonWithRelations[]>();
 
@@ -34,9 +34,9 @@ export class PlanningMapper implements IPlanningMapper {
     };
   }
 
-  toClassroom(room: any, lessons: LessonWithRelations[]): Classroom {
+  toClassroom(room: Room, lessons: LessonWithRelations[]): RoomWithPlannedClasses {
     const plannedClasses: PlannedClass[] = lessons.map(lesson => {
-      const teacher = lesson.users?.[0]; // For now, taking first teacher
+      const teacher = lesson.users?.[0];
       const dayOfWeek = this.getDayOfWeek(lesson.start_time);
 
       return {

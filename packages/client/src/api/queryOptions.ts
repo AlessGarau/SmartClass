@@ -1,5 +1,6 @@
 import type { LoginCredentials } from "../types/User";
 import { userApi } from "./endpoints/user";
+import { planningApi } from "./endpoints/planning";
 
 export const userQueryOptions = {
     login: () => ({
@@ -19,4 +20,11 @@ export const userQueryOptions = {
         mutationFn: () => userApi.logout(),
         mutationKey: ['user', 'logout'],
     })
+};
+
+export const planningQueryOptions = {
+    downloadTemplate: () => ({
+        mutationFn: () => planningApi.downloadTemplate(),
+        mutationKey: ['planning', 'downloadTemplate'],
+    }),
 };

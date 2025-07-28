@@ -108,8 +108,6 @@ export class RoomRepository implements IRoomRepository {
           name: roomUpdateParams.name,
           capacity: roomUpdateParams.capacity,
           is_enabled: roomUpdateParams.is_enabled,
-          building: roomUpdateParams.building,
-          floor: roomUpdateParams.floor,
         })
         .where(eq(roomTable.id, id))
         .returning();

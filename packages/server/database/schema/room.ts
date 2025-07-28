@@ -6,7 +6,7 @@ export const roomTable = pgTable("room", {
   name: varchar({ length: 255 }).unique().notNull(),
   capacity: integer().notNull(),
   is_enabled: boolean().notNull().default(true),
-  building: varchar({ length: 50 }).notNull().default('batA'),
+  building: varchar({ length: 50 }).notNull().default("batA"),
   floor: integer().notNull().default(0),
 },
 (table) => [

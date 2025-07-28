@@ -14,10 +14,67 @@ export class UserRoutes {
   public registerRoutes() {
     this.server.post(
       "/user/login",
+      {
+        schema: {
+          tags: ["User"],
+          summary: "User login",
+          description: "Authenticate user and return user data with token",
+          body: {
+            type: "object",
+            required: ["email", "password"],
+            properties: {
+              email: { type: "string", format: "email" },
+              password: { type: "string", minLength: 6 },
+            },
+          },
+          response: {
+            200: {
+              description: "User successfully logged in",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(UserMeResponseSchema),
+                token: { type: "string", description: "JWT access token" },
+                message: { type: "string" },
+              },
+              required: ["data", "token", "message"],
+            },
+          },
+        },
+      },
       this.controller.loginUser.bind(this.controller),
     );
     this.server.post(
       "/user/register",
+      {
+        schema: {
+          tags: ["User"],
+          summary: "Register a new user",
+          description: "Create a new user account",
+          body: {
+            type: "object",
+            required: ["email", "password", "firstName", "lastName"],
+            properties: {
+              email: { type: "string", format: "email" },
+              password: { type: "string", minLength: 8 },
+              firstName: { type: "string", minLength: 1 },
+              lastName: { type: "string", minLength: 1 },
+              role: { type: "string", enum: ["teacher", "admin"] },
+            },
+          },
+          response: {
+            201: {
+              description: "User registered successfully",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(UserMeResponseSchema),
+                token: { type: "string", description: "JWT access token" },
+                message: { type: "string" },
+              },
+              required: ["data", "token", "message"],
+            },
+          },
+        },
+      },
       this.controller.registerUser.bind(this.controller),
     );
     this.server.get(

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Button from "../components/Button/Button";
 import PlusIcon from "../assets/icons/add_icon.svg"
+import DownloadIcon from "../assets/icons/download_icon.svg"
 import FilterContainer from "../components/FilterContainer/FilterContainer";
 import Select from "../components/Select/SelectContainer";
 import PlanningContainer from "../components/Planning/PlanningContainer/PlanningContainer";
@@ -9,6 +10,8 @@ import { getCurrentWeekNumber, getWeeksInYear } from "../utils/dates";
 import { fetchBuildings, type Building } from "../api/mockPlanningApi";
 import type { PlanningFilters } from "../types/Planning";
 import { PLANNING_LEGEND_ITEMS } from "../constants/planning";
+import { useMutation } from "@tanstack/react-query";
+import { planningQueryOptions } from "../api/queryOptions";
 
 const PlanningPage = () => {
     const currentYear = new Date().getFullYear();
@@ -24,6 +27,23 @@ const PlanningPage = () => {
     const [buildings, setBuildings] = useState<Building[]>([]);
     const [availableFloors, setAvailableFloors] = useState<number[]>([]);
     const [isLoadingBuildings, setIsLoadingBuildings] = useState(true);
+
+    const downloadTemplateMutation = useMutation({
+        ...planningQueryOptions.downloadTemplate(),
+        onSuccess: (data) => {
+            const url = window.URL.createObjectURL(data);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'lesson_import_template.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        },
+        onError: (error) => {
+            console.error('Error downloading template:', error);
+        }
+    });
 
     useEffect(() => {
         const loadBuildings = async () => {
@@ -91,7 +111,15 @@ const PlanningPage = () => {
                         Plannifiez et gérer la réservation des classes
                     </div>
                 </div>
-                <Button label="Importer une feuille" icon={PlusIcon} />
+                <div className="flex gap-2">
+                    <Button
+                        icon={DownloadIcon}
+                        onClick={() => downloadTemplateMutation.mutate()}
+                        disabled={downloadTemplateMutation.isPending}
+                        tooltip="Télécharger le modèle"
+                    />
+                    <Button label="Importer une feuille" icon={PlusIcon} />
+                </div>
             </div>
             <FilterContainer>
                 <Select

@@ -3,8 +3,8 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { PlanningInteractor } from "./Interactor";
 import { PlanningMapper } from "./Mapper";
 import {
-  weeklyPlanningParamsSchema,
-  weeklyPlanningQuerySchema,
+  WeeklyPlanningParamsSchema,
+  WeeklyPlanningQuerySchema,
 } from "./validate";
 import { PlanningMessage } from "./message";
 import { PlanningError } from "./../../middleware/error/planningError";
@@ -18,12 +18,11 @@ export class PlanningController {
 
   async getWeeklyPlanning(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { weekNumber } = weeklyPlanningParamsSchema.parse(request.params);
+      const { weekNumber } = WeeklyPlanningParamsSchema.parse(request.params);
 
-      const query = weeklyPlanningQuerySchema.parse(request.query);
+      const query = WeeklyPlanningQuerySchema.parse(request.query);
       const year = query.year || new Date().getFullYear();
 
-      // Get weekly planning from interactor
       const planningResult = await this.planningInteractor.getWeeklyPlanning({
         weekNumber,
         year,
@@ -31,7 +30,6 @@ export class PlanningController {
         floor: query.floor,
       });
 
-      // Map domain objects to DTOs
       const planningData = this.planningMapper.toWeekPlanningData(
         planningResult.lessons,
         planningResult.rooms,
@@ -48,6 +46,22 @@ export class PlanningController {
         throw error;
       }
       throw PlanningError.notFound(error as Error);
+    }
+  }
+
+  async downloadLessonTemplate(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const templateContent = await this.planningInteractor.getLessonTemplate();
+
+      return reply
+        .header("Content-Type", "text/csv")
+        .header("Content-Disposition", "attachment; filename=lesson_import_template.csv")
+        .send(templateContent);
+    } catch (error) {
+      if (error instanceof PlanningError) {
+        throw error;
+      }
+      throw PlanningError.templateRetrievalFailed(error as Error);
     }
   }
 }

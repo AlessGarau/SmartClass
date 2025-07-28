@@ -20,13 +20,14 @@ import {
 import Container from "typedi";
 import { SensorDataCollector } from "./services/SensorDataCollector";
 import qs from "qs";
+import { PlanningRoutes } from "./feature/planning/Routes";
 
 dotenv.config();
 
 const setupServer = async () => {
   const server = Fastify({
     querystringParser: str => qs.parse(str),
-  }); 
+  });
 
   await server.register(fastifyCors, {
     origin: ["http://localhost:5173", "http://smart-class-client-dev:5173"],
@@ -110,6 +111,8 @@ const setupServer = async () => {
   userRoutes.registerRoutes();
   const weatherRoutes = new WeatherRoutes(server);
   weatherRoutes.registerRoutes();
+  const planningRoutes = new PlanningRoutes(server);
+  planningRoutes.registerRoutes();
 
   return server;
 };

@@ -1,23 +1,28 @@
-import type { userTable } from "../../../../database/schema/user";
 
-// Define select types using Drizzle's inference
-type UserSelect = typeof userTable.$inferSelect;
-
-export interface WeeklyPlanningFilters {
-  weekNumber: number;
-  year: number;
-  building?: string;
-  floor?: number;
+interface RoomEnvironmentalData {
+  room: {
+    name: string;
+    id: string;
+    days: {
+      [key: string]: DayData; // e.g. day1, day2, ..., day7
+    };
+  };
 }
 
-export interface RoomEnvironmentalData {
-  roomId: string;
-  temperature: number;
-  humidity: number;
-  airPressure: number;
-  comfortScore: number;
+interface DayData {
+  temperature: HourlyReadings;
+  humidity: HourlyReadings;
+  airPressure: HourlyReadings;
 }
 
-export interface IPlanningRepository {
-  getTeachers(): Promise<UserSelect[]>;
+interface HourlyReadings {
+  "09:00": number;
+  "10:00": number;
+  "11:00": number;
+  "12:00": number;
+  "13:00": number;
+  "14:00": number;
+  "15:00": number;
+  "16:00": number;
+  "17:00": number;
 }

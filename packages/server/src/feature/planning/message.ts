@@ -6,4 +6,5 @@ export const PlanningMessage = {
   INVALID_YEAR: "Invalid year",
   OPTIMIZATION_FAILED: "Failed to optimize planning",
   ENVIRONMENTAL_DATA_UNAVAILABLE: "Environmental data is currently unavailable",
+  TEMPLATE_RETRIEVAL_FAILED: "Failed to retrieve lesson import template",
 } as const;
