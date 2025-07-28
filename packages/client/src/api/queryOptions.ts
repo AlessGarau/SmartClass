@@ -1,4 +1,5 @@
 import type { LoginCredentials } from "../types/User";
+import type { PlanningFilters } from "../types/Planning";
 import { userApi } from "./endpoints/user";
 import { planningApi } from "./endpoints/planning";
 
@@ -26,5 +27,11 @@ export const planningQueryOptions = {
     downloadTemplate: () => ({
         mutationFn: () => planningApi.downloadTemplate(),
         mutationKey: ['planning', 'downloadTemplate'],
+    }),
+    
+    weeklyPlanning: (filters: PlanningFilters) => ({
+        queryKey: ['planning', 'weekly', filters],
+        queryFn: () => planningApi.getWeeklyPlanning(filters),
+        staleTime: 5 * 60 * 1000, // 5 minutes
     }),
 };
