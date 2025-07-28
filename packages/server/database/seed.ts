@@ -39,18 +39,18 @@ async function main() {
     .insert(schema.userTable)
     .values([
       {
-        email: "john.smith@school.edu",
-        password: "$2b$10$hash1",
-        role: "teacher",
-        first_name: "John",
-        last_name: "Smith",
+        email: "admin@gmail.com",
+        password: "$2b$10$V6qTyc9zNAZzKGj711CqsuqjG1EM7Ee2QhZHQ2fvZ/0HjsUS7OeaW",
+        role: "admin",
+        first_name: "Olivier",
+        last_name: "Martin",
       },
       {
-        email: "mary.jones@school.edu",
-        password: "$2b$10$hash2",
+        email: "teacher@gmail.com",
+        password: "$2b$10$Hpj/ilLB5x4dpqbL/wHBUudmXX0z0Qe7FlvVnxjy8yZdvDSn/J2Gi",
         role: "teacher",
-        first_name: "Mary",
-        last_name: "Jones",
+        first_name: "Clément",
+        last_name: "Dupont",
       },
       {
         email: "david.wilson@school.edu",
