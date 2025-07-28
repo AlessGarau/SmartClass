@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getDatesOfWeek } from "../../../utils/dates";
 import { getTimeSlotsForDay } from "../../../utils/planning";
-import type { Classroom, WeekPlanningData, WeekDate } from "../../../types/Planning";
+import type { Classroom, WeekDate, PlanningFilters } from "../../../types/Planning";
 import PlannedClassSlot from "../PlannedClassSlot/PlannedClassSlot";
-import { getBuildingDisplayName, fetchWeekPlanning } from "../../../api/mockPlanningApi";
+import { getBuildingDisplayName } from "../../../api/mockPlanningApi";
+import { planningQueryOptions } from "../../../api/queryOptions";
 
 interface PlanningContainerProps {
     weekNumber: number;
@@ -19,29 +21,27 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
     floorFilter
 }) => {
     const [currentWeek, setCurrentWeek] = useState<WeekDate[]>([]);
-    const [weekPlanningData, setWeekPlanningData] = useState<WeekPlanningData | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const filters: PlanningFilters = {
+        weekNumber,
+        year,
+        building: buildingFilter,
+        floor: floorFilter
+    };
+
+    const { data: planningResponse, isLoading, error } = useQuery({
+        ...planningQueryOptions.weeklyPlanning(filters),
+    });
+
+    const weekPlanningData = planningResponse?.data || null;
 
     useEffect(() => {
         setCurrentWeek(getDatesOfWeek(weekNumber, year));
     }, [weekNumber, year]);
 
-    // useEffect will be replaced by tanstack query when server route is ready
-    useEffect(() => {
-        const loadWeekPlanning = async () => {
-            setIsLoading(true);
-            try {
-                const data = await fetchWeekPlanning(weekNumber, year, buildingFilter, floorFilter);
-                setWeekPlanningData(data);
-            } catch (error) {
-                console.error('Error loading week planning:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadWeekPlanning();
-    }, [weekNumber, year, buildingFilter, floorFilter]);
+    if (error) {
+        console.error('Error loading week planning:', error);
+    }
 
     const getClassesForDay = (classroom: Classroom, dayOfWeek: string) => {
         return classroom.plannedClasses.filter(cls => cls.dayOfWeek === dayOfWeek);
