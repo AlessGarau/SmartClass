@@ -6,6 +6,7 @@ import fCookie from "@fastify/cookie";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import fastifyCors from "@fastify/cors";
+import multipart from "@fastify/multipart";
 import { ErrorMiddleware } from "./middleware/error/error.handler";
 import { RoomRoutes } from "./feature/room/Routes";
 import { ReportingRoutes } from "./feature/reporting/Routes";
@@ -93,6 +94,12 @@ const setupServer = async () => {
 
   server.register(fCookie, {
     secret: process.env.COOKIE_SECRET!,
+  });
+
+  await server.register(multipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB max file size
+    },
   });
 
   server.get("/", async (_request, _reply) => {

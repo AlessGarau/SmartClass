@@ -1,13 +1,14 @@
 import { Service } from "typedi";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { between, eq } from "drizzle-orm";
+import { between, eq, and } from "drizzle-orm";
 import { database } from "../../../database/database";
 import { lessonTable } from "../../../database/schema/lesson";
 import { roomTable } from "../../../database/schema/room";
 import { classTable } from "../../../database/schema/class";
 import { type User, userTable } from "../../../database/schema/user";
 import { userLessonTable } from "../../../database/schema/userLesson";
-import type { LessonWithRelations, ILessonRepository } from "./interface/IRepository";
+import type { LessonWithRelations, ILessonRepository, CreateLessonData } from "./interface/IRepository";
+import type { Lesson } from "../../../database/schema/lesson";
 @Service()
 export class LessonRepository implements ILessonRepository {
   private db: NodePgDatabase<Record<string, never>>;
@@ -68,5 +69,36 @@ export class LessonRepository implements ILessonRepository {
           .where(eq(lessonTable.id, lessonId));
       }
     });
+  }
+
+  async createLesson(data: CreateLessonData): Promise<Lesson> {
+    const result = await this.db
+      .insert(lessonTable)
+      .values({
+        title: data.title,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        class_id: data.class_id,
+        room_id: data.room_id,
+      })
+      .returning();
+
+    return result[0];
+  }
+
+  async findLessonByDetails(classId: string, startTime: Date, endTime: Date): Promise<Lesson | null> {
+    const result = await this.db
+      .select()
+      .from(lessonTable)
+      .where(
+        and(
+          eq(lessonTable.class_id, classId),
+          eq(lessonTable.start_time, startTime),
+          eq(lessonTable.end_time, endTime),
+        ),
+      )
+      .limit(1);
+
+    return result[0] || null;
   }
 }

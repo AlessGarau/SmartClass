@@ -1,4 +1,0 @@
-title,date,start_time,end_time,class_name,teacher_name
-"# Instructions: date format: YYYY-MM-DD | time format: HH:MM | class_name: use existing class names | teacher_name: Full name of teacher"
-"Example: Mathematics Lesson","2024-03-20","09:00","10:30","WEB1","John Smith"
-"Example: Physics Lab","2024-03-20","11:00","12:30","WEB2","Jane Doe"

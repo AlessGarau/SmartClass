@@ -5,6 +5,7 @@ import { PlanningMapper } from "./Mapper";
 import {
   WeeklyPlanningParamsSchema,
   WeeklyPlanningQuerySchema,
+  FileUploadSchema,
 } from "./validate";
 import { PlanningMessage } from "./message";
 import { PlanningError } from "./../../middleware/error/planningError";
@@ -17,51 +18,72 @@ export class PlanningController {
   ) { }
 
   async getWeeklyPlanning(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { weekNumber } = WeeklyPlanningParamsSchema.parse(request.params);
+    const { weekNumber } = WeeklyPlanningParamsSchema.parse(request.params);
 
-      const query = WeeklyPlanningQuerySchema.parse(request.query);
-      const year = query.year || new Date().getFullYear();
+    const query = WeeklyPlanningQuerySchema.parse(request.query);
+    const year = query.year || new Date().getFullYear();
 
-      const planningResult = await this.planningInteractor.getWeeklyPlanning({
-        weekNumber,
-        year,
-        building: query.building,
-        floor: query.floor,
-      });
+    const planningResult = await this.planningInteractor.getWeeklyPlanning({
+      weekNumber,
+      year,
+      building: query.building,
+      floor: query.floor,
+    });
 
-      const planningData = this.planningMapper.toWeekPlanningData(
-        planningResult.lessons,
-        planningResult.rooms,
-        planningResult.weekNumber,
-        planningResult.year,
-      );
+    const planningData = this.planningMapper.toWeekPlanningData(
+      planningResult.lessons,
+      planningResult.rooms,
+      planningResult.weekNumber,
+      planningResult.year,
+    );
 
-      return reply.status(200).send({
-        data: planningData,
-        message: PlanningMessage.PLANNING_RETRIEVED_SUCCESSFULLY,
-      });
-    } catch (error) {
-      if (error instanceof PlanningError) {
-        throw error;
-      }
-      throw PlanningError.notFound(error as Error);
-    }
+    return reply.status(200).send({
+      data: planningData,
+      message: PlanningMessage.PLANNING_RETRIEVED_SUCCESSFULLY,
+    });
   }
 
   async downloadLessonTemplate(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const templateContent = await this.planningInteractor.getLessonTemplate();
+    const templateContent = await this.planningInteractor.getLessonTemplate();
 
-      return reply
-        .header("Content-Type", "text/csv")
-        .header("Content-Disposition", "attachment; filename=lesson_import_template.csv")
-        .send(templateContent);
-    } catch (error) {
-      if (error instanceof PlanningError) {
-        throw error;
-      }
-      throw PlanningError.templateRetrievalFailed(error as Error);
+    return reply
+      .header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+      .header("Content-Disposition", "attachment; filename=lesson_import_template.xlsx")
+      .send(templateContent);
+  }
+
+  async importLessonTemplate(request: FastifyRequest, reply: FastifyReply) {
+    const data = await request.file();
+
+    if (!data) {
+      throw PlanningError.invalidFileUpload();
     }
+
+    const buffer = await data.toBuffer();
+
+    const validatedFile = FileUploadSchema.parse({
+      filename: data.filename,
+      mimetype: data.mimetype,
+      file: buffer,
+    });
+
+    const importResult = await this.planningInteractor.importLessonsFromTemplate(validatedFile.file);
+
+    return reply.status(200).send({
+      message: PlanningMessage.LESSONS_IMPORTED_SUCCESSFULLY,
+      importedCount: importResult.importedCount,
+      skippedCount: importResult.skippedCount,
+      errors: importResult.errors,
+    });
+
+  }
+
+  async getFilterOptions(_request: FastifyRequest, reply: FastifyReply) {
+    const filterOptions = await this.planningInteractor.getFilterOptions();
+
+    return reply.status(200).send({
+      data: filterOptions,
+      message: PlanningMessage.FILTER_OPTIONS_RETRIEVED_SUCCESSFULLY,
+    });
   }
 }

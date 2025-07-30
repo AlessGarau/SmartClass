@@ -47,3 +47,13 @@ export interface PlanningFilters {
     building?: string;
     floor?: number;
 }
+
+export interface FilterOption {
+    value: string | number;
+    label: string;
+}
+
+export interface PlanningFilterOptions {
+    buildings: FilterOption[];
+    floors: FilterOption[];
+}

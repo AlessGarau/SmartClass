@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Button from "../components/Button/Button";
 import PlusIcon from "../assets/icons/add_icon.svg"
 import DownloadIcon from "../assets/icons/download_icon.svg"
 import FilterContainer from "../components/FilterContainer/FilterContainer";
-import Select from "../components/Select/SelectContainer";
+import Dropdown from "../components/Dropdown/Dropdown";
 import PlanningContainer from "../components/Planning/PlanningContainer/PlanningContainer";
 import ColorLegend from "../components/ColorLegend/ColorLegend";
 import { getCurrentWeekNumber, getWeeksInYear } from "../utils/dates";
-import { fetchBuildings, type Building } from "../api/mockPlanningApi";
 import type { PlanningFilters } from "../types/Planning";
 import { PLANNING_LEGEND_ITEMS } from "../constants/planning";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { planningQueryOptions } from "../api/queryOptions";
+import toast from "react-hot-toast";
 
 const PlanningPage = () => {
     const currentYear = new Date().getFullYear();
@@ -24,17 +24,18 @@ const PlanningPage = () => {
         floor: undefined
     });
 
-    const [buildings, setBuildings] = useState<Building[]>([]);
-    const [availableFloors, setAvailableFloors] = useState<number[]>([]);
-    const [isLoadingBuildings, setIsLoadingBuildings] = useState(true);
+    const { data: filterOptions, isLoading: isLoadingFilters } = useQuery(planningQueryOptions.filterOptions());
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const downloadTemplateMutation = useMutation({
         ...planningQueryOptions.downloadTemplate(),
         onSuccess: (data) => {
             const url = window.URL.createObjectURL(data);
+            console.log(url)
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'lesson_import_template.csv';
+            a.download = 'lesson_import_template.xlsx';
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -45,32 +46,50 @@ const PlanningPage = () => {
         }
     });
 
-    useEffect(() => {
-        const loadBuildings = async () => {
-            try {
-                const data = await fetchBuildings();
-                setBuildings(data);
-            } catch (error) {
-                console.error('Error loading buildings:', error);
-            } finally {
-                setIsLoadingBuildings(false);
+    const uploadLessonsMutation = useMutation({
+        ...planningQueryOptions.uploadLessons(),
+        onSuccess: (data) => {
+            console.log('Upload successful:', data);
+            let message = `Fichier importé avec succès ! `;
+            if (data.importedCount > 0) {
+                message += `${data.importedCount} cours ajoutés`;
             }
-        };
-        loadBuildings();
-    }, []);
+            if (data.skippedCount > 0) {
+                message += data.importedCount > 0 ? ` et ${data.skippedCount} cours ignorés (déjà existants)` : `${data.skippedCount} cours ignorés (déjà existants)`;
+            }
+            toast.success(message);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        },
+        onError: (error) => {
+            console.error('Error uploading file:', error);
+            toast.error('Erreur lors de l\'importation du fichier');
+        }
+    });
+
+    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+            if (!validTypes.includes(file.type) && !file.name.endsWith('.xlsx')) {
+                toast.error('Veuillez sélectionner un fichier Excel (.xlsx)');
+                event.target.value = '';
+                return;
+            }
+            uploadLessonsMutation.mutate(file);
+        }
+    };
+
+    const handleImportClick = () => {
+        fileInputRef.current?.click();
+    };
 
     useEffect(() => {
-        if (filters.building) {
-            const selectedBuilding = buildings.find(b => b.id === filters.building);
-            setAvailableFloors(selectedBuilding?.floors || []);
-            if (filters.floor && !selectedBuilding?.floors.includes(filters.floor)) {
-                setFilters(prev => ({ ...prev, floor: undefined }));
-            }
-        } else {
-            setAvailableFloors([]);
+        if (!filters.building) {
             setFilters(prev => ({ ...prev, floor: undefined }));
         }
-    }, [filters.building, buildings, filters.floor]);
+    }, [filters.building]);
 
     const weekOptions = Array.from({ length: getWeeksInYear(filters.year) }, (_, i) => ({
         label: `Semaine ${i + 1}`,
@@ -79,27 +98,24 @@ const PlanningPage = () => {
 
     const buildingOptions = [
         { label: "Tous les bâtiments", value: "" },
-        ...buildings.map(b => ({ label: b.name, value: b.id }))
+        ...(filterOptions?.data.buildings || [])
     ];
 
     const floorOptions = [
         { label: "Tous les étages", value: "" },
-        ...availableFloors.map(f => ({ label: `Étage ${f}`, value: String(f) }))
+        ...(filterOptions?.data.floors.map(f => ({ ...f, value: String(f.value) })) || [])
     ];
 
-    const handleWeekChange = (value: string | string[]) => {
-        const weekValue = Array.isArray(value) ? value[0] : value;
-        setFilters(prev => ({ ...prev, weekNumber: parseInt(weekValue) }));
+    const handleWeekChange = (value: number) => {
+        setFilters(prev => ({ ...prev, weekNumber: value }));
     };
 
-    const handleBuildingChange = (value: string | string[]) => {
-        const buildingValue = Array.isArray(value) ? value[0] : value;
-        setFilters(prev => ({ ...prev, building: buildingValue || undefined }));
+    const handleBuildingChange = (value: string) => {
+        setFilters(prev => ({ ...prev, building: value || undefined }));
     };
 
-    const handleFloorChange = (value: string | string[]) => {
-        const floorValue = Array.isArray(value) ? value[0] : value;
-        setFilters(prev => ({ ...prev, floor: floorValue ? parseInt(floorValue) : undefined }));
+    const handleFloorChange = (value: number) => {
+        setFilters(prev => ({ ...prev, floor: value ? value : undefined }));
     };
 
     return (
@@ -118,31 +134,51 @@ const PlanningPage = () => {
                         disabled={downloadTemplateMutation.isPending}
                         tooltip="Télécharger le modèle"
                     />
-                    <Button label="Importer une feuille" icon={PlusIcon} />
+                    <Button
+                        label="Importer une feuille"
+                        icon={PlusIcon}
+                        onClick={handleImportClick}
+                        disabled={uploadLessonsMutation.isPending}
+                    />
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                    />
                 </div>
             </div>
             <FilterContainer>
-                <Select
-                    options={weekOptions}
-                    value={String(filters.weekNumber)}
-                    label="Semaine"
-                    onChange={handleWeekChange}
-                    maxHeight="400px"
-                />
-                <Select
-                    options={buildingOptions}
-                    value={filters.building || ""}
-                    label="Bâtiment"
-                    onChange={handleBuildingChange}
-                    disabled={isLoadingBuildings}
-                />
-                <Select
-                    options={floorOptions}
-                    value={filters.floor ? String(filters.floor) : ""}
-                    label="Étage"
-                    onChange={handleFloorChange}
-                    disabled={!filters.building || availableFloors.length === 0}
-                />
+                <div className="flex flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700">Semaine :</label>
+                    <Dropdown
+                        options={weekOptions}
+                        placeholder={weekOptions.find(opt => opt.value === String(filters.weekNumber))?.label || "Sélectionner une semaine"}
+                        onSelect={(option) => handleWeekChange(option.value as number)}
+                        className="min-w-[200px]"
+                    />
+                </div>
+                <div className="flex flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700">Bâtiment :</label>
+                    <Dropdown
+                        options={buildingOptions}
+                        placeholder={buildingOptions.find(opt => opt.value === (filters.building || ""))?.label || "Tous les bâtiments"}
+                        onSelect={(option) => handleBuildingChange(option.value as string)}
+                        className="min-w-[200px]"
+                        disabled={isLoadingFilters}
+                    />
+                </div>
+                <div className="flex flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700">Étage :</label>
+                    <Dropdown
+                        options={floorOptions}
+                        placeholder={floorOptions.find(opt => opt.value === (filters.floor ? String(filters.floor) : ""))?.label || "Tous les étages"}
+                        onSelect={(option) => handleFloorChange(option.value as number)}
+                        className="min-w-[200px]"
+                        disabled={!filters.building || isLoadingFilters}
+                    />
+                </div>
                 <ColorLegend items={PLANNING_LEGEND_ITEMS} className="ml-auto" />
             </FilterContainer>
             <PlanningContainer

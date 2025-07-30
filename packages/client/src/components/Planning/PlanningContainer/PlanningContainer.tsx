@@ -4,7 +4,6 @@ import { getDatesOfWeek } from "../../../utils/dates";
 import { getTimeSlotsForDay } from "../../../utils/planning";
 import type { Classroom, WeekDate, PlanningFilters } from "../../../types/Planning";
 import PlannedClassSlot from "../PlannedClassSlot/PlannedClassSlot";
-import { getBuildingDisplayName } from "../../../api/mockPlanningApi";
 import { planningQueryOptions } from "../../../api/queryOptions";
 
 interface PlanningContainerProps {
@@ -76,7 +75,7 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
                                     <div className="flex flex-col">
                                         <span className="font-semibold">{classroom.name}</span>
                                         <span className="text-xs text-gray-500">
-                                            {getBuildingDisplayName(classroom.building)} - Étage {classroom.floor} ({classroom.capacity} places)
+                                            {classroom.building} - Étage {classroom.floor} ({classroom.capacity} places)
                                         </span>
                                     </div>
                                 </td>

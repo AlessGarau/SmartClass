@@ -28,10 +28,21 @@ export const planningQueryOptions = {
         mutationFn: () => planningApi.downloadTemplate(),
         mutationKey: ['planning', 'downloadTemplate'],
     }),
-    
+
+    uploadLessons: () => ({
+        mutationFn: (file: File) => planningApi.uploadLessons(file),
+        mutationKey: ['planning', 'uploadLessons'],
+    }),
+
     weeklyPlanning: (filters: PlanningFilters) => ({
         queryKey: ['planning', 'weekly', filters],
         queryFn: () => planningApi.getWeeklyPlanning(filters),
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 5 * 60 * 1000,
+    }),
+
+    filterOptions: () => ({
+        queryKey: ['planning', 'filterOptions'],
+        queryFn: () => planningApi.getFilterOptions(),
+        staleTime: 60 * 60 * 1000,
     }),
 };

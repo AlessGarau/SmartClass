@@ -17,6 +17,7 @@ const queryClient = new QueryClient()
 import ReactDOM from "react-dom/client";
 import Navbar from './layout/Navbar/Navbar.tsx';
 import PlanningPage from './pages/PlanningPage.tsx';
+import { Toaster } from 'react-hot-toast';
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,7 @@ ReactDOM.createRoot(root).render(
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <RouterProvider router={router} />
+      <Toaster position="top-right" />
     </AuthProvider>
   </QueryClientProvider>
 );

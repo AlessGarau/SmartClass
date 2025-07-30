@@ -160,4 +160,24 @@ export class RoomRepository implements IRoomRepository {
   async deleteRoom(id: string): Promise<void> {
     await this._db.delete(roomTable).where(eq(roomTable.id, id));
   }
+
+  async getDistinctBuildings(): Promise<string[]> {
+    const result = await this._db
+      .selectDistinct({ building: roomTable.building })
+      .from(roomTable)
+      .where(eq(roomTable.is_enabled, true))
+      .orderBy(roomTable.building);
+    
+    return result.map(row => row.building);
+  }
+
+  async getDistinctFloors(): Promise<number[]> {
+    const result = await this._db
+      .selectDistinct({ floor: roomTable.floor })
+      .from(roomTable)
+      .where(eq(roomTable.is_enabled, true))
+      .orderBy(roomTable.floor);
+    
+    return result.map(row => row.floor);
+  }
 }

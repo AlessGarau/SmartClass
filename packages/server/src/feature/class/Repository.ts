@@ -29,4 +29,14 @@ export class ClassRepository implements IClassRepository {
       .select()
       .from(classTable);
   }
+
+  async getClassByName(name: string): Promise<Class | null> {
+    const result = await this.db
+      .select()
+      .from(classTable)
+      .where(eq(classTable.name, name))
+      .limit(1);
+
+    return result[0] || null;
+  }
 }
