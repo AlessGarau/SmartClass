@@ -6,7 +6,6 @@ interface CardProps {
     className?: string;
     title?: string;
     headerAction?: ReactNode;
-    size?: "sm" | "md" | "lg";
 }
 
 const Card = ({ children, className, title, headerAction }: CardProps) => {
