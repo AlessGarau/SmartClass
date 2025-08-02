@@ -1,4 +1,4 @@
-import { eq, ilike, sql } from "drizzle-orm";
+import { and, eq, ilike, sql } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
@@ -45,26 +45,30 @@ export class RoomRepository implements IRoomRepository {
   }
 
   private applyFilter(filter: RoomFilter, query: any) {
-    if (!filter) {
-      return;
-    }
+    if (!filter) { return; }
+
+    const conditions = [];
 
     if (filter.search) {
-      query.where(ilike(roomTable.name, `%${filter.search}%`));
+      conditions.push(ilike(roomTable.name, `%${filter.search}%`));
     }
 
     if (filter.isEnabled !== undefined) {
-      query.where(eq(roomTable.is_enabled, filter.isEnabled));
+      conditions.push(eq(roomTable.is_enabled, filter.isEnabled));
+    }
+
+    if (conditions.length > 0) {
+      query.where(and(...conditions));
     }
   }
 
   async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
     const query = this._db.select().from(roomTable);
-    const { filter } = params;
 
-    if (filter) {
-      this.applyFilter(filter, query);
-    }
+    this.applyFilter({
+      search: params.search,
+      isEnabled: params.isEnabled,
+    }, query);
 
     if (params.limit !== undefined) {
       query.limit(params.limit);

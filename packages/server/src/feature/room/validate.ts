@@ -43,7 +43,8 @@ export const GetRoomsQuerySchema = z.object({
     .nonnegative()
     .optional()
     .describe("Number of rooms to skip"),
-  filter: RoomFilterSchema.optional(),
+  isEnabled: z.boolean().optional(),
+  search: z.string().optional().describe("Search term for room names"),
 });
 
 export const RoomIdParamsSchema = z.object({

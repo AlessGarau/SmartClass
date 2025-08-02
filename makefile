@@ -59,6 +59,7 @@ help:
 	@echo "  make install  - Installation des dépendances"
 	@echo "  make start    - Démarrage des services"
 	@echo "  make restart  - Redémarrage des services"
+	@echo "  make seed     - Remplir la base de données avec des données de test"
 	@echo "  make stop     - Arrêt des services"
 	@echo "  make migrate  - Génération et exécution des migrations"
 	@echo "  make build    - clean, install et start"
