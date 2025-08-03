@@ -7,7 +7,7 @@ export class ClassMapper implements IClassMapper {
     return classes.map(cls => ({
       id: cls.id,
       name: cls.name,
-      student_count: cls.student_count,
+      studentCount: cls.studentCount,
     }));
   }
 
@@ -15,7 +15,7 @@ export class ClassMapper implements IClassMapper {
     return {
       id: c.id,
       name: c.name,
-      student_count: c.student_count,
+      studentCount: c.studentCount,
     };
   }
 

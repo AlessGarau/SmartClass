@@ -8,9 +8,11 @@ import { IRoomRepository } from "./interface/IRepository";
 import {
   CreateRoomParams,
   GetRoomsQueryParams,
+  PatchRoomParams,
   PutRoomParams,
   Room,
   RoomFilter,
+  dbRoom,
 } from "./validate";
 
 @Service()
@@ -20,31 +22,16 @@ export class RoomRepository implements IRoomRepository {
     this._db = database;
   }
 
-  async create(RoomCreateParams: CreateRoomParams): Promise<Room> {
-    try {
-      const result = await this._db
-        .insert(roomTable)
-        .values({
-          name: RoomCreateParams.name,
-          capacity: RoomCreateParams.capacity,
-          is_enabled: RoomCreateParams.is_enabled,
-        })
-        .returning();
-      return result[0];
-    } catch (error: any) {
-      if (error.cause.code === "23505") {
-        throw RoomError.alreadyExists(
-          `Room name "${RoomCreateParams.name}" already exists.`,
-        );
-      }
-      throw RoomError.creationFailed(
-        "Unexpected error during room creation",
-        error,
-      );
-    }
+  private transformRoom(room: dbRoom): Room {
+    return {
+      id: room.id,
+      name: room.name,
+      capacity: room.capacity,
+      isEnabled: room.is_enabled,
+    };
   }
 
-  private applyFilter(filter: RoomFilter, query: any) {
+  private applyFilter(filter: RoomFilter, query: any): void {
     if (!filter) { return; }
 
     const conditions = [];
@@ -59,6 +46,30 @@ export class RoomRepository implements IRoomRepository {
 
     if (conditions.length > 0) {
       query.where(and(...conditions));
+    }
+  }
+
+  async create(RoomCreateParams: CreateRoomParams): Promise<Room> {
+    try {
+      const result = await this._db
+        .insert(roomTable)
+        .values({
+          name: RoomCreateParams.name,
+          capacity: RoomCreateParams.capacity,
+          is_enabled: RoomCreateParams.isEnabled,
+        })
+        .returning();
+      return this.transformRoom(result[0]);
+    } catch (error: any) {
+      if (error.cause.code === "23505") {
+        throw RoomError.alreadyExists(
+          `Room name "${RoomCreateParams.name}" already exists.`,
+        );
+      }
+      throw RoomError.creationFailed(
+        "Unexpected error during room creation",
+        error,
+      );
     }
   }
 
@@ -79,7 +90,7 @@ export class RoomRepository implements IRoomRepository {
     }
 
     const result = await query;
-    return result;
+    return result.map(room => this.transformRoom(room));
   }
 
   async getRoomsCount(filter: RoomFilter): Promise<number> {
@@ -99,7 +110,12 @@ export class RoomRepository implements IRoomRepository {
       .from(roomTable)
       .where(eq(roomTable.id, id))
       .limit(1);
-    return result[0] || null;
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return this.transformRoom(result[0]);
   }
 
   async putRoom(id: string, roomUpdateParams: PutRoomParams): Promise<Room> {
@@ -109,7 +125,7 @@ export class RoomRepository implements IRoomRepository {
         .set({
           name: roomUpdateParams.name,
           capacity: roomUpdateParams.capacity,
-          is_enabled: roomUpdateParams.is_enabled,
+          is_enabled: roomUpdateParams.isEnabled,
         })
         .where(eq(roomTable.id, id))
         .returning();
@@ -117,7 +133,7 @@ export class RoomRepository implements IRoomRepository {
       if (updatedRoom.length === 0) {
         throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
       }
-      return updatedRoom[0];
+      return this.transformRoom(updatedRoom[0]);
     } catch (error: any) {
       if (error.cause.code === "23505") {
         throw RoomError.alreadyExists(
@@ -131,21 +147,30 @@ export class RoomRepository implements IRoomRepository {
     }
   }
 
-  async patchRoom(
-    id: string,
-    roomUpdateParams: Partial<PutRoomParams>,
-  ): Promise<Room> {
+  async patchRoom(id: string, roomUpdateParams: PatchRoomParams): Promise<Room> {
     try {
+      const updateData: Partial<typeof roomTable.$inferInsert> = {};
+
+      if (roomUpdateParams.name !== undefined) {
+        updateData.name = roomUpdateParams.name;
+      }
+      if (roomUpdateParams.capacity !== undefined) {
+        updateData.capacity = roomUpdateParams.capacity;
+      }
+      if (roomUpdateParams.isEnabled !== undefined) {
+        updateData.is_enabled = roomUpdateParams.isEnabled;
+      }
+
       const result = await this._db
         .update(roomTable)
-        .set(roomUpdateParams)
+        .set(updateData)
         .where(eq(roomTable.id, id))
         .returning();
 
       if (result.length === 0) {
         throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
       }
-      return result[0];
+      return this.transformRoom(result[0]);
     } catch (error: any) {
       if (error.cause.code === "23505") {
         throw RoomError.alreadyExists(

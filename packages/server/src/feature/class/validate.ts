@@ -1,14 +1,20 @@
 import { z } from "zod";
 
-export const ClassSchema = z.object({
+export const dbClassSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   student_count: z.number(),
 });
 
+export const ClassSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  studentCount: z.number(),
+});
+
 export const CreateClassSchema = z.object({
   name: z.string().min(4),
-  student_count: z.number().min(1),
+  studentCount: z.number().min(1),
 });
 
 export const GetClassesQuerySchema = z.object({
@@ -29,12 +35,12 @@ export const GetClassesQuerySchema = z.object({
 
 export const PutClassSchema = z.object({
   name: z.string().min(4),
-  student_count: z.number().min(1),
+  studentCount: z.number().min(1),
 });
 
 export const PatchClassSchema = z.object({
   name: z.string().min(4).optional(),
-  student_count: z.number().min(1).optional(),
+  studentCount: z.number().min(1).optional(),
 });
 
 export const ClassFilterSchema = GetClassesQuerySchema.pick({
@@ -49,6 +55,7 @@ export const ClassesCountSchema = z.object({
   count: z.number().int().nonnegative(),
 });
 
+export type dbClass = z.infer<typeof dbClassSchema>;
 export type Class = z.infer<typeof ClassSchema>;
 export type CreateClassParams = z.infer<typeof CreateClassSchema>;
 export type GetClassesQueryParams = z.infer<typeof GetClassesQuerySchema>;

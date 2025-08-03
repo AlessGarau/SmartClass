@@ -5,7 +5,7 @@ import { database } from "../../../database/database";
 import { classTable } from "../../../database/schema";
 import { ClassError } from "../../middleware/error/classError";
 import { IClassRepository } from "./interface/IRepository";
-import { Class, ClassFilter, CreateClassParams, GetClassesQueryParams, PatchClassParams, PutClassParams } from "./validate";
+import { Class, ClassFilter, CreateClassParams, dbClass, GetClassesQueryParams, PatchClassParams, PutClassParams } from "./validate";
 
 @Service()
 export class ClassRepository implements IClassRepository {
@@ -14,27 +14,12 @@ export class ClassRepository implements IClassRepository {
     this._db = database;
   }
 
-  async create(ClassCreateParams: CreateClassParams): Promise<Class> {
-    try {
-      const result = await this._db
-        .insert(classTable)
-        .values({
-          name: ClassCreateParams.name,
-          student_count: ClassCreateParams.student_count,
-        })
-        .returning();
-      return result[0];
-    } catch (error: any) {
-      if (error.cause.code === "23505") {
-        throw ClassError.alreadyExists(
-          `Class name "${ClassCreateParams.name}" already exists.`,
-        );
-      }
-      throw ClassError.creationFailed(
-        "Unexpected error during class creation",
-        error,
-      );
-    }
+  private transformClass(cls: dbClass): Class {
+    return {
+      id: cls.id,
+      name: cls.name,
+      studentCount: cls.student_count,
+    };
   }
 
   private applyFilter(filter: ClassFilter, query: any) {
@@ -48,6 +33,29 @@ export class ClassRepository implements IClassRepository {
 
     if (conditions.length > 0) {
       query.where(and(...conditions));
+    }
+  }
+
+  async create(ClassCreateParams: CreateClassParams): Promise<Class> {
+    try {
+      const result = await this._db
+        .insert(classTable)
+        .values({
+          name: ClassCreateParams.name,
+          student_count: ClassCreateParams.studentCount,
+        })
+        .returning();
+      return this.transformClass(result[0]);
+    } catch (error: any) {
+      if (error.cause.code === "23505") {
+        throw ClassError.alreadyExists(
+          `Class name "${ClassCreateParams.name}" already exists.`,
+        );
+      }
+      throw ClassError.creationFailed(
+        "Unexpected error during class creation",
+        error,
+      );
     }
   }
 
@@ -67,7 +75,7 @@ export class ClassRepository implements IClassRepository {
     }
 
     const result = await query;
-    return result;
+    return result.map(c => this.transformClass(c));
   }
 
   async getClass(id: string): Promise<Class | null> {
@@ -76,7 +84,12 @@ export class ClassRepository implements IClassRepository {
       .from(classTable)
       .where(eq(classTable.id, id))
       .limit(1);
-    return result[0] || null;
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return this.transformClass(result[0]);
   }
 
   async getClassesCount(filter: ClassFilter): Promise<number> {
@@ -96,7 +109,7 @@ export class ClassRepository implements IClassRepository {
         .update(classTable)
         .set({
           name: classUpdateParams.name,
-          student_count: classUpdateParams.student_count,
+          student_count: classUpdateParams.studentCount,
         })
         .where(eq(classTable.id, id))
         .returning();
@@ -104,7 +117,7 @@ export class ClassRepository implements IClassRepository {
       if (updatedClass.length === 0) {
         throw ClassError.updateFailed(`Failed to update class with ID "${id}".`);
       }
-      return updatedClass[0];
+      return this.transformClass(updatedClass[0]);
     } catch (error: any) {
       if (error.cause.code === "23505") {
         throw ClassError.alreadyExists(
@@ -118,21 +131,27 @@ export class ClassRepository implements IClassRepository {
     }
   }
 
-  async patchClass(
-    id: string,
-    classUpdateParams: PatchClassParams,
-  ): Promise<Class> {
+  async patchClass(id: string, classUpdateParams: PatchClassParams): Promise<Class> {
     try {
+      const updateData: Partial<typeof classTable.$inferInsert> = {};
+
+      if (classUpdateParams.name !== undefined) {
+        updateData.name = classUpdateParams.name;
+      }
+      if (classUpdateParams.studentCount !== undefined) {
+        updateData.student_count = classUpdateParams.studentCount;
+      }
+
       const result = await this._db
         .update(classTable)
-        .set(classUpdateParams)
+        .set(updateData)
         .where(eq(classTable.id, id))
         .returning();
 
       if (result.length === 0) {
         throw ClassError.updateFailed(`Failed to update class with ID "${id}".`);
       }
-      return result[0];
+      return this.transformClass(result[0]);
     } catch (error: any) {
       if (error.cause.code === "23505") {
         throw ClassError.alreadyExists(
