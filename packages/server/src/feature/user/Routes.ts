@@ -1,7 +1,7 @@
 import { type FastifyInstance } from "fastify";
 import { UserController } from "./Controller";
 import Container from "typedi";
-import { UserMeResponseSchema } from "./validate";
+import { UserMeResponseSchema, UserRegisterSchema } from "./validate";
 import zodToJsonSchema from "zod-to-json-schema";
 
 export class UserRoutes {
@@ -53,13 +53,7 @@ export class UserRoutes {
           body: {
             type: "object",
             required: ["email", "password", "firstName", "lastName"],
-            properties: {
-              email: { type: "string", format: "email" },
-              password: { type: "string", minLength: 8 },
-              firstName: { type: "string", minLength: 1 },
-              lastName: { type: "string", minLength: 1 },
-              role: { type: "string", enum: ["teacher", "admin"] },
-            },
+            ...zodToJsonSchema(UserRegisterSchema),
           },
           response: {
             201: {
