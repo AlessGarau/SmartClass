@@ -11,10 +11,10 @@ export interface LessonWithRelations extends Lesson {
 
 export interface CreateLessonData {
   title: string;
-  start_time: Date;
-  end_time: Date;
-  class_id: string;
-  room_id: string | null;
+  startTime: Date;
+  endTime: Date;
+  classId: string;
+  roomId: string | null;
 }
 
 export interface ILessonRepository {

@@ -130,17 +130,17 @@ export class PlanningInteractor implements IPlanningInteractor {
         const lessonData: ImportedLesson = {
           title: row[headerIndices.title]?.toString() || "",
           date: row[headerIndices.date]?.toString() || "",
-          start_time: row[headerIndices.startTime]?.toString() || "",
-          end_time: row[headerIndices.endTime]?.toString() || "",
-          class_name: row[headerIndices.className]?.toString() || "",
-          teacher_name: row[headerIndices.teacherName]?.toString() || "",
+          startTime: row[headerIndices.startTime]?.toString() || "",
+          endTime: row[headerIndices.endTime]?.toString() || "",
+          className: row[headerIndices.className]?.toString() || "",
+          teacherName: row[headerIndices.teacherName]?.toString() || "",
         };
 
         const validatedLesson = ImportedLessonSchema.parse(lessonData);
 
         const [day, month, year] = validatedLesson.date.split("/").map(Number);
-        const [startHour, startMinute] = validatedLesson.start_time.split(":").map(Number);
-        const [endHour, endMinute] = validatedLesson.end_time.split(":").map(Number);
+        const [startHour, startMinute] = validatedLesson.startTime.split(":").map(Number);
+        const [endHour, endMinute] = validatedLesson.endTime.split(":").map(Number);
 
         const startDateTime = new Date(year, month - 1, day, startHour, startMinute, 0);
         const endDateTime = new Date(year, month - 1, day, endHour, endMinute, 0);
@@ -163,12 +163,12 @@ export class PlanningInteractor implements IPlanningInteractor {
           continue;
         }
 
-        const classEntity = await this.classRepository.getClassByName(validatedLesson.class_name);
+        const classEntity = await this.classRepository.getClassByName(validatedLesson.className);
         if (!classEntity) {
           errors.push({
             row: rowIndex + 1,
             field: "class_name",
-            message: `Class "${validatedLesson.class_name}" not found`,
+            message: `Class "${validatedLesson.className}" not found`,
           });
           continue;
         }
@@ -184,10 +184,10 @@ export class PlanningInteractor implements IPlanningInteractor {
         } else {
           await this.lessonRepository.createLesson({
             title: validatedLesson.title,
-            start_time: startDateTime,
-            end_time: endDateTime,
-            class_id: classEntity.id,
-            room_id: null,
+            startTime: startDateTime,
+            endTime: endDateTime,
+            classId: classEntity.id,
+            roomId: null,
           });
           importedCount++;
 

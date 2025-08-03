@@ -85,10 +85,10 @@ export class LessonRepository implements ILessonRepository {
       .insert(lessonTable)
       .values({
         title: data.title,
-        start_time: data.start_time,
-        end_time: data.end_time,
-        class_id: data.class_id,
-        room_id: data.room_id,
+        start_time: data.startTime,
+        end_time: data.endTime,
+        class_id: data.classId,
+        room_id: data.roomId,
       })
       .returning();
 

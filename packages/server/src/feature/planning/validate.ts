@@ -69,10 +69,10 @@ export const FileUploadSchema = z.object({
 export const ImportedLessonSchema = z.object({
   title: z.string().min(1, "Title is required"),
   date: z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/, "Date must be in DD/MM/YYYY format"),
-  start_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Start time must be in HH:MM format"),
-  end_time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "End time must be in HH:MM format"),
-  class_name: z.string().min(1, "Class name is required"),
-  teacher_name: z.string().min(1, "Teacher name is required"),
+  startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Start time must be in HH:MM format"),
+  endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "End time must be in HH:MM format"),
+  className: z.string().min(1, "Class name is required"),
+  teacherName: z.string().min(1, "Teacher name is required"),
 });
 
 export const ImportErrorSchema = z.object({
