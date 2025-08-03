@@ -18,7 +18,7 @@ export interface CreateLessonData {
 }
 
 export interface ILessonRepository {
-  getLessonsForWeek(startDate: Date, endDate: Date): Promise<LessonWithRelations[]>;
+  getLessonsForWeek(startDate: Date, endDate: Date, roomIds?: string[]): Promise<LessonWithRelations[]>;
   updateLessonRoom(lessonId: string, roomId: string): Promise<void>;
   updateMultipleLessonRooms(updates: Array<{ lessonId: string; roomId: string }>): Promise<void>;
   createLesson(data: CreateLessonData): Promise<Lesson>;

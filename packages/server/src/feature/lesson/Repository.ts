@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { between, eq, and } from "drizzle-orm";
+import { between, eq, and, inArray } from "drizzle-orm";
 import { database } from "../../../database/database";
 import { lessonTable } from "../../../database/schema/lesson";
 import { roomTable } from "../../../database/schema/room";
@@ -17,8 +17,8 @@ export class LessonRepository implements ILessonRepository {
     this.db = database;
   }
 
-  async getLessonsForWeek(startDate: Date, endDate: Date): Promise<LessonWithRelations[]> {
-    const lessonsWithRelations = await this.db
+  async getLessonsForWeek(startDate: Date, endDate: Date, roomIds?: string[]): Promise<LessonWithRelations[]> {
+    const query = this.db
       .select({
         lesson: lessonTable,
         room: roomTable,
@@ -26,10 +26,19 @@ export class LessonRepository implements ILessonRepository {
       })
       .from(lessonTable)
       .leftJoin(roomTable, eq(lessonTable.room_id, roomTable.id))
-      .leftJoin(classTable, eq(lessonTable.class_id, classTable.id))
-      .where(
-        between(lessonTable.start_time, startDate, endDate),
-      );
+      .leftJoin(classTable, eq(lessonTable.class_id, classTable.id));
+
+    const conditions = [between(lessonTable.start_time, startDate, endDate)];
+
+    if (roomIds && roomIds.length > 0) {
+
+      const roomFilter = inArray(lessonTable.room_id, roomIds);
+      if (roomFilter) {
+        conditions.push(roomFilter);
+      }
+    }
+
+    const lessonsWithRelations = await query.where(and(...conditions));
 
     const lessonsWithTeachers = await Promise.all(
       lessonsWithRelations.map(async (item) => {

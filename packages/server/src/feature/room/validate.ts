@@ -36,6 +36,8 @@ export const PatchRoomSchema = z.object({
 export const RoomFilterSchema = z.object({
   isEnabled: z.boolean().optional(),
   search: z.string().optional().describe("Search term for room names"),
+  building: z.string().optional().describe("Filter by building"),
+  floor: z.number().optional().describe("Filter by floor"),
 });
 
 export const GetRoomsQuerySchema = z.object({

@@ -24,15 +24,11 @@ export class PlanningInteractor implements IPlanningInteractor {
   async getWeeklyPlanning(filters: WeeklyPlanningFilters): Promise<WeeklyPlanningData> {
     const { startDate, endDate } = this.getWeekDateRange(filters.weekNumber, filters.year);
 
-    const lessons = await this.lessonRepository.getLessonsForWeek(startDate, endDate);
-
-    if (!lessons) {
-      throw LessonError.notFound();
-    }
-
-    let rooms = await this.roomRepository.getRooms({
+    const rooms = await this.roomRepository.getRooms({
       filter: {
         isEnabled: true,
+        building: filters.building,
+        floor: filters.floor,
       },
     });
 
@@ -40,16 +36,15 @@ export class PlanningInteractor implements IPlanningInteractor {
       throw RoomError.notFound();
     }
 
-    if (filters.building || filters.floor !== undefined) {
-      rooms = rooms.filter(room => {
-        if (filters.building && room.building !== filters.building) {
-          return false;
-        }
-        if (filters.floor !== undefined && room.floor !== filters.floor) {
-          return false;
-        }
-        return true;
-      });
+    const roomIds = rooms.map(room => room.id);
+    const lessons = await this.lessonRepository.getLessonsForWeek(
+      startDate,
+      endDate,
+      filters.building || filters.floor !== undefined ? roomIds : undefined,
+    );
+
+    if (!lessons) {
+      throw LessonError.notFound();
     }
 
     return {

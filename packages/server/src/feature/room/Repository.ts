@@ -58,6 +58,14 @@ export class RoomRepository implements IRoomRepository {
     if (filter.isEnabled !== undefined) {
       query.where(eq(roomTable.is_enabled, filter.isEnabled));
     }
+
+    if (filter.building) {
+      query.where(eq(roomTable.building, filter.building));
+    }
+
+    if (filter.floor !== undefined) {
+      query.where(eq(roomTable.floor, filter.floor));
+    }
   }
 
   async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
