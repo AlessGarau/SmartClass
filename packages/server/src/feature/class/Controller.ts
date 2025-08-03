@@ -3,7 +3,7 @@ import { Service } from "typedi";
 import { ClassInteractor } from "./Interactor";
 import { ClassMapper } from "./Mapper";
 import { ClassMessage } from "./message";
-import { Class, ClassFilterSchema, ClassIdParamsSchema, CreateClassParams, CreateClassSchema, GetClassesQuerySchema } from "./validate";
+import { Class, ClassFilterSchema, ClassIdParamsSchema, CreateClassParams, CreateClassSchema, GetClassesQuerySchema, PatchClassSchema, PutClassSchema } from "./validate";
 
 @Service()
 export class ClassController {
@@ -51,5 +51,31 @@ export class ClassController {
     return reply.status(200).send({
       data: this._mapper.toGetTotalClassesResponse(total),
     });
+  }
+
+  async putClass(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = ClassIdParamsSchema.parse(req.params);
+    const classUpdateParams = PutClassSchema.parse(req.body);
+    const updatedClass = await this._interactor.putClass(id, classUpdateParams);
+    return reply.status(200).send({
+      data: this._mapper.toGetClassResponse(updatedClass),
+      message: ClassMessage.UPDATE_SUCCESS,
+    });
+  }
+
+  async patchClass(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = ClassIdParamsSchema.parse(req.params);
+    const classUpdateParams = PatchClassSchema.parse(req.body);
+    const updatedClass = await this._interactor.patchClass(id, classUpdateParams);
+    return reply.status(200).send({
+      data: this._mapper.toGetClassResponse(updatedClass),
+      message: ClassMessage.UPDATE_SUCCESS,
+    });
+  }
+
+  async deleteClass(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = ClassIdParamsSchema.parse(req.params);
+    await this._interactor.deleteClass(id);
+    return reply.status(204).send();
   }
 }

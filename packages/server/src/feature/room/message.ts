@@ -6,4 +6,5 @@ export enum RoomMessage {
   NOT_FOUND = "Room not found",
   ALREADY_EXISTS = "Room already exists",
   INVALID_DATA = "Invalid data",
+  DELETION_FAILED = "Failed to delete room",
 };

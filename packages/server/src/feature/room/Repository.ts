@@ -160,6 +160,13 @@ export class RoomRepository implements IRoomRepository {
   }
 
   async deleteRoom(id: string): Promise<void> {
-    await this._db.delete(roomTable).where(eq(roomTable.id, id));
+    try {
+      await this._db.delete(roomTable).where(eq(roomTable.id, id));
+    } catch (error: any) {
+      throw RoomError.deletionFailed(
+        `Failed to delete room with ID "${id}". The room is linked to courses. Please delete all the courses associated with this room or change their associated room before deleting this room.`,
+        error,
+      );
+    }
   }
 }

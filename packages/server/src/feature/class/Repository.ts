@@ -5,7 +5,7 @@ import { database } from "../../../database/database";
 import { classTable } from "../../../database/schema";
 import { ClassError } from "../../middleware/error/classError";
 import { IClassRepository } from "./interface/IRepository";
-import { Class, ClassFilter, CreateClassParams, GetClassesQueryParams } from "./validate";
+import { Class, ClassFilter, CreateClassParams, GetClassesQueryParams, PatchClassParams, PutClassParams } from "./validate";
 
 @Service()
 export class ClassRepository implements IClassRepository {
@@ -88,5 +88,65 @@ export class ClassRepository implements IClassRepository {
 
     const result = await query;
     return Number(result[0].count);
+  }
+
+  async putClass(id: string, classUpdateParams: PutClassParams): Promise<Class> {
+    try {
+      const updatedClass = await this._db
+        .update(classTable)
+        .set({
+          name: classUpdateParams.name,
+          student_count: classUpdateParams.student_count,
+        })
+        .where(eq(classTable.id, id))
+        .returning();
+
+      if (updatedClass.length === 0) {
+        throw ClassError.updateFailed(`Failed to update class with ID "${id}".`);
+      }
+      return updatedClass[0];
+    } catch (error: any) {
+      if (error.cause.code === "23505") {
+        throw ClassError.alreadyExists(
+          `Class name "${classUpdateParams.name}" already exists.`,
+        );
+      }
+      throw ClassError.updateFailed(
+        "Unexpected error during class update",
+        error,
+      );
+    }
+  }
+
+  async patchClass(
+    id: string,
+    classUpdateParams: PatchClassParams,
+  ): Promise<Class> {
+    try {
+      const result = await this._db
+        .update(classTable)
+        .set(classUpdateParams)
+        .where(eq(classTable.id, id))
+        .returning();
+
+      if (result.length === 0) {
+        throw ClassError.updateFailed(`Failed to update class with ID "${id}".`);
+      }
+      return result[0];
+    } catch (error: any) {
+      if (error.cause.code === "23505") {
+        throw ClassError.alreadyExists(
+          `Class name "${classUpdateParams.name}" already exists.`,
+        );
+      }
+      throw ClassError.updateFailed(
+        "Unexpected error during class update",
+        error,
+      );
+    }
+  }
+
+  async deleteClass(id: string): Promise<void> {
+    await this._db.delete(classTable).where(eq(classTable.id, id));
   }
 }
