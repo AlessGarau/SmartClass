@@ -10,6 +10,7 @@ import { WeeklyPlanningData, ImportResult, ImportError, ImportedLesson, Imported
 import { readFileSync } from "fs";
 import { join } from "path";
 import * as XLSX from "xlsx";
+import { OptimizationService } from "../../services/OptimizationService";
 
 @Service()
 export class PlanningInteractor implements IPlanningInteractor {
@@ -17,6 +18,7 @@ export class PlanningInteractor implements IPlanningInteractor {
     private roomRepository: RoomRepository,
     private lessonRepository: LessonRepository,
     private classRepository: ClassRepository,
+    private optimizationService: OptimizationService,
   ) { }
 
   async getWeeklyPlanning(filters: WeeklyPlanningFilters): Promise<WeeklyPlanningData> {
@@ -86,6 +88,8 @@ export class PlanningInteractor implements IPlanningInteractor {
     const errors: ImportError[] = [];
     let importedCount = 0;
     let skippedCount = 0;
+    let earliestDate: Date | null = null;
+    let latestDate: Date | null = null;
 
     const workbook = XLSX.read(fileBuffer, { type: "buffer" });
     if (workbook.SheetNames.length === 0) {
@@ -191,6 +195,13 @@ export class PlanningInteractor implements IPlanningInteractor {
             room_id: null,
           });
           importedCount++;
+
+          if (!earliestDate || startDateTime < earliestDate) {
+            earliestDate = startDateTime;
+          }
+          if (!latestDate || endDateTime > latestDate) {
+            latestDate = endDateTime;
+          }
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -200,6 +211,16 @@ export class PlanningInteractor implements IPlanningInteractor {
           });
         }
       }
+    }
+
+    if (importedCount > 0 && earliestDate && latestDate) {
+      this.optimizationService.optimizeDateRange(earliestDate, latestDate)
+        .then(() => {
+          console.log("Room optimization completed successfully");
+        })
+        .catch((error) => {
+          console.error("Room optimization failed:", error);
+        });
     }
 
     return {

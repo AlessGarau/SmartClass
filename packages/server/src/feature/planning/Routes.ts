@@ -65,17 +65,6 @@ export class PlanningRoutes {
           summary: "Import lessons from Excel template",
           description: "Upload an Excel file to import lessons into the system (Admin only)",
           consumes: ["multipart/form-data"],
-          body: {
-            type: "object",
-            required: ["file"],
-            properties: {
-              file: {
-                type: "string",
-                format: "binary",
-                description: "Excel file (.xlsx) containing lessons to import",
-              },
-            },
-          },
           response: {
             200: {
               description: "Lessons imported successfully",
