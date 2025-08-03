@@ -1,15 +1,17 @@
-import "reflect-metadata";
-import Fastify from "fastify";
-import dotenv from "dotenv";
-import fjwt from "@fastify/jwt";
 import fCookie from "@fastify/cookie";
+import fastifyCors from "@fastify/cors";
+import fjwt from "@fastify/jwt";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
-import fastifyCors from "@fastify/cors";
-import { ErrorMiddleware } from "./middleware/error/error.handler";
-import { RoomRoutes } from "./feature/room/Routes";
-import { ReportingRoutes } from "./feature/reporting/Routes";
+import dotenv from "dotenv";
+import Fastify from "fastify";
+import qs from "qs";
+import "reflect-metadata";
+import Container from "typedi";
+import { ClassRoutes } from "./feature/class/Routes";
 import { EquipmentRoutes } from "./feature/equipment/Routes";
+import { ReportingRoutes } from "./feature/reporting/Routes";
+import { RoomRoutes } from "./feature/room/Routes";
 import { UserRoutes } from "./feature/user/Routes";
 import { WeatherRoutes } from "./feature/weather/Routes";
 import {
@@ -17,16 +19,15 @@ import {
   authMiddleware,
   teacherMiddleware,
 } from "./middleware/auth.middleware";
-import Container from "typedi";
+import { ErrorMiddleware } from "./middleware/error/error.handler";
 import { SensorDataCollector } from "./services/SensorDataCollector";
-import qs from "qs";
 
 dotenv.config();
 
 const setupServer = async () => {
   const server = Fastify({
     querystringParser: str => qs.parse(str),
-  }); 
+  });
 
   await server.register(fastifyCors, {
     origin: ["http://localhost:5173", "http://smart-class-client-dev:5173"],
@@ -102,6 +103,8 @@ const setupServer = async () => {
 
   const roomRoutes = new RoomRoutes(server);
   roomRoutes.registerRoutes();
+  const classRoutes = new ClassRoutes(server);
+  classRoutes.registerRoutes();
   const reportingRoutes = new ReportingRoutes(server);
   reportingRoutes.registerRoutes();
   const equipmentRoutes = new EquipmentRoutes(server);

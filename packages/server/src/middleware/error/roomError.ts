@@ -46,4 +46,12 @@ export class RoomError extends Error {
       statusCode: 409,
     });
   }
+
+  static deletionFailed(message?: string, cause?: Error): RoomError {
+    return new RoomError({
+      message: message || ErrorMessageEnum.Room.DELETION_FAILED,
+      statusCode: 500,
+      cause,
+    });
+  }
 } 

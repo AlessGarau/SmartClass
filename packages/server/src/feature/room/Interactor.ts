@@ -5,6 +5,7 @@ import { RoomRepository } from "./Repository";
 import {
   CreateRoomParams,
   GetRoomsQueryParams,
+  PatchRoomParams,
   PutRoomParams,
   Room,
   RoomFilter,
@@ -12,7 +13,7 @@ import {
 
 @Service()
 export class RoomInteractor implements IRoomInteractor {
-  constructor(private _repository: RoomRepository) {}
+  constructor(private _repository: RoomRepository) { }
 
   async createRoom(CreateRoomCreateParams: CreateRoomParams): Promise<Room> {
     const room: Room = await this._repository.create(CreateRoomCreateParams);
@@ -33,7 +34,7 @@ export class RoomInteractor implements IRoomInteractor {
   async getRoom(id: string): Promise<Room> {
     const room: Room | null = await this._repository.getRoom(id);
     if (!room) {
-      throw RoomError.notFound();
+      throw RoomError.notFound(`Room with ID "${id}" not found.`);
     }
     return room;
   }
@@ -41,7 +42,7 @@ export class RoomInteractor implements IRoomInteractor {
   async putRoom(id: string, putRoomParams: PutRoomParams): Promise<Room> {
     const existingRoom: Room | null = await this._repository.getRoom(id);
     if (!existingRoom) {
-      throw RoomError.notFound();
+      throw RoomError.notFound(`Room with ID "${id}" not found.`);
     }
     const updatedRoom: Room = await this._repository.putRoom(id, putRoomParams);
     if (!updatedRoom) {
@@ -50,18 +51,12 @@ export class RoomInteractor implements IRoomInteractor {
     return updatedRoom;
   }
 
-  async patchRoom(
-    id: string,
-    patchRoomParams: Partial<PutRoomParams>,
-  ): Promise<Room> {
+  async patchRoom(id: string, patchRoomParams: PatchRoomParams): Promise<Room> {
     const existingRoom: Room | null = await this._repository.getRoom(id);
     if (!existingRoom) {
-      throw RoomError.notFound();
+      throw RoomError.notFound(`Room with ID "${id}" not found.`);
     }
-    const updatedRoom: Room = await this._repository.patchRoom(
-      id,
-      patchRoomParams,
-    );
+    const updatedRoom: Room = await this._repository.patchRoom(id, patchRoomParams);
     if (!updatedRoom) {
       throw RoomError.updateFailed();
     }
@@ -71,7 +66,7 @@ export class RoomInteractor implements IRoomInteractor {
   async deleteRoom(id: string): Promise<void> {
     const room = await this._repository.getRoom(id);
     if (!room) {
-      throw RoomError.notFound();
+      throw RoomError.notFound(`Room with ID "${id}" not found.`);
     }
     await this._repository.deleteRoom(id);
   }

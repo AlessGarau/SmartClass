@@ -1,0 +1,308 @@
+import { FastifyInstance } from "fastify";
+import Container from "typedi";
+import zodToJsonSchema from "zod-to-json-schema";
+import { ClassController } from "./Controller";
+import { ClassesCountSchema, ClassFilterSchema, ClassIdParamsSchema, ClassSchema, CreateClassSchema, GetClassesQuerySchema, PatchClassSchema, PutClassSchema } from "./validate";
+
+export class ClassRoutes {
+  private controller: ClassController;
+
+  constructor(private server: FastifyInstance) {
+    this.controller = Container.get(ClassController);
+  }
+
+  public registerRoutes() {
+    this.server.post(
+      "/class",
+      {
+        schema: {
+          tags: ["Class"],
+          summary: "Create a new class",
+          description: "Create a new class with the specified details",
+          body: zodToJsonSchema(CreateClassSchema),
+          response: {
+            201: {
+              description: "Class created successfully",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ClassSchema),
+                message: { type: "string" },
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            409: {
+              description: "Already Exists",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.createClass.bind(this.controller),
+    );
+
+    this.server.get(
+      "/class",
+      {
+        schema: {
+          tags: ["Class"],
+          summary: "Get all classes",
+          description: "Retrieve a list of all classes",
+          querystring: zodToJsonSchema(GetClassesQuerySchema),
+          response: {
+            200: {
+              description: "List of classes",
+              type: "object",
+              properties: {
+                data: {
+                  type: "array",
+                  items: zodToJsonSchema(ClassSchema),
+                },
+                message: { type: "string" },
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.getClasses.bind(this.controller),
+    );
+
+    this.server.get(
+      "/class/count",
+      {
+        schema: {
+          tags: ["Class"],
+          summary: "Get total count of classes",
+          description:
+            "Retrieve total number of classes matching optional filter",
+          querystring: zodToJsonSchema(ClassFilterSchema),
+          response: {
+            200: {
+              description: "Total count",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ClassesCountSchema),
+              },
+            },
+          },
+        },
+      },
+      this.controller.getClassesCount.bind(this.controller),
+    );
+
+    this.server.get(
+      "/class/:id",
+      {
+        schema: {
+          tags: ["Class"],
+          summary: "Get class by ID",
+          description: "Retrieve a class by its ID",
+          params: zodToJsonSchema(ClassIdParamsSchema),
+          response: {
+            200: {
+              description: "Class details",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ClassSchema),
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            404: {
+              description: "Room not found",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.getClass.bind(this.controller),
+    );
+
+    this.server.put(
+      "/class/:id",
+      {
+        schema: {
+          tags: ["Class"],
+          summary: "Update entire class by ID",
+          description: "Update a class entirely using its ID",
+          params: zodToJsonSchema(ClassIdParamsSchema),
+          body: zodToJsonSchema(PutClassSchema),
+          response: {
+            200: {
+              description: "Class entirely updated successfully",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ClassSchema),
+                message: { type: "string" },
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            404: {
+              description: "Room not found",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            409: {
+              description: "Conflict",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.putClass.bind(this.controller),
+    );
+
+    this.server.patch(
+      "/class/:id",
+      {
+        schema: {
+          tags: ["Class"],
+          summary: "Update class by ID",
+          description: "Update one or more fields of a class using its ID",
+          params: zodToJsonSchema(ClassIdParamsSchema),
+          body: zodToJsonSchema(PatchClassSchema),
+          response: {
+            200: {
+              description: "Class updated successfully",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ClassSchema),
+                message: { type: "string" },
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            404: {
+              description: "Room not found",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            409: {
+              description: "Conflict",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.patchClass.bind(this.controller),
+    );
+
+    this.server.delete(
+      "/class/:id",
+      {
+        schema: {
+          tags: ["Class"],
+          summary: "Delete a class by ID",
+          description: "Delete a class using its ID",
+          params: zodToJsonSchema(ClassIdParamsSchema),
+          response: {
+            204: {
+              description: "Class deleted successfully",
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            404: {
+              description: "Room not found",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.deleteClass.bind(this.controller),
+    );
+  }
+}

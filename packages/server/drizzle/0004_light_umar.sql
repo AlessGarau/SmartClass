@@ -1,0 +1,1 @@
+ALTER TABLE "class" ADD CONSTRAINT "class_name_unique" UNIQUE("name");
