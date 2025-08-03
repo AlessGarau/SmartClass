@@ -1,4 +1,4 @@
-import { and, ilike } from "drizzle-orm";
+import { and, eq, ilike, sql } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
@@ -44,5 +44,25 @@ export class ClassRepository implements IClassRepository {
 
     const result = await query;
     return result;
+  }
+
+  async getClass(id: string): Promise<Class | null> {
+    const result = await this._db
+      .select()
+      .from(classTable)
+      .where(eq(classTable.id, id))
+      .limit(1);
+    return result[0] || null;
+  }
+
+  async getClassesCount(filter: ClassFilter): Promise<number> {
+    const query = this._db
+      .select({ count: sql<number>`count(*)` })
+      .from(classTable);
+
+    this.applyFilter(filter, query);
+
+    const result = await query;
+    return Number(result[0].count);
   }
 }

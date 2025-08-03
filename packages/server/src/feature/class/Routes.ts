@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import Container from "typedi";
 import zodToJsonSchema from "zod-to-json-schema";
 import { ClassController } from "./Controller";
-import { ClassSchema, GetClassesQuerySchema } from "./validate";
+import { ClassesCountSchema, ClassFilterSchema, ClassIdParamsSchema, ClassSchema, GetClassesQuerySchema } from "./validate";
 
 export class ClassRoutes {
   private controller: ClassController;
@@ -50,6 +50,72 @@ export class ClassRoutes {
         },
       },
       this.controller.getClasses.bind(this.controller),
+    );
+
+    this.server.get(
+      "/class/count",
+      {
+        schema: {
+          tags: ["Class"],
+          summary: "Get total count of classes",
+          description:
+            "Retrieve total number of classes matching optional filter",
+          querystring: zodToJsonSchema(ClassFilterSchema),
+          response: {
+            200: {
+              description: "Total count",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ClassesCountSchema),
+              },
+            },
+          },
+        },
+      },
+      this.controller.getClassesCount.bind(this.controller),
+    );
+
+    this.server.get(
+      "/class/:id",
+      {
+        schema: {
+          tags: ["Class"],
+          summary: "Get class by ID",
+          description: "Retrieve a class by its ID",
+          params: zodToJsonSchema(ClassIdParamsSchema),
+          response: {
+            200: {
+              description: "Class details",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ClassSchema),
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            404: {
+              description: "Room not found",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.getClass.bind(this.controller),
     );
   }
 }

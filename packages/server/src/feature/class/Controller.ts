@@ -2,7 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { Service } from "typedi";
 import { ClassInteractor } from "./Interactor";
 import { ClassMapper } from "./Mapper";
-import { GetClassesQuerySchema } from "./validate";
+import { ClassFilterSchema, ClassIdParamsSchema, GetClassesQuerySchema } from "./validate";
 
 @Service()
 export class ClassController {
@@ -24,4 +24,19 @@ export class ClassController {
     });
   }
 
+  async getClass(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = ClassIdParamsSchema.parse(req.params);
+    const room = await this._interactor.getClass(id);
+    return reply.status(200).send({
+      data: this._mapper.toGetClassResponse(room),
+    });
+  }
+
+  async getClassesCount(req: FastifyRequest, reply: FastifyReply) {
+    const filter = ClassFilterSchema.parse(req.query);
+    const total = await this._interactor.getClassesCount(filter);
+    return reply.status(200).send({
+      data: this._mapper.toGetTotalClassesResponse(total),
+    });
+  }
 }
