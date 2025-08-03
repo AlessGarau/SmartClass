@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import Container from "typedi";
 import zodToJsonSchema from "zod-to-json-schema";
 import { ClassController } from "./Controller";
-import { ClassesCountSchema, ClassFilterSchema, ClassIdParamsSchema, ClassSchema, GetClassesQuerySchema } from "./validate";
+import { ClassesCountSchema, ClassFilterSchema, ClassIdParamsSchema, ClassSchema, CreateClassSchema, GetClassesQuerySchema } from "./validate";
 
 export class ClassRoutes {
   private controller: ClassController;
@@ -12,6 +12,50 @@ export class ClassRoutes {
   }
 
   public registerRoutes() {
+    this.server.post(
+      "/class",
+      {
+        schema: {
+          tags: ["Class"],
+          summary: "Create a new class",
+          description: "Create a new class with the specified details",
+          body: zodToJsonSchema(CreateClassSchema),
+          response: {
+            201: {
+              description: "Class created successfully",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ClassSchema),
+                message: { type: "string" },
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            409: {
+              description: "Already Exists",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.createClass.bind(this.controller),
+    );
+
     this.server.get(
       "/class",
       {

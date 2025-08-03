@@ -3,14 +3,38 @@ import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
 import { classTable } from "../../../database/schema";
+import { ClassError } from "../../middleware/error/classError";
 import { IClassRepository } from "./interface/IRepository";
-import { Class, ClassFilter, GetClassesQueryParams } from "./validate";
+import { Class, ClassFilter, CreateClassParams, GetClassesQueryParams } from "./validate";
 
 @Service()
 export class ClassRepository implements IClassRepository {
   private _db: NodePgDatabase<Record<string, never>>;
   constructor() {
     this._db = database;
+  }
+
+  async create(ClassCreateParams: CreateClassParams): Promise<Class> {
+    try {
+      const result = await this._db
+        .insert(classTable)
+        .values({
+          name: ClassCreateParams.name,
+          student_count: ClassCreateParams.student_count,
+        })
+        .returning();
+      return result[0];
+    } catch (error: any) {
+      if (error.cause.code === "23505") {
+        throw ClassError.alreadyExists(
+          `Class name "${ClassCreateParams.name}" already exists.`,
+        );
+      }
+      throw ClassError.creationFailed(
+        "Unexpected error during class creation",
+        error,
+      );
+    }
   }
 
   private applyFilter(filter: ClassFilter, query: any) {

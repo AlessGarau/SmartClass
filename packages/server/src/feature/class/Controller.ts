@@ -2,7 +2,8 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { Service } from "typedi";
 import { ClassInteractor } from "./Interactor";
 import { ClassMapper } from "./Mapper";
-import { ClassFilterSchema, ClassIdParamsSchema, GetClassesQuerySchema } from "./validate";
+import { ClassMessage } from "./message";
+import { Class, ClassFilterSchema, ClassIdParamsSchema, CreateClassParams, CreateClassSchema, GetClassesQuerySchema } from "./validate";
 
 @Service()
 export class ClassController {
@@ -10,6 +11,18 @@ export class ClassController {
     private _interactor: ClassInteractor,
     private _mapper: ClassMapper,
   ) { }
+
+  async createClass(req: FastifyRequest, reply: FastifyReply) {
+    const classCreateParams: CreateClassParams = CreateClassSchema.parse(req.body);
+    const createdClass: Class = await this._interactor.createClass(
+      classCreateParams,
+    );
+    return reply.status(201).send({
+      data: this._mapper.toGetClassResponse(createdClass),
+      message: ClassMessage.CREATION_SUCCESS,
+    });
+  }
+
 
   async getClasses(req: FastifyRequest, reply: FastifyReply) {
     const { limit, offset, search } = GetClassesQuerySchema.parse(req.query);
