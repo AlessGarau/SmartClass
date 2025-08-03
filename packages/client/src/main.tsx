@@ -1,47 +1,73 @@
-import './index.css'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router";
+import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import LoginPage from "./pages/LoginPage.tsx";
 import DashboardTestPage from "./pages/DashboardPage.tsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.tsx";
 import { AuthProvider } from "./contexts/auth/AuthContextProvider.tsx";
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
-
-const queryClient = new QueryClient()
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactDOM from "react-dom/client";
-import Navbar from './layout/Navbar/Navbar.tsx';
-import PlanningPage from './pages/PlanningPage.tsx';
+import Layout from "./layout/Layout.tsx";
+import PlanningPage from "./pages/PlanningPage.tsx";
 import { Toaster } from 'react-hot-toast';
 
+const queryClient = new QueryClient();
+
 const router = createBrowserRouter([
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    element: <ProtectedRoute />,
-    children: [
-      {
-        element: <Navbar />,
+    {
+        path: "/login",
+        element: <LoginPage />,
+    },
+    {
+        element: <ProtectedRoute />,
         children: [
-          {
-            path: "/",
-            element: <DashboardTestPage />,
-          },
-          {
-            path: "/planning",
-            element: <PlanningPage />,
-          },
+            {
+                element: <Layout />,
+                children: [
+                    {
+                        path: "/",
+                        element: <DashboardTestPage />,
+                    },
+                    {
+                        path: "/dashboard",
+                        element: <DashboardTestPage />,
+                    },
+                    {
+                        path: "/planning",
+                        element: <PlanningPage />,
+                    },
+                    {
+                        path: "/salles",
+                        element: (
+                            <div className="p-6">
+                                <h1 className="text-2xl font-bold">Salles</h1>
+                                <p>Page des salles en construction...</p>
+                            </div>
+                        ),
+                    },
+                    {
+                        path: "/analytics",
+                        element: (
+                            <div className="p-6">
+                                <h1 className="text-2xl font-bold">
+                                    Analytics
+                                </h1>
+                                <p>Page d'analytics en construction...</p>
+                            </div>
+                        ),
+                    },
+                    {
+                        path: "/alertes",
+                        element: (
+                            <div className="p-6">
+                                <h1 className="text-2xl font-bold">Alertes</h1>
+                                <p>Page d'alertes en construction...</p>
+                            </div>
+                        ),
+                    },
+                ],
+            },
         ],
-      },
-    ],
-  },
+    },
 ]);
 
 const root = document.getElementById("root")!;
