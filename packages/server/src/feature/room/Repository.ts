@@ -59,11 +59,11 @@ export class RoomRepository implements IRoomRepository {
       query.where(eq(roomTable.is_enabled, filter.isEnabled));
     }
 
-    if (filter.building) {
+    if (filter?.building !== undefined) {
       query.where(eq(roomTable.building, filter.building));
     }
 
-    if (filter.floor !== undefined) {
+    if (filter?.floor !== undefined) {
       query.where(eq(roomTable.floor, filter.floor));
     }
   }
@@ -175,7 +175,7 @@ export class RoomRepository implements IRoomRepository {
       .from(roomTable)
       .where(eq(roomTable.is_enabled, true))
       .orderBy(roomTable.building);
-    
+
     return result.map(row => row.building);
   }
 
@@ -185,7 +185,7 @@ export class RoomRepository implements IRoomRepository {
       .from(roomTable)
       .where(eq(roomTable.is_enabled, true))
       .orderBy(roomTable.floor);
-    
+
     return result.map(row => row.floor);
   }
 }
