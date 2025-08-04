@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import Button from "../components/Button/Button";
 import PlusIcon from "../assets/icons/add_icon.svg"
 import DownloadIcon from "../assets/icons/download_icon.svg"
@@ -125,7 +125,7 @@ const PlanningPage = () => {
     };
 
     const handleBuildingChange = (value: string) => {
-        setFilters(prev => ({ ...prev, building: value || undefined }));
+        setFilters(prev => ({ ...prev, building: value ? value : undefined }));
     };
 
     const handleFloorChange = (value: number) => {
