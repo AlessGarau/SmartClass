@@ -23,14 +23,14 @@ async function main() {
   const rooms = await database
     .insert(schema.roomTable)
     .values([
-      { name: "Room 101", capacity: 25, is_enabled: true },
-      { name: "Room 102", capacity: 30, is_enabled: true },
-      { name: "Room 103", capacity: 28, is_enabled: false }, // Under maintenance
-      { name: "Science Lab", capacity: 20, is_enabled: true },
-      { name: "Computer Lab", capacity: 24, is_enabled: true },
-      { name: "Library", capacity: 50, is_enabled: true },
-      { name: "Auditorium", capacity: 100, is_enabled: true },
-      { name: "Art Studio", capacity: 18, is_enabled: true },
+      { name: "Room 101", capacity: 25, is_enabled: true, building: "batA", floor: 1 },
+      { name: "Room 102", capacity: 30, is_enabled: true, building: "batA", floor: 1 },
+      { name: "Room 103", capacity: 28, is_enabled: false, building: "batA", floor: 1 }, // Under maintenance
+      { name: "Science Lab", capacity: 20, is_enabled: true, building: "batB", floor: 2 },
+      { name: "Computer Lab", capacity: 24, is_enabled: true, building: "batB", floor: 2 },
+      { name: "Library", capacity: 50, is_enabled: true, building: "batC", floor: 0 },
+      { name: "Auditorium", capacity: 100, is_enabled: true, building: "batB", floor: 0 },
+      { name: "Art Studio", capacity: 18, is_enabled: true, building: "batC", floor: 2 },
     ])
     .returning();
 

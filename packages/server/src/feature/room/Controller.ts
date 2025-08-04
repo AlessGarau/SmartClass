@@ -33,12 +33,14 @@ export class RoomController {
   }
 
   async getRooms(req: FastifyRequest, reply: FastifyReply) {
-    const { limit, offset, isEnabled, search } = GetRoomsQuerySchema.parse(req.query);
+    const { limit, offset, isEnabled, search, building, floor } = GetRoomsQuerySchema.parse(req.query);
     const rooms = await this._interactor.getRooms({
       limit,
       offset,
       isEnabled,
       search,
+      building,
+      floor,
     });
     return reply.status(200).send({
       data: this._mapper.toGetRoomsResponse(rooms),

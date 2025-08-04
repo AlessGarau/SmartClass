@@ -4,6 +4,8 @@ export const dbRoomSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   capacity: z.number(),
+  building: z.string().max(50),
+  floor: z.number().int().nonnegative().default(0),
   is_enabled: z.boolean(),
 });
 
@@ -11,30 +13,40 @@ export const RoomSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   capacity: z.number(),
+  building: z.string().max(50),
+  floor: z.number().int().nonnegative().default(0),
   isEnabled: z.boolean(),
 });
 
 export const CreateRoomSchema = z.object({
   name: z.string().min(4),
   capacity: z.number().min(1),
+  building: z.string(),
+  floor: z.number().min(0),
   isEnabled: z.boolean().default(true),
 });
 
 export const PutRoomSchema = z.object({
   name: z.string().min(4),
   capacity: z.number().min(1),
+  building: z.string(),
+  floor: z.number().min(0),
   isEnabled: z.boolean(),
 });
 
 export const PatchRoomSchema = z.object({
   name: z.string().min(4).optional(),
   capacity: z.number().min(1).optional(),
+  building: z.string().optional(),
+  floor: z.number().min(0).optional(),
   isEnabled: z.boolean().optional(),
 });
 
 export const RoomFilterSchema = z.object({
   isEnabled: z.boolean().optional(),
   search: z.string().optional().describe("Search term for room names"),
+  building: z.string().optional().describe("Filter by building"),
+  floor: z.number().optional().describe("Filter by floor"),
 });
 
 export const GetRoomsQuerySchema = z.object({
@@ -52,6 +64,8 @@ export const GetRoomsQuerySchema = z.object({
     .describe("Number of rooms to skip"),
   isEnabled: z.boolean().optional(),
   search: z.string().optional().describe("Search term for room names"),
+  building: z.string().optional().describe("Filter by building"),
+  floor: z.number().optional().describe("Filter by floor"),
 });
 
 export const RoomIdParamsSchema = z.object({

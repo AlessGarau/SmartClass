@@ -8,6 +8,8 @@ export class RoomMapper implements IMapper {
       id: room.id,
       name: room.name,
       capacity: room.capacity,
+      building: room.building,
+      floor: room.floor,
       isEnabled: room.isEnabled,
     }));
   }
@@ -17,6 +19,8 @@ export class RoomMapper implements IMapper {
       id: room.id,
       name: room.name,
       capacity: room.capacity,
+      building: room.building,
+      floor: room.floor,
       isEnabled: room.isEnabled,
     };
   }

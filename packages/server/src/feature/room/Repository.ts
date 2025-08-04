@@ -27,6 +27,8 @@ export class RoomRepository implements IRoomRepository {
       id: room.id,
       name: room.name,
       capacity: room.capacity,
+      building: room.building,
+      floor: room.floor,
       isEnabled: room.is_enabled,
     };
   }
@@ -38,6 +40,14 @@ export class RoomRepository implements IRoomRepository {
 
     if (filter.search) {
       conditions.push(ilike(roomTable.name, `%${filter.search}%`));
+    }
+
+    if (filter.building) {
+      conditions.push(ilike(roomTable.building, `%${filter.building}%`));
+    }
+
+    if (filter.floor !== undefined) {
+      conditions.push(eq(roomTable.floor, filter.floor));
     }
 
     if (filter.isEnabled !== undefined) {
@@ -56,6 +66,8 @@ export class RoomRepository implements IRoomRepository {
         .values({
           name: RoomCreateParams.name,
           capacity: RoomCreateParams.capacity,
+          building: RoomCreateParams.building,
+          floor: RoomCreateParams.floor,
           is_enabled: RoomCreateParams.isEnabled,
         })
         .returning();
@@ -79,6 +91,8 @@ export class RoomRepository implements IRoomRepository {
     this.applyFilter({
       search: params.search,
       isEnabled: params.isEnabled,
+      building: params.building,
+      floor: params.floor,
     }, query);
 
     if (params.limit !== undefined) {
@@ -125,6 +139,8 @@ export class RoomRepository implements IRoomRepository {
         .set({
           name: roomUpdateParams.name,
           capacity: roomUpdateParams.capacity,
+          building: roomUpdateParams.building,
+          floor: roomUpdateParams.floor,
           is_enabled: roomUpdateParams.isEnabled,
         })
         .where(eq(roomTable.id, id))
@@ -159,6 +175,12 @@ export class RoomRepository implements IRoomRepository {
       }
       if (roomUpdateParams.isEnabled !== undefined) {
         updateData.is_enabled = roomUpdateParams.isEnabled;
+      }
+      if (roomUpdateParams.building !== undefined) {
+        updateData.building = roomUpdateParams.building;
+      }
+      if (roomUpdateParams.floor !== undefined) {
+        updateData.floor = roomUpdateParams.floor;
       }
 
       const result = await this._db
