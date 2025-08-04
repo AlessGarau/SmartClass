@@ -22,8 +22,6 @@ export const WeekPlanningResultSchema = z.object({
   classrooms: z.array(RoomWithPlannedClassesSchema),
 });
 
-export const WeeklyPlanningParamsSchema = z.object({});
-
 export const WeeklyPlanningQuerySchema = z.object({
   startDate: z.string().datetime(),
   endDate: z.string().datetime(),
@@ -51,7 +49,6 @@ export const WeeklyPlanningDataSchema = z.object({
 export type PlannedClass = z.infer<typeof PlannedClassSchema>;
 export type RoomWithPlannedClasses = z.infer<typeof RoomWithPlannedClassesSchema>;
 export type WeeklyPlanningData = z.infer<typeof WeeklyPlanningDataSchema>;
-export type WeeklyPlanningParams = z.infer<typeof WeeklyPlanningParamsSchema>;
 export type WeeklyPlanningQuery = z.infer<typeof WeeklyPlanningQuerySchema>;
 export type WeeklyPlanningResult = z.infer<typeof WeekPlanningResultSchema>;
 export type OptimizePlanningParams = z.infer<typeof OptimizePlanningParamsSchema>;

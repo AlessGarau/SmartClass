@@ -193,8 +193,8 @@ export class PlanningInteractor implements IPlanningInteractor {
 
     if (importedCount > 0 && earliestDate && latestDate) {
       this.optimizationService.optimizeDateRange(earliestDate, latestDate)
-        .catch(() => {
-          // Handle error appropriately, maybe log to a proper logging service
+        .catch((error) => {
+          console.error("Failed to optimize date range after lesson import:", error);
         });
     }
 
