@@ -9,7 +9,8 @@ export interface IPlanningInteractor {
 }
 
 export interface WeeklyPlanningFilters {
-  weekNumber: number;
+  startDate: string;
+  endDate: string;
   year: number;
   building?: string;
   floor?: number;

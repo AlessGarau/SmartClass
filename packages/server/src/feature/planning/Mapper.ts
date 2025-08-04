@@ -9,7 +9,8 @@ export class PlanningMapper implements IPlanningMapper {
   toWeekPlanningData(
     lessons: LessonWithRelations[],
     rooms: Room[],
-    weekNumber: number,
+    startDate: Date,
+    endDate: Date,
     year: number,
   ): WeeklyPlanningResult {
 
@@ -24,11 +25,12 @@ export class PlanningMapper implements IPlanningMapper {
     });
 
     const classrooms = rooms
-      .filter(room => room.is_enabled)
+      .filter(room => room.isEnabled)
       .map(room => this.toClassroom(room, roomLessonsMap.get(room.id) || []));
 
     return {
-      weekNumber,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
       year,
       classrooms,
     };
@@ -56,6 +58,7 @@ export class PlanningMapper implements IPlanningMapper {
       capacity: room.capacity,
       building: room.building,
       floor: room.floor,
+      isEnabled: room.isEnabled,
       plannedClasses,
     };
   }

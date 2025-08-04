@@ -52,7 +52,10 @@ export class LessonRepository implements ILessonRepository {
 
         return {
           ...item.lesson,
-          room: item.room,
+          room: item.room ? {
+            ...item.room,
+            isEnabled: item.room.is_enabled,
+          } : null,
           class: item.class,
           users: teachers.map(t => t.user).filter(Boolean) as User[],
         };

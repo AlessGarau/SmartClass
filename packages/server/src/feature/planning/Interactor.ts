@@ -22,14 +22,13 @@ export class PlanningInteractor implements IPlanningInteractor {
   ) { }
 
   async getWeeklyPlanning(filters: WeeklyPlanningFilters): Promise<WeeklyPlanningData> {
-    const { startDate, endDate } = this.getWeekDateRange(filters.weekNumber, filters.year);
+    const startDate = new Date(filters.startDate);
+    const endDate = new Date(filters.endDate);
 
     const rooms = await this.roomRepository.getRooms({
-      filter: {
-        isEnabled: true,
-        building: filters.building,
-        floor: filters.floor,
-      },
+      isEnabled: true,
+      building: filters.building,
+      floor: filters.floor,
     });
 
     if (!rooms) {
@@ -50,28 +49,12 @@ export class PlanningInteractor implements IPlanningInteractor {
     return {
       lessons,
       rooms,
-      weekNumber: filters.weekNumber,
+      startDate,
+      endDate,
       year: filters.year,
     };
   }
 
-  private getWeekDateRange(weekNumber: number, year: number): { startDate: Date; endDate: Date } {
-    const firstDayOfYear = new Date(year, 0, 1);
-
-    const firstMonday = new Date(firstDayOfYear);
-    const dayOfWeek = firstMonday.getDay();
-    const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek) % 7;
-    firstMonday.setDate(firstMonday.getDate() + daysUntilMonday);
-
-    const startDate = new Date(firstMonday);
-    startDate.setDate(startDate.getDate() + (weekNumber - 1) * 7);
-
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 4);
-    endDate.setHours(23, 59, 59, 999);
-
-    return { startDate, endDate };
-  }
 
   async getLessonTemplate(): Promise<Buffer> {
     const templatePath = join(__dirname, "../../templates/lesson_import_template.xlsx");
@@ -210,11 +193,8 @@ export class PlanningInteractor implements IPlanningInteractor {
 
     if (importedCount > 0 && earliestDate && latestDate) {
       this.optimizationService.optimizeDateRange(earliestDate, latestDate)
-        .then(() => {
-          console.log("Room optimization completed successfully");
-        })
-        .catch((error) => {
-          console.error("Room optimization failed:", error);
+        .catch(() => {
+          // Handle error appropriately, maybe log to a proper logging service
         });
     }
 

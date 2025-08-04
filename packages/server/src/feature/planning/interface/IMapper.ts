@@ -1,7 +1,8 @@
 import type { LessonWithRelations } from "../../lesson/interface/IRepository";
-import type { Classroom, WeekPlanningData } from "./IInteractor";
+import type { Room } from "../../room/validate";
+import type { RoomWithPlannedClasses, WeeklyPlanningResult } from "../validate";
 
 export interface IPlanningMapper {
-  toWeekPlanningData(lessons: LessonWithRelations[], rooms: any[], weekNumber: number, year: number): WeekPlanningData;
-  toClassroom(room: any, lessons: LessonWithRelations[]): Classroom;
+  toWeekPlanningData(lessons: LessonWithRelations[], rooms: Room[], startDate: Date, endDate: Date, year: number): WeeklyPlanningResult;
+  toClassroom(room: Room, lessons: LessonWithRelations[]): RoomWithPlannedClasses;
 }

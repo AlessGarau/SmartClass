@@ -3,7 +3,6 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { PlanningInteractor } from "./Interactor";
 import { PlanningMapper } from "./Mapper";
 import {
-  WeeklyPlanningParamsSchema,
   WeeklyPlanningQuerySchema,
   FileUploadSchema,
 } from "./validate";
@@ -18,13 +17,12 @@ export class PlanningController {
   ) { }
 
   async getWeeklyPlanning(request: FastifyRequest, reply: FastifyReply) {
-    const { weekNumber } = WeeklyPlanningParamsSchema.parse(request.params);
-
     const query = WeeklyPlanningQuerySchema.parse(request.query);
     const year = query.year || new Date().getFullYear();
 
     const planningResult = await this.planningInteractor.getWeeklyPlanning({
-      weekNumber,
+      startDate: query.startDate,
+      endDate: query.endDate,
       year,
       building: query.building,
       floor: query.floor,
@@ -33,7 +31,8 @@ export class PlanningController {
     const planningData = this.planningMapper.toWeekPlanningData(
       planningResult.lessons,
       planningResult.rooms,
-      planningResult.weekNumber,
+      planningResult.startDate,
+      planningResult.endDate,
       planningResult.year,
     );
 

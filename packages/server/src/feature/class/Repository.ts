@@ -168,4 +168,19 @@ export class ClassRepository implements IClassRepository {
   async deleteClass(id: string): Promise<void> {
     await this._db.delete(classTable).where(eq(classTable.id, id));
   }
+
+  async getClassByName(name: string): Promise<Class> {
+    const result = await this._db
+      .select()
+      .from(classTable)
+      .where(eq(classTable.name, name))
+      .limit(1);
+
+    if (result.length === 0) {
+      throw ClassError.notFound(`Class with name "${name}" not found.`);
+    }
+
+    return this.transformClass(result[0]);
+
+  }
 }

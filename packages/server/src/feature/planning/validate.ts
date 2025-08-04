@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RoomResponseSchema, RoomSchema } from "../room/validate";
+import { RoomSchema } from "../room/validate";
 
 export const PlannedClassSchema = z.object({
   id: z.string().uuid(),
@@ -11,21 +11,22 @@ export const PlannedClassSchema = z.object({
   dayOfWeek: z.enum(["LUN", "MAR", "MER", "JEU", "VEN"]),
 });
 
-export const RoomWithPlannedClassesSchema = RoomResponseSchema.extend({
+export const RoomWithPlannedClassesSchema = RoomSchema.extend({
   plannedClasses: z.array(PlannedClassSchema),
 });
 
 export const WeekPlanningResultSchema = z.object({
-  weekNumber: z.number().min(1).max(53),
+  startDate: z.string(),
+  endDate: z.string(),
   year: z.number().min(2024).max(2100),
   classrooms: z.array(RoomWithPlannedClassesSchema),
 });
 
-export const WeeklyPlanningParamsSchema = z.object({
-  weekNumber: z.number().min(1).max(53),
-});
+export const WeeklyPlanningParamsSchema = z.object({});
 
 export const WeeklyPlanningQuerySchema = z.object({
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime(),
   year: z.number().min(2024).max(2100).optional(),
   building: z.string().optional(),
   floor: z.number().optional(),
@@ -42,7 +43,8 @@ export const OptimizePlanningBodySchema = z.object({
 export const WeeklyPlanningDataSchema = z.object({
   lessons: z.array(z.any()),
   rooms: z.array(RoomSchema),
-  weekNumber: z.number().min(1).max(53),
+  startDate: z.date(),
+  endDate: z.date(),
   year: z.number().min(2024).max(2100),
 });
 

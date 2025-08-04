@@ -7,14 +7,16 @@ import PlannedClassSlot from "../PlannedClassSlot/PlannedClassSlot";
 import { planningQueryOptions } from "../../../api/queryOptions";
 
 interface PlanningContainerProps {
-    weekNumber: number;
+    startDate: string;
+    endDate: string;
     year: number;
     buildingFilter?: string;
     floorFilter?: number;
 }
 
 const PlanningContainer: React.FC<PlanningContainerProps> = ({
-    weekNumber,
+    startDate,
+    endDate,
     year,
     buildingFilter,
     floorFilter
@@ -22,7 +24,8 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
     const [currentWeek, setCurrentWeek] = useState<WeekDate[]>([]);
 
     const filters: PlanningFilters = {
-        weekNumber,
+        startDate,
+        endDate,
         year,
         building: buildingFilter,
         floor: floorFilter
@@ -35,8 +38,14 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
     const weekPlanningData = planningResponse?.data || null;
 
     useEffect(() => {
+        // Calculate week number from startDate for getDatesOfWeek
+        const start = new Date(startDate);
+        const startOfYear = new Date(start.getFullYear(), 0, 1);
+        const days = Math.floor((start.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
+        const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+        
         setCurrentWeek(getDatesOfWeek(weekNumber, year));
-    }, [weekNumber, year]);
+    }, [startDate, year]);
 
     if (error) {
         console.error('Error loading week planning:', error);

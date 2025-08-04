@@ -25,3 +25,16 @@ export const getCurrentWeekNumber = () => {
 export const getWeeksInYear = (year: number): number => {
     return getISOWeeksInYear(new Date(year, 0, 1));
 };
+
+export const getWeekDateRange = (weekNumber: number, year: number) => {
+    const startOfYear = new Date(year, 0, 1);
+    const targetWeek = setISOWeek(startOfYear, weekNumber);
+    const monday = startOfISOWeek(targetWeek);
+    const friday = addDays(monday, 4);
+    
+    return {
+        startDate: monday,
+        endDate: friday,
+        label: `${format(monday, 'dd-MMM-yyyy', { locale: fr })} - ${format(friday, 'dd-MMM-yyyy', { locale: fr })}`
+    };
+};

@@ -18,7 +18,8 @@ export interface Classroom {
 }
 
 export interface WeekPlanningData {
-    weekNumber: number;
+    startDate: string;
+    endDate: string;
     year: number;
     classrooms: Classroom[];
 }
@@ -42,7 +43,8 @@ export interface DayScheduleConfig {
 }
 
 export interface PlanningFilters {
-    weekNumber: number;
+    startDate: string;
+    endDate: string;
     year: number;
     building?: string;
     floor?: number;

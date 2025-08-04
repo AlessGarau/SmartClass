@@ -3,7 +3,6 @@ import Container from "typedi";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { PlanningController } from "./Controller";
 import {
-  WeeklyPlanningParamsSchema,
   WeeklyPlanningQuerySchema,
   WeeklyPlanningResponseSchema,
   ImportLessonResponseSchema,
@@ -19,13 +18,12 @@ export class PlanningRoutes {
 
   public registerRoutes() {
     this.server.get(
-      "/planning/:weekNumber",
+      "/planning",
       {
         schema: {
           tags: ["Planning"],
           summary: "Get weekly planning",
-          description: "Retrieve the planning for a specific week with optional building and floor filters (Admin only)",
-          params: zodToJsonSchema(WeeklyPlanningParamsSchema),
+          description: "Retrieve the planning for a specific date range with optional building and floor filters (Admin only)",
           querystring: zodToJsonSchema(WeeklyPlanningQuerySchema),
           response: {
             200: {

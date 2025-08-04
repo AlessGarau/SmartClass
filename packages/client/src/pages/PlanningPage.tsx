@@ -6,7 +6,7 @@ import FilterContainer from "../components/FilterContainer/FilterContainer";
 import Dropdown from "../components/Dropdown/Dropdown";
 import PlanningContainer from "../components/Planning/PlanningContainer/PlanningContainer";
 import ColorLegend from "../components/ColorLegend/ColorLegend";
-import { getCurrentWeekNumber, getWeeksInYear } from "../utils/dates";
+import { getCurrentWeekNumber, getWeeksInYear, getWeekDateRange } from "../utils/dates";
 import type { PlanningFilters } from "../types/Planning";
 import { PLANNING_LEGEND_ITEMS } from "../constants/planning";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -17,8 +17,11 @@ const PlanningPage = () => {
     const currentYear = new Date().getFullYear();
     const currentWeekNum = getCurrentWeekNumber();
 
+    const currentWeekDateRange = getWeekDateRange(currentWeekNum, currentYear);
+    
     const [filters, setFilters] = useState<PlanningFilters>({
-        weekNumber: currentWeekNum,
+        startDate: currentWeekDateRange.startDate.toISOString(),
+        endDate: currentWeekDateRange.endDate.toISOString(),
         year: currentYear,
         building: undefined,
         floor: undefined
@@ -91,10 +94,17 @@ const PlanningPage = () => {
         }
     }, [filters.building]);
 
-    const weekOptions = Array.from({ length: getWeeksInYear(filters.year) }, (_, i) => ({
-        label: `Semaine ${i + 1}`,
-        value: String(i + 1)
-    }));
+    const weekOptions = Array.from({ length: getWeeksInYear(filters.year) }, (_, i) => {
+        const weekNumber = i + 1;
+        const { label, startDate, endDate } = getWeekDateRange(weekNumber, filters.year);
+        return {
+            label,
+            value: JSON.stringify({ 
+                startDate: startDate.toISOString(), 
+                endDate: endDate.toISOString() 
+            })
+        };
+    });
 
     const buildingOptions = [
         { label: "Tous les bâtiments", value: "" },
@@ -106,8 +116,13 @@ const PlanningPage = () => {
         ...(filterOptions?.data.floors.map(f => ({ ...f, value: String(f.value) })) || [])
     ];
 
-    const handleWeekChange = (value: number) => {
-        setFilters(prev => ({ ...prev, weekNumber: value }));
+    const handleWeekChange = (value: string) => {
+        const dateRange = JSON.parse(value);
+        setFilters(prev => ({ 
+            ...prev, 
+            startDate: dateRange.startDate,
+            endDate: dateRange.endDate 
+        }));
     };
 
     const handleBuildingChange = (value: string) => {
@@ -119,7 +134,7 @@ const PlanningPage = () => {
     };
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 p-20">
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-4xl font-bold">Planning</h1>
@@ -154,8 +169,12 @@ const PlanningPage = () => {
                     <label className="text-sm font-medium text-gray-700">Semaine :</label>
                     <Dropdown
                         options={weekOptions}
-                        placeholder={weekOptions.find(opt => opt.value === String(filters.weekNumber))?.label || "Sélectionner une semaine"}
-                        onSelect={(option) => handleWeekChange(option.value as number)}
+                        placeholder={weekOptions.find(opt => {
+                            const optDateRange = JSON.parse(opt.value);
+                            return optDateRange.startDate === filters.startDate && 
+                                   optDateRange.endDate === filters.endDate;
+                        })?.label || "Sélectionner une semaine"}
+                        onSelect={(option) => handleWeekChange(option.value as string)}
                         className="min-w-[200px]"
                     />
                 </div>
@@ -182,7 +201,8 @@ const PlanningPage = () => {
                 <ColorLegend items={PLANNING_LEGEND_ITEMS} className="ml-auto" />
             </FilterContainer>
             <PlanningContainer
-                weekNumber={filters.weekNumber}
+                startDate={filters.startDate}
+                endDate={filters.endDate}
                 year={filters.year}
                 buildingFilter={filters.building}
                 floorFilter={filters.floor}

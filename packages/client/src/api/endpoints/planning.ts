@@ -12,6 +12,9 @@ export const planningApi = {
     getWeeklyPlanning: async (filters: PlanningFilters): Promise<{ data: WeekPlanningData }> => {
         const queryParams = new URLSearchParams();
 
+        queryParams.append('startDate', filters.startDate);
+        queryParams.append('endDate', filters.endDate);
+        
         if (filters.year) {
             queryParams.append('year', filters.year.toString());
         }
@@ -23,7 +26,7 @@ export const planningApi = {
         }
 
         const queryString = queryParams.toString();
-        const url = `/planning/${filters.weekNumber}${queryString ? `?${queryString}` : ''}`;
+        const url = `/planning?${queryString}`;
 
         const response = await apiClient.get(url);
         return response.data;
