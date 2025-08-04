@@ -19,7 +19,7 @@ const PlanningPage = () => {
     const today = new Date();
     const currentWeekStart = startOfISOWeek(today);
     const currentWeekEnd = endOfISOWeek(today);
-    
+
     const [filters, setFilters] = useState<PlanningFilters>({
         startDate: currentWeekStart.toISOString(),
         endDate: currentWeekEnd.toISOString(),
@@ -89,24 +89,18 @@ const PlanningPage = () => {
         fileInputRef.current?.click();
     };
 
-    useEffect(() => {
-        if (!filters.building) {
-            setFilters(prev => ({ ...prev, floor: undefined }));
-        }
-    }, [filters.building]);
-
     const yearStart = startOfYear(new Date(filters.year, 0, 1));
     const yearEnd = endOfYear(new Date(filters.year, 0, 1));
     const weeks = eachWeekOfInterval({ start: yearStart, end: yearEnd }, { weekStartsOn: 1 });
-    
+
     const weekOptions = weeks.map((weekStart) => {
         const weekEnd = addDays(weekStart, 4); // Friday
         const label = `${format(weekStart, 'dd MMM', { locale: fr })} - ${format(weekEnd, 'dd MMM yyyy', { locale: fr })}`;
         return {
             label,
-            value: JSON.stringify({ 
-                startDate: weekStart.toISOString(), 
-                endDate: weekEnd.toISOString() 
+            value: JSON.stringify({
+                startDate: weekStart.toISOString(),
+                endDate: weekEnd.toISOString()
             })
         };
     });
@@ -123,10 +117,10 @@ const PlanningPage = () => {
 
     const handleWeekChange = (value: string) => {
         const dateRange = JSON.parse(value);
-        setFilters(prev => ({ 
-            ...prev, 
+        setFilters(prev => ({
+            ...prev,
             startDate: dateRange.startDate,
-            endDate: dateRange.endDate 
+            endDate: dateRange.endDate
         }));
     };
 
@@ -176,8 +170,8 @@ const PlanningPage = () => {
                         options={weekOptions}
                         placeholder={weekOptions.find(opt => {
                             const optDateRange = JSON.parse(opt.value);
-                            return optDateRange.startDate === filters.startDate && 
-                                   optDateRange.endDate === filters.endDate;
+                            return optDateRange.startDate === filters.startDate &&
+                                optDateRange.endDate === filters.endDate;
                         })?.label || "Sélectionner une semaine"}
                         onSelect={(option) => handleWeekChange(option.value as string)}
                         className="min-w-[200px]"
@@ -200,7 +194,7 @@ const PlanningPage = () => {
                         placeholder={floorOptions.find(opt => opt.value === (filters.floor ? String(filters.floor) : ""))?.label || "Tous les étages"}
                         onSelect={(option) => handleFloorChange(option.value as number)}
                         className="min-w-[200px]"
-                        disabled={!filters.building || isLoadingFilters}
+                        disabled={isLoadingFilters}
                     />
                 </div>
                 <ColorLegend items={PLANNING_LEGEND_ITEMS} className="ml-auto" />
