@@ -30,14 +30,6 @@ export const WeeklyPlanningQuerySchema = z.object({
   floor: z.number().optional(),
 });
 
-export const OptimizePlanningParamsSchema = z.object({
-  weekNumber: z.string().transform((val) => parseInt(val)).pipe(z.number().min(1).max(53)),
-});
-
-export const OptimizePlanningBodySchema = z.object({
-  year: z.number().min(2024).max(2100).optional(),
-});
-
 export const WeeklyPlanningDataSchema = z.object({
   lessons: z.array(z.any()),
   rooms: z.array(RoomSchema),
@@ -51,8 +43,6 @@ export type RoomWithPlannedClasses = z.infer<typeof RoomWithPlannedClassesSchema
 export type WeeklyPlanningData = z.infer<typeof WeeklyPlanningDataSchema>;
 export type WeeklyPlanningQuery = z.infer<typeof WeeklyPlanningQuerySchema>;
 export type WeeklyPlanningResult = z.infer<typeof WeekPlanningResultSchema>;
-export type OptimizePlanningParams = z.infer<typeof OptimizePlanningParamsSchema>;
-export type OptimizePlanningBody = z.infer<typeof OptimizePlanningBodySchema>;
 
 export const FileUploadSchema = z.object({
   filename: z.string().endsWith(".xlsx", "File must be an Excel file (.xlsx)"),

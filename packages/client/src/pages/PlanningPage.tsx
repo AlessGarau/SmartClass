@@ -6,7 +6,8 @@ import FilterContainer from "../components/FilterContainer/FilterContainer";
 import Dropdown from "../components/Dropdown/Dropdown";
 import PlanningContainer from "../components/Planning/PlanningContainer/PlanningContainer";
 import ColorLegend from "../components/ColorLegend/ColorLegend";
-import { getCurrentWeekNumber, getWeeksInYear, getWeekDateRange } from "../utils/dates";
+import { format, addDays, startOfISOWeek, endOfISOWeek, eachWeekOfInterval, startOfYear, endOfYear } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import type { PlanningFilters } from "../types/Planning";
 import { PLANNING_LEGEND_ITEMS } from "../constants/planning";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -15,13 +16,13 @@ import toast from "react-hot-toast";
 
 const PlanningPage = () => {
     const currentYear = new Date().getFullYear();
-    const currentWeekNum = getCurrentWeekNumber();
-
-    const currentWeekDateRange = getWeekDateRange(currentWeekNum, currentYear);
+    const today = new Date();
+    const currentWeekStart = startOfISOWeek(today);
+    const currentWeekEnd = endOfISOWeek(today);
     
     const [filters, setFilters] = useState<PlanningFilters>({
-        startDate: currentWeekDateRange.startDate.toISOString(),
-        endDate: currentWeekDateRange.endDate.toISOString(),
+        startDate: currentWeekStart.toISOString(),
+        endDate: currentWeekEnd.toISOString(),
         year: currentYear,
         building: undefined,
         floor: undefined
@@ -94,14 +95,18 @@ const PlanningPage = () => {
         }
     }, [filters.building]);
 
-    const weekOptions = Array.from({ length: getWeeksInYear(filters.year) }, (_, i) => {
-        const weekNumber = i + 1;
-        const { label, startDate, endDate } = getWeekDateRange(weekNumber, filters.year);
+    const yearStart = startOfYear(new Date(filters.year, 0, 1));
+    const yearEnd = endOfYear(new Date(filters.year, 0, 1));
+    const weeks = eachWeekOfInterval({ start: yearStart, end: yearEnd }, { weekStartsOn: 1 });
+    
+    const weekOptions = weeks.map((weekStart) => {
+        const weekEnd = addDays(weekStart, 4); // Friday
+        const label = `${format(weekStart, 'dd MMM', { locale: fr })} - ${format(weekEnd, 'dd MMM yyyy', { locale: fr })}`;
         return {
             label,
             value: JSON.stringify({ 
-                startDate: startDate.toISOString(), 
-                endDate: endDate.toISOString() 
+                startDate: weekStart.toISOString(), 
+                endDate: weekEnd.toISOString() 
             })
         };
     });

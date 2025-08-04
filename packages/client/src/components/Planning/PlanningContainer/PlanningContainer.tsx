@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getDatesOfWeek } from "../../../utils/dates";
+import { format, addDays, startOfISOWeek } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { getTimeSlotsForDay } from "../../../utils/planning";
 import type { Classroom, WeekDate, PlanningFilters } from "../../../types/Planning";
 import PlannedClassSlot from "../PlannedClassSlot/PlannedClassSlot";
@@ -38,14 +39,21 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
     const weekPlanningData = planningResponse?.data || null;
 
     useEffect(() => {
-        // Calculate week number from startDate for getDatesOfWeek
         const start = new Date(startDate);
-        const startOfYear = new Date(start.getFullYear(), 0, 1);
-        const days = Math.floor((start.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
-        const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-        
-        setCurrentWeek(getDatesOfWeek(weekNumber, year));
-    }, [startDate, year]);
+        const monday = startOfISOWeek(start);
+
+        const weekDays = ['LUN', 'MAR', 'MER', 'JEU', 'VEN'];
+        const weekDates = weekDays.map((day, i) => {
+            const date = addDays(monday, i);
+            return {
+                day,
+                date: format(date, 'dd/MM', { locale: fr }),
+                fullDate: date
+            };
+        });
+
+        setCurrentWeek(weekDates);
+    }, [startDate]);
 
     if (error) {
         console.error('Error loading week planning:', error);
