@@ -8,6 +8,7 @@ interface DropdownOption {
 interface DropdownProps {
     options: DropdownOption[];
     placeholder?: string;
+    value?: string | number;
     onSelect: (option: DropdownOption) => void;
     className?: string;
     disabled?: boolean;
@@ -16,6 +17,7 @@ interface DropdownProps {
 function Dropdown({
     options,
     placeholder = "Sélectionner une option",
+    value,
     onSelect,
     className,
     disabled = false,
@@ -40,6 +42,13 @@ function Dropdown({
         return () =>
             document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    useEffect(() => {
+        if (value !== undefined) {
+            const option = options.find(opt => opt.value === value);
+            setSelectedOption(option || null);
+        }
+    }, [value, options]);
 
     const handleOptionClick = (option: DropdownOption) => {
         setSelectedOption(option);

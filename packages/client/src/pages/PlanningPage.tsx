@@ -18,7 +18,7 @@ const PlanningPage = () => {
     const currentYear = new Date().getFullYear();
     const today = new Date();
     const currentWeekStart = startOfISOWeek(today);
-    const currentWeekEnd = endOfISOWeek(today);
+    const currentWeekEnd = addDays(currentWeekStart, 4); // Friday
 
     const [filters, setFilters] = useState<PlanningFilters>({
         startDate: currentWeekStart.toISOString(),
@@ -94,13 +94,14 @@ const PlanningPage = () => {
     const weeks = eachWeekOfInterval({ start: yearStart, end: yearEnd }, { weekStartsOn: 1 });
 
     const weekOptions = weeks.map((weekStart) => {
-        const weekEnd = addDays(weekStart, 4); // Friday
-        const label = `${format(weekStart, 'dd MMM', { locale: fr })} - ${format(weekEnd, 'dd MMM yyyy', { locale: fr })}`;
+        const monday = startOfISOWeek(weekStart);
+        const friday = addDays(monday, 4); // Friday
+        const label = `${format(monday, 'dd MMM', { locale: fr })} - ${format(friday, 'dd MMM yyyy', { locale: fr })}`;
         return {
             label,
             value: JSON.stringify({
-                startDate: weekStart.toISOString(),
-                endDate: weekEnd.toISOString()
+                startDate: monday.toISOString(),
+                endDate: friday.toISOString()
             })
         };
     });
@@ -168,11 +169,12 @@ const PlanningPage = () => {
                     <label className="text-sm font-medium text-gray-700">Semaine :</label>
                     <Dropdown
                         options={weekOptions}
-                        placeholder={weekOptions.find(opt => {
+                        value={weekOptions.find(opt => {
                             const optDateRange = JSON.parse(opt.value);
                             return optDateRange.startDate === filters.startDate &&
                                 optDateRange.endDate === filters.endDate;
-                        })?.label || "Sélectionner une semaine"}
+                        })?.value}
+                        placeholder="Sélectionner une semaine"
                         onSelect={(option) => handleWeekChange(option.value as string)}
                         className="min-w-[200px]"
                     />
@@ -181,7 +183,8 @@ const PlanningPage = () => {
                     <label className="text-sm font-medium text-gray-700">Bâtiment :</label>
                     <Dropdown
                         options={buildingOptions}
-                        placeholder={buildingOptions.find(opt => opt.value === (filters.building || ""))?.label || "Tous les bâtiments"}
+                        value={filters.building || ""}
+                        placeholder="Tous les bâtiments"
                         onSelect={(option) => handleBuildingChange(option.value as string)}
                         className="min-w-[200px]"
                         disabled={isLoadingFilters}
@@ -191,7 +194,8 @@ const PlanningPage = () => {
                     <label className="text-sm font-medium text-gray-700">Étage :</label>
                     <Dropdown
                         options={floorOptions}
-                        placeholder={floorOptions.find(opt => opt.value === (filters.floor ? String(filters.floor) : ""))?.label || "Tous les étages"}
+                        value={filters.floor ? String(filters.floor) : ""}
+                        placeholder="Tous les étages"
                         onSelect={(option) => handleFloorChange(option.value as number)}
                         className="min-w-[200px]"
                         disabled={isLoadingFilters}
