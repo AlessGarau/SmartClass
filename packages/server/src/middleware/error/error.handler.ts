@@ -1,11 +1,12 @@
 import { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 
 import { z } from "zod";
+import { ClassError } from "./classError";
+import { MqttError } from "./mqttError";
 import NotFoundError from "./notFoundError";
 import { RoomError } from "./roomError";
 import { UserError } from "./userError";
 import { WeatherError } from "./weatherError";
-import { MqttError } from "./mqttError";
 import { PlanningError } from "./planningError";
 
 export const ErrorMiddleware = (
@@ -13,6 +14,7 @@ export const ErrorMiddleware = (
     | FastifyError
     | NotFoundError
     | RoomError
+    | ClassError
     | UserError
     | WeatherError
     | MqttError
@@ -31,6 +33,13 @@ export const ErrorMiddleware = (
   }
 
   if (error instanceof RoomError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: null,
+    });
+  }
+
+  if (error instanceof ClassError) {
     return reply.status(error.statusCode).send({
       error: error.message,
       data: null,

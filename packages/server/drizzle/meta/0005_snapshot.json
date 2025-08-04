@@ -1,6 +1,6 @@
 {
-  "id": "26d8e9ca-31f7-4b20-b31b-712110b0a1e2",
-  "prevId": "1d5abd9a-cdc9-48a7-842e-e98d02830e81",
+  "id": "2bf4ca0e-bdc0-43c4-bdb4-3e2d9eadf15e",
+  "prevId": "4cbae63f-815a-43f4-b6e1-b032df4ffa37",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -31,7 +31,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "class_name_unique": {
+          "name": "class_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -438,7 +446,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -647,7 +655,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "user_lesson_lesson_id_lesson_id_fk": {
@@ -660,7 +668,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

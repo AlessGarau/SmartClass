@@ -1,4 +1,4 @@
-import { eq, ilike, sql } from "drizzle-orm";
+import { and, eq, ilike, sql } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
@@ -8,9 +8,11 @@ import { IRoomRepository } from "./interface/IRepository";
 import {
   CreateRoomParams,
   GetRoomsQueryParams,
+  PatchRoomParams,
   PutRoomParams,
   Room,
   RoomFilter,
+  dbRoom,
 } from "./validate";
 
 @Service()
@@ -20,6 +22,43 @@ export class RoomRepository implements IRoomRepository {
     this._db = database;
   }
 
+  private transformRoom(room: dbRoom): Room {
+    return {
+      id: room.id,
+      name: room.name,
+      capacity: room.capacity,
+      building: room.building,
+      floor: room.floor,
+      isEnabled: room.is_enabled,
+    };
+  }
+
+  private applyFilter(filter: RoomFilter, query: any): void {
+    if (!filter) { return; }
+
+    const conditions = [];
+
+    if (filter.search) {
+      conditions.push(ilike(roomTable.name, `%${filter.search}%`));
+    }
+
+    if (filter.building) {
+      conditions.push(ilike(roomTable.building, `%${filter.building}%`));
+    }
+
+    if (filter.floor !== undefined) {
+      conditions.push(eq(roomTable.floor, filter.floor));
+    }
+
+    if (filter.isEnabled !== undefined) {
+      conditions.push(eq(roomTable.is_enabled, filter.isEnabled));
+    }
+
+    if (conditions.length > 0) {
+      query.where(and(...conditions));
+    }
+  }
+
   async create(RoomCreateParams: CreateRoomParams): Promise<Room> {
     try {
       const result = await this._db
@@ -27,12 +66,12 @@ export class RoomRepository implements IRoomRepository {
         .values({
           name: RoomCreateParams.name,
           capacity: RoomCreateParams.capacity,
-          is_enabled: RoomCreateParams.is_enabled,
           building: RoomCreateParams.building,
           floor: RoomCreateParams.floor,
+          is_enabled: RoomCreateParams.isEnabled,
         })
         .returning();
-      return result[0];
+      return this.transformRoom(result[0]);
     } catch (error: any) {
       if (error.cause.code === "23505") {
         throw RoomError.alreadyExists(
@@ -46,35 +85,15 @@ export class RoomRepository implements IRoomRepository {
     }
   }
 
-  private applyFilter(filter: RoomFilter, query: any) {
-    if (!filter) {
-      return;
-    }
-
-    if (filter.search) {
-      query.where(ilike(roomTable.name, `%${filter.search}%`));
-    }
-
-    if (filter.isEnabled !== undefined) {
-      query.where(eq(roomTable.is_enabled, filter.isEnabled));
-    }
-
-    if (filter?.building !== undefined) {
-      query.where(eq(roomTable.building, filter.building));
-    }
-
-    if (filter?.floor !== undefined) {
-      query.where(eq(roomTable.floor, filter.floor));
-    }
-  }
-
   async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
     const query = this._db.select().from(roomTable);
-    const { filter } = params;
 
-    if (filter) {
-      this.applyFilter(filter, query);
-    }
+    this.applyFilter({
+      search: params.search,
+      isEnabled: params.isEnabled,
+      building: params.building,
+      floor: params.floor,
+    }, query);
 
     if (params.limit !== undefined) {
       query.limit(params.limit);
@@ -85,7 +104,7 @@ export class RoomRepository implements IRoomRepository {
     }
 
     const result = await query;
-    return result;
+    return result.map(room => this.transformRoom(room));
   }
 
   async getRoomsCount(filter: RoomFilter): Promise<number> {
@@ -105,7 +124,12 @@ export class RoomRepository implements IRoomRepository {
       .from(roomTable)
       .where(eq(roomTable.id, id))
       .limit(1);
-    return result[0] || null;
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return this.transformRoom(result[0]);
   }
 
   async putRoom(id: string, roomUpdateParams: PutRoomParams): Promise<Room> {
@@ -115,7 +139,9 @@ export class RoomRepository implements IRoomRepository {
         .set({
           name: roomUpdateParams.name,
           capacity: roomUpdateParams.capacity,
-          is_enabled: roomUpdateParams.is_enabled,
+          building: roomUpdateParams.building,
+          floor: roomUpdateParams.floor,
+          is_enabled: roomUpdateParams.isEnabled,
         })
         .where(eq(roomTable.id, id))
         .returning();
@@ -123,7 +149,7 @@ export class RoomRepository implements IRoomRepository {
       if (updatedRoom.length === 0) {
         throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
       }
-      return updatedRoom[0];
+      return this.transformRoom(updatedRoom[0]);
     } catch (error: any) {
       if (error.cause.code === "23505") {
         throw RoomError.alreadyExists(
@@ -137,21 +163,36 @@ export class RoomRepository implements IRoomRepository {
     }
   }
 
-  async patchRoom(
-    id: string,
-    roomUpdateParams: Partial<PutRoomParams>,
-  ): Promise<Room> {
+  async patchRoom(id: string, roomUpdateParams: PatchRoomParams): Promise<Room> {
     try {
+      const updateData: Partial<typeof roomTable.$inferInsert> = {};
+
+      if (roomUpdateParams.name !== undefined) {
+        updateData.name = roomUpdateParams.name;
+      }
+      if (roomUpdateParams.capacity !== undefined) {
+        updateData.capacity = roomUpdateParams.capacity;
+      }
+      if (roomUpdateParams.isEnabled !== undefined) {
+        updateData.is_enabled = roomUpdateParams.isEnabled;
+      }
+      if (roomUpdateParams.building !== undefined) {
+        updateData.building = roomUpdateParams.building;
+      }
+      if (roomUpdateParams.floor !== undefined) {
+        updateData.floor = roomUpdateParams.floor;
+      }
+
       const result = await this._db
         .update(roomTable)
-        .set(roomUpdateParams)
+        .set(updateData)
         .where(eq(roomTable.id, id))
         .returning();
 
       if (result.length === 0) {
         throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
       }
-      return result[0];
+      return this.transformRoom(result[0]);
     } catch (error: any) {
       if (error.cause.code === "23505") {
         throw RoomError.alreadyExists(
@@ -166,7 +207,14 @@ export class RoomRepository implements IRoomRepository {
   }
 
   async deleteRoom(id: string): Promise<void> {
-    await this._db.delete(roomTable).where(eq(roomTable.id, id));
+    try {
+      await this._db.delete(roomTable).where(eq(roomTable.id, id));
+    } catch (error: any) {
+      throw RoomError.deletionFailed(
+        `Failed to delete room with ID "${id}". The room is linked to courses. Please delete all the courses associated with this room or change their associated room before deleting this room.`,
+        error,
+      );
+    }
   }
 
   async getDistinctBuildings(): Promise<string[]> {

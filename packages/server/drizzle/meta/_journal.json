@@ -26,8 +26,36 @@
     {
       "idx": 3,
       "version": "7",
-      "when": 1753726078077,
-      "tag": "0003_unknown_wild_pack",
+      "when": 1754229257782,
+      "tag": "0003_lyrical_stepford_cuckoos",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1754229528056,
+      "tag": "0004_light_umar",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1754229775041,
+      "tag": "0005_special_lorna_dane",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1754230626071,
+      "tag": "0006_needy_the_spike",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1754318462440,
+      "tag": "0007_confused_bloodaxe",
       "breakpoints": true
     }
   ]

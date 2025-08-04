@@ -1,3 +1,4 @@
+import { ClassMessage } from "../../feature/class/message";
 import { RoomMessage } from "../../feature/room/message";
 import { UserMessage } from "../../feature/user/message";
 import { WeatherMessage } from "../../feature/weather/message";
@@ -10,6 +11,9 @@ export const ErrorMessageEnum = {
   },
   Room: {
     ...RoomMessage,
+  },
+  Class: {
+    ...ClassMessage,
   },
   User: {
     ...UserMessage,
