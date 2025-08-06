@@ -45,14 +45,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy docker-compose to VPS
+      - name: Copy files to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
           port: 2323
-          source: "Docker/docker-compose.prod.yml"
+          source: "Docker/docker-compose.prod.yml,packages/server/drizzle.config.ts,packages/server/drizzle/"
           target: "/home/${{ secrets.VPS_USERNAME }}/smart-class/"
 
       - name: Deploy to VPS
@@ -65,12 +65,20 @@ jobs:
           script: |
             cd /home/${{ secrets.VPS_USERNAME }}/smart-class/Docker
 
-            docker-compose -f docker-compose.prod.yml down || true
+            docker compose -f docker-compose.prod.yml down || true
 
             docker pull ${{ vars.DOCKERHUB_USERNAME }}/smart-class-client:latest
             docker pull ${{ vars.DOCKERHUB_USERNAME }}/smart-class-server:latest
 
-            docker-compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml up -d
+
+            # Run database migrations
+            echo "Running database migrations..."
+            docker cp /home/${{ secrets.VPS_USERNAME }}/smart-class/packages/server/drizzle.config.ts docker-smart-class-server-prod-1:/app/
+            docker cp /home/${{ secrets.VPS_USERNAME }}/smart-class/packages/server/drizzle docker-smart-class-server-prod-1:/app/
+            docker exec docker-smart-class-server-prod-1 npm run db:migrate
 
             # Clean up unused images
             docker image prune -f
+            
+            echo "Deployment with migrations completed!"
