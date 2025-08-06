@@ -11,6 +11,7 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import * as XLSX from "xlsx";
 import { OptimizationService } from "../../services/OptimizationService";
+import { parseISO, startOfDay, endOfDay } from "date-fns";
 
 @Service()
 export class PlanningInteractor implements IPlanningInteractor {
@@ -22,8 +23,8 @@ export class PlanningInteractor implements IPlanningInteractor {
   ) { }
 
   async getWeeklyPlanning(filters: WeeklyPlanningFilters): Promise<WeeklyPlanningData> {
-    const startDate = new Date(filters.startDate);
-    const endDate = new Date(filters.endDate);
+    const startDate = startOfDay(parseISO(filters.startDate));
+    const endDate = endOfDay(parseISO(filters.endDate));
 
     const rooms = await this.roomRepository.getRooms({
       isEnabled: true,
@@ -235,5 +236,29 @@ export class PlanningInteractor implements IPlanningInteractor {
     };
 
     return buildingMap[buildingCode] || buildingCode;
+  }
+
+  async deleteLesson(lessonId: string): Promise<void> {
+    const lesson = await this.lessonRepository.getLessonById(lessonId);
+
+    if (!lesson) {
+      throw LessonError.notFound();
+    }
+
+    await this.lessonRepository.deleteLesson(lessonId);
+
+    const startOfWeek = new Date(lesson.start_time);
+    startOfWeek.setHours(0, 0, 0, 0);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay() + 1);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 4);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    try {
+      await this.optimizationService.optimizeDateRange(startOfWeek, endOfWeek);
+    } catch (error) {
+      console.error("Failed to optimize planning after lesson deletion:", error);
+    }
   }
 }

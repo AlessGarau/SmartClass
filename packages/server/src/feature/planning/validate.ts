@@ -23,8 +23,8 @@ export const WeekPlanningResultSchema = z.object({
 });
 
 export const WeeklyPlanningQuerySchema = z.object({
-  startDate: z.string().datetime(),
-  endDate: z.string().datetime(),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
   year: z.number().min(2024).max(2100).optional(),
   building: z.string().optional(),
   floor: z.number().optional(),
@@ -104,6 +104,10 @@ export const PlanningFilterOptionsResponseSchema = z.object({
   message: z.string(),
 });
 
+export const DeleteLessonParamsSchema = z.object({
+  lessonId: z.string().uuid("Lesson ID must be a valid UUID"),
+});
+
 export type FileUpload = z.infer<typeof FileUploadSchema>;
 export type ImportedLesson = z.infer<typeof ImportedLessonSchema>;
 export type ImportResult = z.infer<typeof ImportResultSchema>;
@@ -112,3 +116,4 @@ export type ImportLessonResponse = z.infer<typeof ImportLessonResponseSchema>;
 export type WeeklyPlanningResponse = z.infer<typeof WeeklyPlanningResponseSchema>;
 export type PlanningFilterOptions = z.infer<typeof PlanningFilterOptionsSchema>;
 export type PlanningFilterOptionsResponse = z.infer<typeof PlanningFilterOptionsResponseSchema>;
+export type DeleteLessonParams = z.infer<typeof DeleteLessonParamsSchema>;

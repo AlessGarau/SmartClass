@@ -113,4 +113,20 @@ export class LessonRepository implements ILessonRepository {
 
     return result[0] || null;
   }
+
+  async getLessonById(lessonId: string): Promise<Lesson | null> {
+    const result = await this.db
+      .select()
+      .from(lessonTable)
+      .where(eq(lessonTable.id, lessonId))
+      .limit(1);
+
+    return result[0] || null;
+  }
+
+  async deleteLesson(lessonId: string): Promise<void> {
+    await this.db
+      .delete(lessonTable)
+      .where(eq(lessonTable.id, lessonId));
+  }
 }

@@ -4,4 +4,5 @@ export const PlanningMessage = {
   INVALID_FILE_FORMAT: "Invalid file format",
   LESSONS_IMPORTED_SUCCESSFULLY: "Lessons imported successfully",
   FILTER_OPTIONS_RETRIEVED_SUCCESSFULLY: "Filter options retrieved successfully",
+  LESSON_DELETED_SUCCESSFULLY: "Lesson deleted successfully",
 } as const;

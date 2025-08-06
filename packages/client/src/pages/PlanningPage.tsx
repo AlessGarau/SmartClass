@@ -6,7 +6,7 @@ import FilterContainer from "../components/FilterContainer/FilterContainer";
 import Dropdown from "../components/Dropdown/Dropdown";
 import PlanningContainer from "../components/Planning/PlanningContainer/PlanningContainer";
 import ColorLegend from "../components/ColorLegend/ColorLegend";
-import { format, addDays, startOfISOWeek, endOfISOWeek, eachWeekOfInterval, startOfYear, endOfYear } from 'date-fns';
+import { format, formatISO, addDays, startOfISOWeek, eachWeekOfInterval, startOfYear, endOfYear } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import type { PlanningFilters } from "../types/Planning";
 import { PLANNING_LEGEND_ITEMS } from "../constants/planning";
@@ -21,8 +21,8 @@ const PlanningPage = () => {
     const currentWeekEnd = addDays(currentWeekStart, 4); // Friday
 
     const [filters, setFilters] = useState<PlanningFilters>({
-        startDate: currentWeekStart.toISOString(),
-        endDate: currentWeekEnd.toISOString(),
+        startDate: formatISO(currentWeekStart, { representation: 'date' }),
+        endDate: formatISO(currentWeekEnd, { representation: 'date' }),
         year: currentYear,
         building: undefined,
         floor: undefined
@@ -95,13 +95,13 @@ const PlanningPage = () => {
 
     const weekOptions = weeks.map((weekStart) => {
         const monday = startOfISOWeek(weekStart);
-        const friday = addDays(monday, 4); // Friday
+        const friday = addDays(monday, 4);
         const label = `${format(monday, 'dd MMM', { locale: fr })} - ${format(friday, 'dd MMM yyyy', { locale: fr })}`;
         return {
             label,
             value: JSON.stringify({
-                startDate: monday.toISOString(),
-                endDate: friday.toISOString()
+                startDate: formatISO(monday, { representation: 'date' }),
+                endDate: formatISO(friday, { representation: 'date' })
             })
         };
     });

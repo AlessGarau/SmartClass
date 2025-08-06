@@ -6,6 +6,7 @@ export interface IPlanningInteractor {
   getLessonTemplate(): Promise<Buffer>;
   importLessonsFromTemplate(fileBuffer: Buffer): Promise<ImportResult>;
   getFilterOptions(): Promise<PlanningFilterOptions>;
+  deleteLesson(lessonId: string): Promise<void>;
 }
 
 export interface WeeklyPlanningFilters {

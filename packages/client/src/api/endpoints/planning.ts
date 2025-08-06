@@ -14,7 +14,7 @@ export const planningApi = {
 
         queryParams.append('startDate', filters.startDate);
         queryParams.append('endDate', filters.endDate);
-        
+
         if (filters.year) {
             queryParams.append('year', filters.year.toString());
         }
@@ -46,6 +46,11 @@ export const planningApi = {
 
     getFilterOptions: async (): Promise<{ data: PlanningFilterOptions }> => {
         const response = await apiClient.get('/planning/filters');
+        return response.data;
+    },
+
+    deleteLesson: async (lessonId: string): Promise<{ message: string }> => {
+        const response = await apiClient.delete(`/lessons/${lessonId}`);
         return response.data;
     },
 }

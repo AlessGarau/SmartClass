@@ -5,6 +5,7 @@ import { PlanningMapper } from "./Mapper";
 import {
   WeeklyPlanningQuerySchema,
   FileUploadSchema,
+  DeleteLessonParamsSchema,
 } from "./validate";
 import { PlanningMessage } from "./message";
 import { PlanningError } from "./../../middleware/error/planningError";
@@ -83,6 +84,16 @@ export class PlanningController {
     return reply.status(200).send({
       data: filterOptions,
       message: PlanningMessage.FILTER_OPTIONS_RETRIEVED_SUCCESSFULLY,
+    });
+  }
+
+  async deleteLesson(request: FastifyRequest, reply: FastifyReply) {
+    const { lessonId } = DeleteLessonParamsSchema.parse(request.params);
+
+    await this.planningInteractor.deleteLesson(lessonId);
+
+    return reply.status(200).send({
+      message: PlanningMessage.LESSON_DELETED_SUCCESSFULLY,
     });
   }
 }

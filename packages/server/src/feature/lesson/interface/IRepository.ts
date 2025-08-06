@@ -23,4 +23,6 @@ export interface ILessonRepository {
   updateMultipleLessonRooms(updates: Array<{ lessonId: string; roomId: string }>): Promise<void>;
   createLesson(data: CreateLessonData): Promise<Lesson>;
   findLessonByDetails(classId: string, startTime: Date, endTime: Date): Promise<Lesson | null>;
+  getLessonById(lessonId: string): Promise<Lesson | null>;
+  deleteLesson(lessonId: string): Promise<void>;
 }

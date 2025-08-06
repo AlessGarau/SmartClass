@@ -45,4 +45,9 @@ export const planningQueryOptions = {
         queryFn: () => planningApi.getFilterOptions(),
         staleTime: 60 * 60 * 1000,
     }),
+
+    deleteLesson: () => ({
+        mutationFn: (lessonId: string) => planningApi.deleteLesson(lessonId),
+        mutationKey: ['planning', 'deleteLesson'],
+    }),
 };

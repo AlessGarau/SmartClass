@@ -7,6 +7,8 @@ import {
   WeeklyPlanningResponseSchema,
   ImportLessonResponseSchema,
   PlanningFilterOptionsResponseSchema,
+  DeleteLessonParamsSchema,
+  DeleteLessonParams,
 } from "./validate";
 
 export class PlanningRoutes {
@@ -91,6 +93,28 @@ export class PlanningRoutes {
         onRequest: [this.server.admin],
       },
       this.controller.getFilterOptions.bind(this.controller),
+    );
+    this.server.delete<{ Params: DeleteLessonParams }>(
+      "/lessons/:lessonId",
+      {
+        schema: {
+          tags: ["Planning"],
+          summary: "Delete a lesson",
+          description: "Delete a specific lesson and re-optimize planning (Admin only)",
+          params: zodToJsonSchema(DeleteLessonParamsSchema),
+          response: {
+            200: {
+              description: "Lesson deleted successfully",
+              type: "object",
+              properties: {
+                message: { type: "string" },
+              },
+            },
+          },
+        },
+        onRequest: [this.server.admin],
+      },
+      this.controller.deleteLesson.bind(this.controller),
     );
   }
 }
