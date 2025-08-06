@@ -32,7 +32,16 @@ export const planningApi = {
         return response.data;
     },
 
-    uploadLessons: async (file: File): Promise<{ message: string; importedCount: number; skippedCount: number; errors: Array<{ row: number; field?: string; message: string }> }> => {
+    uploadLessons: async (file: File): Promise<{ 
+        message: string; 
+        importedCount: number; 
+        skippedCount: number; 
+        errors: Array<{ row: number; field?: string; message: string }>; 
+        optimization?: {
+            status: 'success' | 'failed' | 'skipped';
+            error?: string;
+        };
+    }> => {
         const formData = new FormData();
         formData.append('file', file);
 

@@ -192,17 +192,26 @@ export class PlanningInteractor implements IPlanningInteractor {
       }
     }
 
+    let optimizationStatus = undefined;
+    
     if (importedCount > 0 && earliestDate && latestDate) {
-      this.optimizationService.optimizeDateRange(earliestDate, latestDate)
-        .catch((error) => {
-          console.error("Failed to optimize date range after lesson import:", error);
-        });
+      try {
+        await this.optimizationService.optimizeDateRange(earliestDate, latestDate);
+        optimizationStatus = { status: "success" as const };
+      } catch (error) {
+        console.error("Failed to optimize date range after lesson import:", error);
+        optimizationStatus = {
+          status: "failed" as const,
+          error: error instanceof Error ? error.message : "Unknown optimization error",
+        };
+      }
     }
 
     return {
       importedCount,
       skippedCount,
       errors,
+      optimization: optimizationStatus,
     };
   }
 

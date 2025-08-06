@@ -70,10 +70,16 @@ export const ImportErrorSchema = z.object({
   message: z.string(),
 });
 
+const OptimizationStatusSchema = z.object({
+  status: z.enum(["success", "failed", "skipped"]),
+  error: z.string().optional(),
+});
+
 export const ImportResultSchema = z.object({
   importedCount: z.number(),
   skippedCount: z.number(),
   errors: z.array(ImportErrorSchema),
+  optimization: OptimizationStatusSchema.optional(),
 });
 
 export const ImportLessonResponseSchema = z.object({
@@ -81,6 +87,7 @@ export const ImportLessonResponseSchema = z.object({
   importedCount: z.number(),
   skippedCount: z.number(),
   errors: z.array(ImportErrorSchema),
+  optimization: OptimizationStatusSchema.optional(),
 });
 
 export const WeeklyPlanningResponseSchema = z.object({
@@ -113,6 +120,7 @@ export type ImportedLesson = z.infer<typeof ImportedLessonSchema>;
 export type ImportResult = z.infer<typeof ImportResultSchema>;
 export type ImportError = z.infer<typeof ImportErrorSchema>;
 export type ImportLessonResponse = z.infer<typeof ImportLessonResponseSchema>;
+export type OptimizationStatus = z.infer<typeof OptimizationStatusSchema>;
 export type WeeklyPlanningResponse = z.infer<typeof WeeklyPlanningResponseSchema>;
 export type PlanningFilterOptions = z.infer<typeof PlanningFilterOptionsSchema>;
 export type PlanningFilterOptionsResponse = z.infer<typeof PlanningFilterOptionsResponseSchema>;

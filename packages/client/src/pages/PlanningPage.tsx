@@ -10,11 +10,12 @@ import { format, formatISO, addDays, startOfISOWeek, eachWeekOfInterval, startOf
 import { fr } from 'date-fns/locale';
 import type { PlanningFilters } from "../types/Planning";
 import { PLANNING_LEGEND_ITEMS } from "../constants/planning";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { planningQueryOptions } from "../api/queryOptions";
 import toast from "react-hot-toast";
 
 const PlanningPage = () => {
+    const queryClient = useQueryClient()
     const currentYear = new Date().getFullYear();
     const today = new Date();
     const currentWeekStart = startOfISOWeek(today);
@@ -53,7 +54,6 @@ const PlanningPage = () => {
     const uploadLessonsMutation = useMutation({
         ...planningQueryOptions.uploadLessons(),
         onSuccess: (data) => {
-            console.log('Upload successful:', data);
             let message = `Fichier importé avec succès ! `;
             if (data.importedCount > 0) {
                 message += `${data.importedCount} cours ajoutés`;
@@ -61,7 +61,14 @@ const PlanningPage = () => {
             if (data.skippedCount > 0) {
                 message += data.importedCount > 0 ? ` et ${data.skippedCount} cours ignorés (déjà existants)` : `${data.skippedCount} cours ignorés (déjà existants)`;
             }
+
             toast.success(message);
+
+            if (data.optimization?.status === 'failed') {
+                toast.error(`Attention: L'optimisation des salles a échoué. ${data.optimization.error || 'Erreur inconnue'}`);
+            }
+
+            queryClient.invalidateQueries({ queryKey: ['planning', 'weekly'] });
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
