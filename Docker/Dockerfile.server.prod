@@ -6,9 +6,9 @@ WORKDIR /app
 COPY packages/server/package*.json ./
 RUN --mount=type=cache,id=npm,target=/root/.npm \
     if [ -f package-lock.json ]; then \
-        npm ci --omit=dev; \
+        npm ci; \
     else \
-        npm install --omit=dev; \
+        npm install; \
     fi
 
 FROM base AS build
@@ -27,4 +27,6 @@ FROM base AS runtime
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/drizzle.config.ts ./drizzle.config.ts
 CMD ["node", "./dist/src/server.js"]
