@@ -52,7 +52,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
           port: 2323
-          source: "Docker/docker-compose.prod.yml,packages/server/drizzle.config.ts,packages/server/drizzle/"
+          source: "Docker/docker-compose.prod.yml,packages/server/drizzle.config.ts,packages/server/drizzle/,packages/server/database/"
           target: "/home/${{ secrets.VPS_USERNAME }}/smart-class/"
 
       - name: Deploy to VPS
@@ -78,7 +78,12 @@ jobs:
             docker cp /home/${{ secrets.VPS_USERNAME }}/smart-class/packages/server/drizzle docker-smart-class-server-prod-1:/app/
             docker exec docker-smart-class-server-prod-1 npm run db:migrate
 
+            # Seed database
+            echo "Seeding database..."
+            docker cp /home/${{ secrets.VPS_USERNAME }}/smart-class/packages/server/database docker-smart-class-server-prod-1:/app/
+            docker exec docker-smart-class-server-prod-1 npm run db:seed
+
             # Clean up unused images
             docker image prune -f
             
-            echo "Deployment with migrations completed!"
+            echo "Deployment with migrations and database seeding completed!"
