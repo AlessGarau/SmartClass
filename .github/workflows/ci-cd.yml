@@ -2,7 +2,7 @@ name: ci/cd
 
 on:
   push:
-    branches: [main, DP-201-CI/CD]
+    branches: [main]
 
 jobs:
   build-and-push:
