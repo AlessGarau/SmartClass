@@ -94,11 +94,11 @@ async function main() {
   const classes = await database
     .insert(schema.classTable)
     .values([
-      { name: "Mathematics", student_count: 28 },
-      { name: "English Literature", student_count: 25 },
-      { name: "Physics", student_count: 22 },
-      { name: "Chemistry", student_count: 20 },
-      { name: "History", student_count: 30 },
+      { name: "WEB1", student_count: 28 },
+      { name: "WEB2", student_count: 25 },
+      { name: "WEB3", student_count: 22 },
+      { name: "DATA1", student_count: 20 },
+      { name: "DATA2", student_count: 30 },
       { name: "Art", student_count: 18 },
       { name: "Computer Science", student_count: 24 },
       { name: "Biology", student_count: 26 },

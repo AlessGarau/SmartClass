@@ -1,47 +1,63 @@
 import React, { useEffect, useState } from "react";
-import { getDatesOfWeek } from "../../../utils/dates";
+import { useQuery } from "@tanstack/react-query";
+import { format, addDays, startOfISOWeek } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { getTimeSlotsForDay } from "../../../utils/planning";
-import type { Classroom, WeekPlanningData, WeekDate } from "../../../types/Planning";
+import type { Classroom, WeekDate, PlanningFilters } from "../../../types/Planning";
 import PlannedClassSlot from "../PlannedClassSlot/PlannedClassSlot";
-import { getBuildingDisplayName, fetchWeekPlanning } from "../../../api/mockPlanningApi";
+import { planningQueryOptions } from "../../../api/queryOptions";
 
 interface PlanningContainerProps {
-    weekNumber: number;
+    startDate: string;
+    endDate: string;
     year: number;
     buildingFilter?: string;
     floorFilter?: number;
 }
 
 const PlanningContainer: React.FC<PlanningContainerProps> = ({
-    weekNumber,
+    startDate,
+    endDate,
     year,
     buildingFilter,
     floorFilter
 }) => {
     const [currentWeek, setCurrentWeek] = useState<WeekDate[]>([]);
-    const [weekPlanningData, setWeekPlanningData] = useState<WeekPlanningData | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const filters: PlanningFilters = {
+        startDate,
+        endDate,
+        year,
+        building: buildingFilter,
+        floor: floorFilter
+    };
+
+    const { data: planningResponse, isLoading, error } = useQuery({
+        ...planningQueryOptions.weeklyPlanning(filters),
+    });
+
+    const weekPlanningData = planningResponse?.data || null;
 
     useEffect(() => {
-        setCurrentWeek(getDatesOfWeek(weekNumber, year));
-    }, [weekNumber, year]);
+        const start = new Date(startDate);
+        const monday = startOfISOWeek(start);
 
-    // useEffect will be replaced by tanstack query when server route is ready
-    useEffect(() => {
-        const loadWeekPlanning = async () => {
-            setIsLoading(true);
-            try {
-                const data = await fetchWeekPlanning(weekNumber, year, buildingFilter, floorFilter);
-                setWeekPlanningData(data);
-            } catch (error) {
-                console.error('Error loading week planning:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        const weekDays = ['LUN', 'MAR', 'MER', 'JEU', 'VEN'];
+        const weekDates = weekDays.map((day, i) => {
+            const date = addDays(monday, i);
+            return {
+                day,
+                date: format(date, 'dd/MM', { locale: fr }),
+                fullDate: date
+            };
+        });
 
-        loadWeekPlanning();
-    }, [weekNumber, year, buildingFilter, floorFilter]);
+        setCurrentWeek(weekDates);
+    }, [startDate]);
+
+    if (error) {
+        console.error('Error loading week planning:', error);
+    }
 
     const getClassesForDay = (classroom: Classroom, dayOfWeek: string) => {
         return classroom.plannedClasses.filter(cls => cls.dayOfWeek === dayOfWeek);
@@ -76,7 +92,7 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
                                     <div className="flex flex-col">
                                         <span className="font-semibold">{classroom.name}</span>
                                         <span className="text-xs text-gray-500">
-                                            {getBuildingDisplayName(classroom.building)} - Étage {classroom.floor} ({classroom.capacity} places)
+                                            {classroom.building} - Étage {classroom.floor} ({classroom.capacity} places)
                                         </span>
                                     </div>
                                 </td>

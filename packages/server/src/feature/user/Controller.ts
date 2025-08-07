@@ -84,7 +84,7 @@ export class UserController {
     });
   }
 
-  async logoutUser(req: FastifyRequest, reply: FastifyReply) {
+  async logoutUser(_req: FastifyRequest, reply: FastifyReply) {
     reply.setCookie("token", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

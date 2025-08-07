@@ -12,4 +12,4 @@ export const roomTable = pgTable("room", {
 (table) => [
   check("capacity_check1", sql`${table.capacity} > 0`),
   check("floor_check", sql`${table.floor} >= 0`),
-]);
+]); 

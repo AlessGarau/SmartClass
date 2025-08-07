@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactDOM from "react-dom/client";
 import Layout from "./layout/Layout.tsx";
 import PlanningPage from "./pages/PlanningPage.tsx";
+import { Toaster } from 'react-hot-toast';
 
 const queryClient = new QueryClient();
 
@@ -72,9 +73,10 @@ const router = createBrowserRouter([
 const root = document.getElementById("root")!;
 
 ReactDOM.createRoot(root).render(
-    <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-            <RouterProvider router={router} />
-        </AuthProvider>
-    </QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <RouterProvider router={router} />
+      <Toaster position="top-right" />
+    </AuthProvider>
+  </QueryClientProvider>
 );

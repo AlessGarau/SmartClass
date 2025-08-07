@@ -1,0 +1,30 @@
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for psycopg2 and OR-Tools
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY packages/data/requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code
+COPY packages/data/ .
+
+# Set environment variables
+ENV FLASK_APP=run.py
+ENV PYTHONUNBUFFERED=1
+
+# Expose the port
+EXPOSE 5001
+
+# Run the application
+CMD ["python", "run.py"]

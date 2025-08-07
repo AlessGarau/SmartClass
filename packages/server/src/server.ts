@@ -8,6 +8,7 @@ import Fastify from "fastify";
 import qs from "qs";
 import "reflect-metadata";
 import Container from "typedi";
+import multipart from "@fastify/multipart";
 import { ClassRoutes } from "./feature/class/Routes";
 import { EquipmentRoutes } from "./feature/equipment/Routes";
 import { ReportingRoutes } from "./feature/reporting/Routes";
@@ -21,6 +22,7 @@ import {
 } from "./middleware/auth.middleware";
 import { ErrorMiddleware } from "./middleware/error/error.handler";
 import { SensorDataCollector } from "./services/SensorDataCollector";
+import { PlanningRoutes } from "./feature/planning/Routes";
 
 dotenv.config();
 
@@ -32,6 +34,7 @@ const setupServer = async () => {
   await server.register(fastifyCors, {
     origin: ["http://localhost:5173", "http://smart-class-client-dev:5173"],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   });
 
   // Register OpenAPI/Swagger plugins
@@ -95,6 +98,12 @@ const setupServer = async () => {
     secret: process.env.COOKIE_SECRET!,
   });
 
+  await server.register(multipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB max file size
+    },
+  });
+
   server.get("/", async (_request, _reply) => {
     return "Wesh les bgs";
   });
@@ -113,6 +122,8 @@ const setupServer = async () => {
   userRoutes.registerRoutes();
   const weatherRoutes = new WeatherRoutes(server);
   weatherRoutes.registerRoutes();
+  const planningRoutes = new PlanningRoutes(server);
+  planningRoutes.registerRoutes();
 
   return server;
 };

@@ -8,4 +8,5 @@ export interface IClassRepository {
     putClass(id: string, classUpdateParams: PutClassParams): Promise<Class>;
     patchClass(id: string, classUpdateParams: PatchClassParams): Promise<Class>;
     deleteClass(id: string): Promise<void>;
+    getClassByName(name: string): Promise<Class>;
 }

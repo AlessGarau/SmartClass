@@ -15,4 +15,6 @@ export interface IRoomRepository {
   putRoom(id: string, roomUpdateParams: PutRoomParams): Promise<Room>;
   patchRoom(id: string, roomUpdateParams: PatchRoomParams): Promise<Room>;
   deleteRoom(id: string): Promise<void>;
+  getDistinctBuildings(): Promise<string[]>;
+  getDistinctFloors(): Promise<number[]>;
 }
