@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import { UserError } from "./../../middleware/error/userError";
 import { IInteractor } from "./interface/IInteractor";
 import { UserAuth } from "../../../database/schema/user";
-import { UserLoginParams, UserRegisterParams } from "./validate";
+import { UserLoginParams, UserRegisterParams, GetUsersQuery } from "./validate";
 
 @Service()
 export class UserInteractor implements IInteractor {
@@ -38,5 +38,9 @@ export class UserInteractor implements IInteractor {
       throw UserError.notFound();
     }
     return currentUser;
+  }
+
+  async getUsers(filters: GetUsersQuery) {
+    return this.repository.getUsers(filters);
   }
 }

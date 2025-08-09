@@ -1,7 +1,7 @@
 import { type FastifyInstance } from "fastify";
 import { UserController } from "./Controller";
 import Container from "typedi";
-import { UserMeResponseSchema, UserRegisterSchema } from "./validate";
+import { UserMeResponseSchema, UserRegisterSchema, TeacherOptionsResponseSchema } from "./validate";
 import zodToJsonSchema from "zod-to-json-schema";
 
 export class UserRoutes {
@@ -112,6 +112,24 @@ export class UserRoutes {
         },
       },
       this.controller.logoutUser.bind(this.controller),
+    );
+    this.server.get(
+      "/user/teachers/options",
+      {
+        schema: {
+          tags: ["User"],
+          summary: "Get teacher options",
+          description: "Get list of teachers for dropdown options (Admin only)",
+          response: {
+            200: {
+              description: "Teacher options retrieved successfully",
+              ...zodToJsonSchema(TeacherOptionsResponseSchema),
+            },
+          },
+        },
+        onRequest: [this.server.admin],
+      },
+      this.controller.getTeacherOptions.bind(this.controller),
     );
   }
 }

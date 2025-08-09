@@ -3,9 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { format, addDays, startOfISOWeek } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { getTimeSlotsForDay } from "../../../utils/planning";
-import type { Classroom, WeekDate, PlanningFilters } from "../../../types/Planning";
+import type { Classroom, WeekDate, PlanningFilters, PlannedClass } from "../../../types/Planning";
 import PlannedClassSlot from "../PlannedClassSlot/PlannedClassSlot";
 import { planningQueryOptions } from "../../../api/queryOptions";
+import LessonDetailsModal from "../LessonDetailsModal/LessonDetailsModal";
 
 interface PlanningContainerProps {
     startDate: string;
@@ -23,6 +24,8 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
     floorFilter
 }) => {
     const [currentWeek, setCurrentWeek] = useState<WeekDate[]>([]);
+    const [selectedLesson, setSelectedLesson] = useState<PlannedClass | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const filters: PlanningFilters = {
         startDate,
@@ -61,6 +64,16 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
 
     const getClassesForDay = (classroom: Classroom, dayOfWeek: string) => {
         return classroom.plannedClasses.filter(cls => cls.dayOfWeek === dayOfWeek);
+    };
+
+    const handleLessonClick = (lesson: PlannedClass) => {
+        setSelectedLesson(lesson);
+        setIsModalOpen(true);
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setSelectedLesson(null);
     };
 
     return (
@@ -109,6 +122,7 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
                                                         isEmpty={slot.isEmpty}
                                                         startTime={slot.startTime}
                                                         endTime={slot.endTime}
+                                                        onClick={slot.plannedClass ? () => handleLessonClick(slot.plannedClass!) : undefined}
                                                     />
                                                 ))}
                                             </div>
@@ -119,6 +133,13 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
                         ))}
                     </tbody>
                 </table>
+            )}
+            {selectedLesson && (
+                <LessonDetailsModal
+                    lesson={selectedLesson}
+                    isOpen={isModalOpen}
+                    onClose={handleModalClose}
+                />
             )}
         </div>
     )
