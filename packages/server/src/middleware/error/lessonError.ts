@@ -18,4 +18,12 @@ export class LessonError extends Error {
       cause,
     });
   }
+
+  static teacherNotAvailable(cause?: Error): LessonError {
+    return new LessonError({
+      message: "Le professeur a déjà un cours à cette heure",
+      statusCode: 409,
+      cause,
+    });
+  }
 }

@@ -23,6 +23,7 @@ import {
 import { ErrorMiddleware } from "./middleware/error/error.handler";
 import { SensorDataCollector } from "./services/SensorDataCollector";
 import { PlanningRoutes } from "./feature/planning/Routes";
+import { LessonRoutes } from "./feature/lesson/Routes";
 
 dotenv.config();
 
@@ -124,6 +125,8 @@ const setupServer = async () => {
   weatherRoutes.registerRoutes();
   const planningRoutes = new PlanningRoutes(server);
   planningRoutes.registerRoutes();
+  const lessonRoutes = new LessonRoutes(server);
+  lessonRoutes.registerRoutes();
 
   return server;
 };

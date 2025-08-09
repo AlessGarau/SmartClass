@@ -32,11 +32,11 @@ export const planningApi = {
         return response.data;
     },
 
-    uploadLessons: async (file: File): Promise<{ 
-        message: string; 
-        importedCount: number; 
-        skippedCount: number; 
-        errors: Array<{ row: number; field?: string; message: string }>; 
+    uploadLessons: async (file: File): Promise<{
+        message: string;
+        importedCount: number;
+        skippedCount: number;
+        errors: Array<{ row: number; field?: string; message: string }>;
         optimization?: {
             status: 'success' | 'failed' | 'skipped';
             error?: string;
@@ -55,11 +55,6 @@ export const planningApi = {
 
     getFilterOptions: async (): Promise<{ data: PlanningFilterOptions }> => {
         const response = await apiClient.get('/planning/filters');
-        return response.data;
-    },
-
-    deleteLesson: async (lessonId: string): Promise<{ message: string }> => {
-        const response = await apiClient.delete(`/lessons/${lessonId}`);
         return response.data;
     },
 }

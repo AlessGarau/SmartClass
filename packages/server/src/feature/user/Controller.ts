@@ -96,4 +96,15 @@ export class UserController {
       message: "Utilisateur déconnecté avec succès",
     });
   }
+
+  async getTeacherOptions(_req: FastifyRequest, reply: FastifyReply) {
+    const teachers = await this.interactor.getUsers({ role: "teacher" });
+    
+    const teacherOptions = this.responseMapper.toTeacherOptions(teachers);
+
+    return reply.status(200).send({
+      data: teacherOptions,
+      message: "Options des professeurs récupérées avec succès",
+    });
+  }
 }

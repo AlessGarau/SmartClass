@@ -7,7 +7,7 @@ import { roomTable } from "../../../database/schema/room";
 import { classTable } from "../../../database/schema/class";
 import { type User, userTable } from "../../../database/schema/user";
 import { userLessonTable } from "../../../database/schema/userLesson";
-import type { LessonWithRelations, ILessonRepository, CreateLessonData } from "./interface/IRepository";
+import type { LessonWithRelations, ILessonRepository, CreateLessonData, UpdateLessonData } from "./interface/IRepository";
 import type { Lesson } from "../../../database/schema/lesson";
 @Service()
 export class LessonRepository implements ILessonRepository {
@@ -17,7 +17,7 @@ export class LessonRepository implements ILessonRepository {
     this.db = database;
   }
 
-  async getLessonsForWeek(startDate: Date, endDate: Date, roomIds?: string[]): Promise<LessonWithRelations[]> {
+  async getLessonsBetween(startDate: Date, endDate: Date, roomIds?: string[]): Promise<LessonWithRelations[]> {
     const query = this.db
       .select({
         lesson: lessonTable,
@@ -128,5 +128,76 @@ export class LessonRepository implements ILessonRepository {
     await this.db
       .delete(lessonTable)
       .where(eq(lessonTable.id, lessonId));
+  }
+
+  async updateLesson(lessonId: string, data: UpdateLessonData): Promise<Lesson> {
+    const [startHour, startMinute] = data.startTime.split(":").map(Number);
+    const [endHour, endMinute] = data.endTime.split(":").map(Number);
+
+    const startDate = new Date(data.date);
+    startDate.setHours(startHour, startMinute, 0, 0);
+
+    const endDate = new Date(data.date);
+    endDate.setHours(endHour, endMinute, 0, 0);
+
+    const result = await this.db
+      .update(lessonTable)
+      .set({
+        title: data.title,
+        room_id: data.roomId,
+        start_time: startDate,
+        end_time: endDate,
+      })
+      .where(eq(lessonTable.id, lessonId))
+      .returning();
+
+    return result[0];
+  }
+
+  async updateLessonTeacher(lessonId: string, teacherId: string): Promise<void> {
+    await this.db
+      .delete(userLessonTable)
+      .where(eq(userLessonTable.lesson_id, lessonId));
+
+    await this.db
+      .insert(userLessonTable)
+      .values({
+        user_id: teacherId,
+        lesson_id: lessonId,
+      });
+  }
+
+  async getLessonWithRelations(lessonId: string): Promise<LessonWithRelations | null> {
+    const result = await this.db
+      .select({
+        lesson: lessonTable,
+        room: roomTable,
+        class: classTable,
+      })
+      .from(lessonTable)
+      .leftJoin(roomTable, eq(lessonTable.room_id, roomTable.id))
+      .leftJoin(classTable, eq(lessonTable.class_id, classTable.id))
+      .where(eq(lessonTable.id, lessonId))
+      .limit(1);
+
+    if (!result[0]) { return null; }
+
+    const teachers = await this.db
+      .select({
+        user: userTable,
+      })
+      .from(userLessonTable)
+      .leftJoin(userTable, eq(userLessonTable.user_id, userTable.id))
+      .where(eq(userLessonTable.lesson_id, lessonId));
+
+    return {
+      ...result[0].lesson,
+      room: result[0].room ? {
+        ...result[0].room,
+        isEnabled: result[0].room.is_enabled,
+      } : null,
+      class: result[0].class,
+      users: teachers.map(t => t.user).filter(Boolean) as User[],
+    };
   }
 }

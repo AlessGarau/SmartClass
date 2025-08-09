@@ -1,18 +1,9 @@
 import { z } from "zod";
 import { RoomSchema } from "../room/validate";
-
-export const PlannedClassSchema = z.object({
-  id: z.string().uuid(),
-  subject: z.string(),
-  teacher: z.string(),
-  startTime: z.string(),
-  endTime: z.string(),
-  room: z.string(),
-  dayOfWeek: z.enum(["LUN", "MAR", "MER", "JEU", "VEN"]),
-});
+import { PlannedLessonSchema } from "../lesson/validate";
 
 export const RoomWithPlannedClassesSchema = RoomSchema.extend({
-  plannedClasses: z.array(PlannedClassSchema),
+  plannedClasses: z.array(PlannedLessonSchema),
 });
 
 export const WeekPlanningResultSchema = z.object({
@@ -38,7 +29,6 @@ export const WeeklyPlanningDataSchema = z.object({
   year: z.number().min(2024).max(2100),
 });
 
-export type PlannedClass = z.infer<typeof PlannedClassSchema>;
 export type RoomWithPlannedClasses = z.infer<typeof RoomWithPlannedClassesSchema>;
 export type WeeklyPlanningData = z.infer<typeof WeeklyPlanningDataSchema>;
 export type WeeklyPlanningQuery = z.infer<typeof WeeklyPlanningQuerySchema>;
@@ -114,6 +104,7 @@ export const PlanningFilterOptionsResponseSchema = z.object({
 export const DeleteLessonParamsSchema = z.object({
   lessonId: z.string().uuid("Lesson ID must be a valid UUID"),
 });
+
 
 export type FileUpload = z.infer<typeof FileUploadSchema>;
 export type ImportedLesson = z.infer<typeof ImportedLessonSchema>;

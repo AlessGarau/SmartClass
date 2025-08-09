@@ -17,12 +17,24 @@ export interface CreateLessonData {
   roomId: string | null;
 }
 
+export interface UpdateLessonData {
+  title: string;
+  roomId: string;
+  startTime: string;
+  endTime: string;
+  dayOfWeek: string;
+  date: string;
+}
+
 export interface ILessonRepository {
-  getLessonsForWeek(startDate: Date, endDate: Date, roomIds?: string[]): Promise<LessonWithRelations[]>;
+  getLessonsBetween(startDate: Date, endDate: Date, roomIds?: string[]): Promise<LessonWithRelations[]>;
   updateLessonRoom(lessonId: string, roomId: string): Promise<void>;
   updateMultipleLessonRooms(updates: Array<{ lessonId: string; roomId: string }>): Promise<void>;
   createLesson(data: CreateLessonData): Promise<Lesson>;
   findLessonByDetails(classId: string, startTime: Date, endTime: Date): Promise<Lesson | null>;
   getLessonById(lessonId: string): Promise<Lesson | null>;
   deleteLesson(lessonId: string): Promise<void>;
+  updateLesson(lessonId: string, data: UpdateLessonData): Promise<Lesson>;
+  updateLessonTeacher(lessonId: string, teacherId: string): Promise<void>;
+  getLessonWithRelations(lessonId: string): Promise<LessonWithRelations | null>;
 }

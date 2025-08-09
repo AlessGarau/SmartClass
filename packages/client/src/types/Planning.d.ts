@@ -1,11 +1,12 @@
 export interface PlannedClass {
     id: string;
-    subject: string;
+    title: string;
     teacher: string;
     startTime: string;
     endTime: string;
     room: string;
     dayOfWeek: 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN';
+    date: string;
 }
 
 export interface Classroom {

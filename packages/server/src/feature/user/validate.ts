@@ -32,7 +32,25 @@ export const UserFullResponseSchema = z.object({
   updatedAt: z.string(),
 });
 
+export const TeacherOptionSchema = z.object({
+  value: z.string(),
+  label: z.string(),
+});
+
+export const TeacherOptionsResponseSchema = z.object({
+  data: z.array(TeacherOptionSchema),
+  message: z.string(),
+});
+
+export const GetUsersQuerySchema = z.object({
+  role: z.enum(["admin", "teacher"]).optional(),
+  search: z.string().optional(),
+});
+
 export type UserRegisterParams = z.infer<typeof UserRegisterSchema>;
 export type UserLoginParams = z.infer<typeof UserLoginSchema>;
 export type UserMeResponse = z.infer<typeof UserMeResponseSchema>;
 export type UserFullResponse = z.infer<typeof UserFullResponseSchema>;
+export type TeacherOption = z.infer<typeof TeacherOptionSchema>;
+export type TeacherOptionsResponse = z.infer<typeof TeacherOptionsResponseSchema>;
+export type GetUsersQuery = z.infer<typeof GetUsersQuerySchema>;
