@@ -1,6 +1,7 @@
 import fCookie from "@fastify/cookie";
 import fastifyCors from "@fastify/cors";
 import fjwt from "@fastify/jwt";
+import multipart from "@fastify/multipart";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import dotenv from "dotenv";
@@ -8,11 +9,13 @@ import Fastify from "fastify";
 import qs from "qs";
 import "reflect-metadata";
 import Container from "typedi";
-import multipart from "@fastify/multipart";
 import { ClassRoutes } from "./feature/class/Routes";
 import { EquipmentRoutes } from "./feature/equipment/Routes";
+import { LessonRoutes } from "./feature/lesson/Routes";
+import { PlanningRoutes } from "./feature/planning/Routes";
 import { ReportingRoutes } from "./feature/reporting/Routes";
 import { RoomRoutes } from "./feature/room/Routes";
+import { TeacherRoutes } from "./feature/teacher/Routes";
 import { UserRoutes } from "./feature/user/Routes";
 import { WeatherRoutes } from "./feature/weather/Routes";
 import {
@@ -22,8 +25,6 @@ import {
 } from "./middleware/auth.middleware";
 import { ErrorMiddleware } from "./middleware/error/error.handler";
 import { SensorDataCollector } from "./services/SensorDataCollector";
-import { PlanningRoutes } from "./feature/planning/Routes";
-import { LessonRoutes } from "./feature/lesson/Routes";
 
 dotenv.config();
 
@@ -115,6 +116,8 @@ const setupServer = async () => {
   roomRoutes.registerRoutes();
   const classRoutes = new ClassRoutes(server);
   classRoutes.registerRoutes();
+  const teacherRoutes = new TeacherRoutes(server);
+  teacherRoutes.registerRoutes();
   const reportingRoutes = new ReportingRoutes(server);
   reportingRoutes.registerRoutes();
   const equipmentRoutes = new EquipmentRoutes(server);

@@ -4,10 +4,11 @@ import { z } from "zod";
 import { ClassError } from "./classError";
 import { MqttError } from "./mqttError";
 import NotFoundError from "./notFoundError";
+import { PlanningError } from "./planningError";
 import { RoomError } from "./roomError";
+import { TeacherError } from "./teacherError";
 import { UserError } from "./userError";
 import { WeatherError } from "./weatherError";
-import { PlanningError } from "./planningError";
 
 export const ErrorMiddleware = (
   error:
@@ -15,6 +16,7 @@ export const ErrorMiddleware = (
     | NotFoundError
     | RoomError
     | ClassError
+    | TeacherError
     | UserError
     | WeatherError
     | MqttError
@@ -43,6 +45,13 @@ export const ErrorMiddleware = (
     return reply.status(error.statusCode).send({
       error: error.message,
       data: null,
+    });
+  }
+
+  if (error instanceof TeacherError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: error.cause,
     });
   }
 
