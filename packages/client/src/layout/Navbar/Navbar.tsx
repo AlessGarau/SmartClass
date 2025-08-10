@@ -16,7 +16,14 @@ function Navbar() {
         { name: "Alertes", path: "/alertes" },
     ];
 
-    const isActive = (path: string) => location.pathname === path;
+    const isActive = (path: string) => {
+        if (path === "/dashboard") {
+            return (
+                location.pathname === "/" || location.pathname === "/dashboard"
+            );
+        }
+        return location.pathname === path;
+    };
 
     if (!isAuthenticated) {
         return null;
