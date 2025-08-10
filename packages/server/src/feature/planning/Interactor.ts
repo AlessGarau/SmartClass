@@ -37,7 +37,7 @@ export class PlanningInteractor implements IPlanningInteractor {
     }
 
     const roomIds = rooms.map(room => room.id);
-    const lessons = await this.lessonRepository.getLessonsForWeek(
+    const lessons = await this.lessonRepository.getLessonsBetween(
       startDate,
       endDate,
       filters.building || filters.floor !== undefined ? roomIds : undefined,

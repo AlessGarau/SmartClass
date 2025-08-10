@@ -1,7 +1,8 @@
 import type { LoginCredentials } from "../types/User";
-import type { PlanningFilters } from "../types/Planning";
+import type { PlanningFilters, PlannedClass } from "../types/Planning";
 import { userApi } from "./endpoints/user";
 import { planningApi } from "./endpoints/planning";
+import { lessonApi } from "./endpoints/lesson";
 
 export const userQueryOptions = {
     login: () => ({
@@ -20,7 +21,13 @@ export const userQueryOptions = {
     logout: () => ({
         mutationFn: () => userApi.logout(),
         mutationKey: ['user', 'logout'],
-    })
+    }),
+
+    teacherOptions: () => ({
+        queryKey: ['user', 'teacherOptions'],
+        queryFn: () => userApi.getTeacherOptions(),
+        staleTime: 60 * 60 * 1000, // 1 hour
+    }),
 };
 
 export const planningQueryOptions = {
@@ -45,9 +52,16 @@ export const planningQueryOptions = {
         queryFn: () => planningApi.getFilterOptions(),
         staleTime: 60 * 60 * 1000,
     }),
+};
 
+export const lessonQueryOptions = {
     deleteLesson: () => ({
-        mutationFn: (lessonId: string) => planningApi.deleteLesson(lessonId),
-        mutationKey: ['planning', 'deleteLesson'],
+        mutationFn: (lessonId: string) => lessonApi.deleteLesson(lessonId),
+        mutationKey: ['lesson', 'deleteLesson'],
+    }),
+
+    updateLesson: () => ({
+        mutationFn: (lesson: PlannedClass) => lessonApi.updateLesson(lesson),
+        mutationKey: ['lesson', 'updateLesson'],
     }),
 };

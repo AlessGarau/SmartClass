@@ -2,7 +2,8 @@ import { Service } from "typedi";
 import type { IPlanningMapper } from "./interface/IMapper";
 import type { LessonWithRelations } from "../lesson/interface/IRepository";
 import type { Room } from "../room/validate";
-import { PlannedClass, RoomWithPlannedClasses, WeeklyPlanningResult } from "./validate";
+import { RoomWithPlannedClasses, WeeklyPlanningResult } from "./validate";
+import { PlannedLesson } from "../lesson/validate";
 
 @Service()
 export class PlanningMapper implements IPlanningMapper {
@@ -37,18 +38,19 @@ export class PlanningMapper implements IPlanningMapper {
   }
 
   toClassroom(room: Room, lessons: LessonWithRelations[]): RoomWithPlannedClasses {
-    const plannedClasses: PlannedClass[] = lessons.map(lesson => {
+    const plannedClasses: PlannedLesson[] = lessons.map(lesson => {
       const teacher = lesson.users?.[0];
       const dayOfWeek = this.getDayOfWeek(lesson.start_time);
 
       return {
         id: lesson.id,
-        subject: lesson.title,
+        title: lesson.title,
         teacher: teacher ? `${teacher.first_name} ${teacher.last_name}` : "TBD",
         startTime: this.formatTime(lesson.start_time),
         endTime: this.formatTime(lesson.end_time),
         room: room.name,
         dayOfWeek,
+        date: this.formatDate(lesson.start_time),
       };
     });
 
@@ -81,6 +83,13 @@ export class PlanningMapper implements IPlanningMapper {
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");
     return `${hours}:${minutes}`;
+  }
+
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }
 
 }

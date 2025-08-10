@@ -1,6 +1,6 @@
 import { apiClient } from '../client';
-import type { LoginCredentials } from '../../types/User';
-import type { User } from '../../types/User';
+import type { LoginCredentials, User } from '../../types/User';
+import type { FilterOption } from '../../types/Planning';
 
 export const userApi = {
     login: async (credentials: LoginCredentials): Promise<{ data: User }> => {
@@ -15,5 +15,10 @@ export const userApi = {
 
     logout: async (): Promise<void> => {
         await apiClient.post('/user/logout');
+    },
+
+    getTeacherOptions: async (): Promise<{ data: FilterOption[]; message: string }> => {
+        const response = await apiClient.get('/user/teachers/options');
+        return response.data;
     },
 }

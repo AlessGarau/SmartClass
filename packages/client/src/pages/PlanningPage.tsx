@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import Button from "../components/Button/Button";
 import PlusIcon from "../assets/icons/add_icon.svg"
 import DownloadIcon from "../assets/icons/download_icon.svg"
+import ChevronLeftIcon from "../assets/icons/chevron_left.svg"
+import ChevronRightIcon from "../assets/icons/chevron_right.svg"
 import FilterContainer from "../components/FilterContainer/FilterContainer";
 import Dropdown from "../components/Dropdown/Dropdown";
 import PlanningContainer from "../components/Planning/PlanningContainer/PlanningContainer";
@@ -132,6 +134,28 @@ const PlanningPage = () => {
         }));
     };
 
+    const handlePreviousWeek = () => {
+        const currentStart = new Date(filters.startDate);
+        const newStart = addDays(currentStart, -7);
+        const newEnd = addDays(newStart, 4);
+        setFilters(prev => ({
+            ...prev,
+            startDate: formatISO(newStart, { representation: 'date' }),
+            endDate: formatISO(newEnd, { representation: 'date' })
+        }));
+    };
+
+    const handleNextWeek = () => {
+        const currentStart = new Date(filters.startDate);
+        const newStart = addDays(currentStart, 7);
+        const newEnd = addDays(newStart, 4);
+        setFilters(prev => ({
+            ...prev,
+            startDate: formatISO(newStart, { representation: 'date' }),
+            endDate: formatISO(newEnd, { representation: 'date' })
+        }));
+    };
+
     const handleBuildingChange = (value: string) => {
         setFilters(prev => ({ ...prev, building: value ? value : undefined }));
     };
@@ -174,6 +198,11 @@ const PlanningPage = () => {
             <FilterContainer>
                 <div className="flex flex items-center gap-2">
                     <label className="text-sm font-medium text-gray-700">Semaine :</label>
+                    <Button
+                        onClick={handlePreviousWeek}
+                        icon={ChevronLeftIcon}
+                        tooltip="Semaine précédente"
+                    />
                     <Dropdown
                         options={weekOptions}
                         value={weekOptions.find(opt => {
@@ -184,6 +213,11 @@ const PlanningPage = () => {
                         placeholder="Sélectionner une semaine"
                         onSelect={(option) => handleWeekChange(option.value as string)}
                         className="min-w-[200px]"
+                    />
+                    <Button
+                        onClick={handleNextWeek}
+                        icon={ChevronRightIcon}
+                        tooltip="Semaine suivante"
                     />
                 </div>
                 <div className="flex flex items-center gap-2">
