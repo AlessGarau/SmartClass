@@ -84,7 +84,7 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
                     <div className="text-gray-500">Chargement...</div>
                 </div>
             ) : (
-                <table className="flex flex-col justify-between items-center rounded-md bg-white border border-grayBorder border-solid border-2">
+                <table className="flex flex-col justify-between items-center rounded-md bg-white border-grayBorder border-solid border-2">
                     <thead className="flex flex-col gap-2 bg-lightGray w-full rounded-t-md p-4 font-semibold text-[12px]">
                         <tr className="w-full flex justify-between items-center">
                             <th className="flex-1">CLASSE</th>

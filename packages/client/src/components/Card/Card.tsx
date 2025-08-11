@@ -12,7 +12,7 @@ const Card = ({ children, className, title, headerAction }: CardProps) => {
     return (
         <div
             className={cn(
-                "rounded-lg border shadow-sm bg-white border-grayBorder px-6 py-8",
+                "rounded-lg border-2 bg-white border-grayBorder px-6 py-8",
                 className
             )}
         >
