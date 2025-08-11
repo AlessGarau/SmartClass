@@ -225,7 +225,12 @@ const DashboardTestPage = () => {
                     className="w-[830px] relative"
                     title="Aperçu de l'état des classes"
                 >
-                    <button className="absolute top-4 right-6 text-blue-500 hover:underline text-sm">
+                    <button
+                        onClick={() => {
+                            navigate("/salles");
+                        }}
+                        className="absolute top-6 right-6 text-blue-500 hover:underline text-sm cursor-pointer"
+                    >
                         Voir tout
                     </button>
 
