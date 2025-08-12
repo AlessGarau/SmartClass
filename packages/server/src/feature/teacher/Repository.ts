@@ -3,6 +3,7 @@ import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
 import { userTable } from "../../../database/schema";
+import { PostgresErrorCode } from "../../middleware/error/PostgresErrorCode";
 import { TeacherError } from "../../middleware/error/teacherError";
 import { ITeacherRepository } from "./interface/IRepository";
 import { CreateTeacherParams, dbTeacher, GetTeachersQueryParams, PatchTeacherParams, PutTeacherParams, Teacher, TeacherFilter } from "./validate";
@@ -49,10 +50,18 @@ export class TeacherRepository implements ITeacherRepository {
           first_name: TeacherCreateParams.firstName,
           last_name: TeacherCreateParams.lastName,
         })
-        .returning();
+        .returning({
+          id: userTable.id,
+          email: userTable.email,
+          role: userTable.role,
+          first_name: userTable.first_name,
+          last_name: userTable.last_name,
+          created_at: userTable.created_at,
+          updated_at: userTable.updated_at,
+        });
       return this.transformTeacher(result[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw TeacherError.alreadyExists(
           `Teacher with email "${TeacherCreateParams.email}" already exists.`,
         );
@@ -108,31 +117,35 @@ export class TeacherRepository implements ITeacherRepository {
     return this.transformTeacher(result[0]);
   }
 
-  async putTeacher(id: string, teacherUpdateParams: PutTeacherParams, hashedPassword: string): Promise<Teacher> {
+  async putTeacher(id: string, { email, firstName, lastName }: PutTeacherParams, hashedPassword: string): Promise<Teacher> {
     try {
-      const dateNow = new Date();
-
       const updatedTeacher = await this._db
         .update(userTable)
         .set({
-          email: teacherUpdateParams.email,
+          email: email,
           password: hashedPassword,
-          first_name: teacherUpdateParams.firstName,
-          last_name: teacherUpdateParams.lastName,
-          created_at: dateNow,
-          updated_at: dateNow,
+          first_name: firstName,
+          last_name: lastName,
         })
         .where(and(eq(userTable.id, id), eq(userTable.role, "teacher")))
-        .returning();
+        .returning({
+          id: userTable.id,
+          email: userTable.email,
+          role: userTable.role,
+          first_name: userTable.first_name,
+          last_name: userTable.last_name,
+          created_at: userTable.created_at,
+          updated_at: userTable.updated_at,
+        });
 
       if (updatedTeacher.length === 0) {
         throw TeacherError.updateFailed(`Failed to update teacher with ID "${id}".`);
       }
       return this.transformTeacher(updatedTeacher[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw TeacherError.alreadyExists(
-          `Teacher with email "${teacherUpdateParams.email}" already exists.`,
+          `Teacher with email "${email}" already exists.`,
         );
       }
       throw TeacherError.updateFailed(
@@ -159,20 +172,26 @@ export class TeacherRepository implements ITeacherRepository {
         updateData.last_name = teacherUpdateParams.lastName;
       }
 
-      updateData.updated_at = new Date();
-
       const result = await this._db
         .update(userTable)
         .set(updateData)
         .where(and(eq(userTable.id, id), eq(userTable.role, "teacher")))
-        .returning();
+        .returning({
+          id: userTable.id,
+          email: userTable.email,
+          role: userTable.role,
+          first_name: userTable.first_name,
+          last_name: userTable.last_name,
+          created_at: userTable.created_at,
+          updated_at: userTable.updated_at,
+        });
 
       if (result.length === 0) {
         throw TeacherError.updateFailed(`Failed to update teacher with ID "${id}".`);
       }
       return this.transformTeacher(result[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw TeacherError.alreadyExists(
           `Teacher with email "${teacherUpdateParams.email}" already exists.`,
         );

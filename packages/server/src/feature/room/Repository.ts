@@ -3,6 +3,7 @@ import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
 import { roomTable } from "../../../database/schema/room";
+import { PostgresErrorCode } from "../../middleware/error/PostgresErrorCode";
 import { RoomError } from "../../middleware/error/roomError";
 import { IRoomRepository } from "./interface/IRepository";
 import {
@@ -73,7 +74,7 @@ export class RoomRepository implements IRoomRepository {
         .returning();
       return this.transformRoom(result[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw RoomError.alreadyExists(
           `Room name "${RoomCreateParams.name}" already exists.`,
         );
@@ -151,7 +152,7 @@ export class RoomRepository implements IRoomRepository {
       }
       return this.transformRoom(updatedRoom[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw RoomError.alreadyExists(
           `Room name "${roomUpdateParams.name}" already exists.`,
         );
@@ -194,7 +195,7 @@ export class RoomRepository implements IRoomRepository {
       }
       return this.transformRoom(result[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw RoomError.alreadyExists(
           `Room name "${roomUpdateParams.name}" already exists.`,
         );

@@ -3,7 +3,7 @@ import { z } from "zod";
 export const dbTeacherSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
-  password: z.string(),
+  // password: z.string().optional(),
   role: z.enum(["teacher", "admin"]),
   first_name: z.string(),
   last_name: z.string(),
