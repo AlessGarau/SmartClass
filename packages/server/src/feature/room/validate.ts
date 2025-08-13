@@ -76,7 +76,27 @@ export const RoomCountSchema = z.object({
   count: z.number().int().nonnegative(),
 });
 
+export const RoomWithMetricsSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  capacity: z.number(),
+  building: z.string().max(50),
+  floor: z.number().int().nonnegative().default(0),
+  isEnabled: z.boolean(),
+  temperature: z.string().nullable(),
+  humidity: z.string().nullable(),
+  pressure: z.string().nullable(),
+  movement: z.string().nullable(),
+});
+
 export type dbRoom = z.infer<typeof dbRoomSchema>;
+export type dbRowWithMetrics = dbRoom & {
+  temperature: string | null;
+  humidity: string | null;
+  pressure: string | null;
+  movement: string | null;
+};
+export type RoomWithMetrics = z.infer<typeof RoomWithMetricsSchema>;
 export type Room = z.infer<typeof RoomSchema>;
 export type Count = z.infer<typeof RoomCountSchema>;
 export type CreateRoomParams = z.infer<typeof CreateRoomSchema>;

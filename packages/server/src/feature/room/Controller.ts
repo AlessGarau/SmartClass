@@ -19,7 +19,7 @@ export class RoomController {
   constructor(
     private _interactor: RoomInteractor,
     private _mapper: RoomMapper,
-  ) { }
+  ) {}
 
   async createRoom(req: FastifyRequest, reply: FastifyReply) {
     const roomCreateParams: CreateRoomParams = CreateRoomSchema.parse(req.body);
@@ -33,7 +33,8 @@ export class RoomController {
   }
 
   async getRooms(req: FastifyRequest, reply: FastifyReply) {
-    const { limit, offset, isEnabled, search, building, floor } = GetRoomsQuerySchema.parse(req.query);
+    const { limit, offset, isEnabled, search, building, floor } =
+      GetRoomsQuerySchema.parse(req.query);
     const rooms = await this._interactor.getRooms({
       limit,
       offset,
@@ -43,7 +44,7 @@ export class RoomController {
       floor,
     });
     return reply.status(200).send({
-      data: this._mapper.toGetRoomsResponse(rooms),
+      data: this._mapper.toGetAllRoomsWithMetricsResponse(rooms),
     });
   }
 
@@ -51,7 +52,7 @@ export class RoomController {
     const { id } = RoomIdParamsSchema.parse(req.params);
     const room = await this._interactor.getRoom(id);
     return reply.status(200).send({
-      data: this._mapper.toGetRoomResponse(room),
+      data: this._mapper.toGetRoomWithMetricsResponse(room),
     });
   }
 

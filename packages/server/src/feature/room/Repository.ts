@@ -12,8 +12,16 @@ import {
   PutRoomParams,
   Room,
   RoomFilter,
+  RoomWithMetrics,
   dbRoom,
+  dbRowWithMetrics,
 } from "./validate";
+import {
+  temperatureTable,
+  humidityTable,
+  pressureTable,
+  movementTable,
+} from "../../../database/schema";
 
 @Service()
 export class RoomRepository implements IRoomRepository {
@@ -21,6 +29,18 @@ export class RoomRepository implements IRoomRepository {
   constructor() {
     this._db = database;
   }
+  private _selectedFields = {
+    id: roomTable.id,
+    name: roomTable.name,
+    capacity: roomTable.capacity,
+    building: roomTable.building,
+    floor: roomTable.floor,
+    is_enabled: roomTable.is_enabled,
+    temperature: temperatureTable.data,
+    humidity: humidityTable.data,
+    pressure: pressureTable.data,
+    movement: movementTable.data,
+  } as const;
 
   private transformRoom(room: dbRoom): Room {
     return {
@@ -32,9 +52,28 @@ export class RoomRepository implements IRoomRepository {
       isEnabled: room.is_enabled,
     };
   }
+  private transformRoomWithMetrics = (
+    row: dbRowWithMetrics,
+  ): RoomWithMetrics => ({
+    ...this.transformRoom(row),
+    temperature: row.temperature,
+    humidity: row.humidity,
+    pressure: row.pressure,
+    movement: row.movement,
+  });
+
+  private addJoins(query: any) {
+    return query
+      .leftJoin(temperatureTable, eq(temperatureTable.room_id, roomTable.id))
+      .leftJoin(humidityTable, eq(humidityTable.room_id, roomTable.id))
+      .leftJoin(pressureTable, eq(pressureTable.room_id, roomTable.id))
+      .leftJoin(movementTable, eq(movementTable.room_id, roomTable.id));
+  }
 
   private applyFilter(filter: RoomFilter, query: any): void {
-    if (!filter) { return; }
+    if (!filter) {
+      return;
+    }
 
     const conditions = [];
 
@@ -85,15 +124,20 @@ export class RoomRepository implements IRoomRepository {
     }
   }
 
-  async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
-    const query = this._db.select().from(roomTable);
+  async getRooms(params: GetRoomsQueryParams): Promise<RoomWithMetrics[]> {
+    const query = this._db.select(this._selectedFields).from(roomTable);
 
-    this.applyFilter({
-      search: params.search,
-      isEnabled: params.isEnabled,
-      building: params.building,
-      floor: params.floor,
-    }, query);
+    this.addJoins(query);
+
+    this.applyFilter(
+      {
+        search: params.search,
+        isEnabled: params.isEnabled,
+        building: params.building,
+        floor: params.floor,
+      },
+      query,
+    );
 
     if (params.limit !== undefined) {
       query.limit(params.limit);
@@ -104,7 +148,7 @@ export class RoomRepository implements IRoomRepository {
     }
 
     const result = await query;
-    return result.map(room => this.transformRoom(room));
+    return result.map((room) => this.transformRoomWithMetrics(room));
   }
 
   async getRoomsCount(filter: RoomFilter): Promise<number> {
@@ -118,18 +162,20 @@ export class RoomRepository implements IRoomRepository {
     return Number(result[0].count);
   }
 
-  async getRoom(id: string): Promise<Room | null> {
-    const result = await this._db
-      .select()
+  async getRoom(id: string): Promise<RoomWithMetrics | null> {
+    const query = this._db
+      .select(this._selectedFields)
       .from(roomTable)
-      .where(eq(roomTable.id, id))
-      .limit(1);
+      .where(eq(roomTable.id, id));
 
-    if (result.length === 0) {
+    this.addJoins(query).limit(1);
+
+    const room = await query;
+    if (room.length === 0) {
       return null;
     }
 
-    return this.transformRoom(result[0]);
+    return this.transformRoomWithMetrics(room[0]);
   }
 
   async putRoom(id: string, roomUpdateParams: PutRoomParams): Promise<Room> {
@@ -163,7 +209,10 @@ export class RoomRepository implements IRoomRepository {
     }
   }
 
-  async patchRoom(id: string, roomUpdateParams: PatchRoomParams): Promise<Room> {
+  async patchRoom(
+    id: string,
+    roomUpdateParams: PatchRoomParams,
+  ): Promise<Room> {
     try {
       const updateData: Partial<typeof roomTable.$inferInsert> = {};
 
@@ -224,7 +273,7 @@ export class RoomRepository implements IRoomRepository {
       .where(eq(roomTable.is_enabled, true))
       .orderBy(roomTable.building);
 
-    return result.map(row => row.building);
+    return result.map((row) => row.building);
   }
 
   async getDistinctFloors(): Promise<number[]> {
@@ -234,6 +283,6 @@ export class RoomRepository implements IRoomRepository {
       .where(eq(roomTable.is_enabled, true))
       .orderBy(roomTable.floor);
 
-    return result.map(row => row.floor);
+    return result.map((row) => row.floor);
   }
 }
