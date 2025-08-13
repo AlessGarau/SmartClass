@@ -95,3 +95,21 @@ jobs:
             docker image prune -f
 
             echo "Deployment with migrations and database seeding completed!"
+
+            # Check container status
+            echo "=== Checking container status ==="
+            docker compose -f docker-compose.prod.yml --profile data ps
+            
+            # Show container logs for debugging
+            echo "=== Container health check ==="
+            docker ps --filter "name=smart-class" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+            
+            # Check if all services are running
+            if docker compose -f docker-compose.prod.yml --profile data ps | grep -E "(Exit|Restarting)"; then
+              echo "⚠️  WARNING: Some containers are not running properly!"
+              echo "=== Showing logs for non-running containers ==="
+              docker compose -f docker-compose.prod.yml --profile data logs --tail=50
+              exit 1
+            else
+              echo "✅ All containers are running successfully!"
+            fi
