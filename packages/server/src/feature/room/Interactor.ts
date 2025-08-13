@@ -9,11 +9,12 @@ import {
   PutRoomParams,
   Room,
   RoomFilter,
+  RoomWithMetrics,
 } from "./validate";
 
 @Service()
 export class RoomInteractor implements IRoomInteractor {
-  constructor(private _repository: RoomRepository) { }
+  constructor(private _repository: RoomRepository) {}
 
   async createRoom(CreateRoomCreateParams: CreateRoomParams): Promise<Room> {
     const room: Room = await this._repository.create(CreateRoomCreateParams);
@@ -23,7 +24,7 @@ export class RoomInteractor implements IRoomInteractor {
     return room;
   }
 
-  async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
+  async getRooms(params: GetRoomsQueryParams): Promise<RoomWithMetrics[]> {
     return this._repository.getRooms(params);
   }
 
@@ -31,8 +32,8 @@ export class RoomInteractor implements IRoomInteractor {
     return this._repository.getRoomsCount(params);
   }
 
-  async getRoom(id: string): Promise<Room> {
-    const room: Room | null = await this._repository.getRoom(id);
+  async getRoom(id: string): Promise<RoomWithMetrics> {
+    const room = await this._repository.getRoom(id);
     if (!room) {
       throw RoomError.notFound(`Room with ID "${id}" not found.`);
     }
@@ -56,7 +57,10 @@ export class RoomInteractor implements IRoomInteractor {
     if (!existingRoom) {
       throw RoomError.notFound(`Room with ID "${id}" not found.`);
     }
-    const updatedRoom: Room = await this._repository.patchRoom(id, patchRoomParams);
+    const updatedRoom: Room = await this._repository.patchRoom(
+      id,
+      patchRoomParams,
+    );
     if (!updatedRoom) {
       throw RoomError.updateFailed();
     }

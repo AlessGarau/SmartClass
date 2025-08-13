@@ -11,6 +11,7 @@ import {
   RoomFilterSchema,
   RoomIdParamsSchema,
   RoomSchema,
+  RoomWithMetricsSchema,
 } from "./validate";
 
 export class RoomRoutes {
@@ -80,7 +81,7 @@ export class RoomRoutes {
               properties: {
                 data: {
                   type: "array",
-                  items: zodToJsonSchema(RoomSchema),
+                  items: zodToJsonSchema(RoomWithMetricsSchema),
                 },
                 message: { type: "string" },
               },
@@ -141,7 +142,7 @@ export class RoomRoutes {
               description: "Room details",
               type: "object",
               properties: {
-                data: zodToJsonSchema(RoomSchema),
+                data: zodToJsonSchema(RoomWithMetricsSchema),
               },
             },
             400: {
