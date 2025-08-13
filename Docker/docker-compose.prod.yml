@@ -1,12 +1,15 @@
 services:
   smart-class-server-prod:
     image: ${DOCKERHUB_USERNAME}/smart-class-server:latest
-    expose:
-      - "3000"
+    ports:
+      - "3000:3000"
     restart: always
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@smart-class-db-prod:5432/${POSTGRES_DB}
       - DATA_API_URL=http://smart-class-data-prod:5001
+      - JWT_SECRET=${JWT_SECRET}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - MQTT_BROKER_URL=${MQTT_BROKER_URL}
     networks:
       - smart-class-network
 
@@ -26,9 +29,11 @@ services:
 
   smart-class-client-prod:
     image: ${DOCKERHUB_USERNAME}/smart-class-client:latest
-    expose:
-      - "5173"
+    ports:
+      - "8080:80"
     restart: always
+    environment:
+      - VITE_API_URL=https://06.hetic.arcplex.dev/api
     networks:
       - smart-class-network
 
