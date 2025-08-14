@@ -45,8 +45,20 @@ export const GetReportsQuerySchema = z.object({
   status: z.enum(["pending", "resolved"]).optional().describe("Filter by report status"),
 });
 
+export const PatchReportingSchema = z.object({
+  status: z.enum(["pending", "resolved"]).optional(),
+});
+
+export const ReportingIdParamsSchema = z.object({
+  id: z.string().uuid().describe("Reporting ID"),
+});
+
 export const ReportingFilterSchema = GetReportsQuerySchema.pick({
   status: true,
+});
+
+export const ReportsCountSchema = z.object({
+  count: z.number().int().nonnegative(),
 });
 
 export type dbReporting = z.infer<typeof dbReportingSchema>;
@@ -54,3 +66,6 @@ export type ReportingByRoomResponse = z.infer<typeof ReportingByRoomResponseSche
 export type Reporting = z.infer<typeof ReportingSchema>;
 export type GetReportsQueryParams = z.infer<typeof GetReportsQuerySchema>;
 export type ReportingFilter = z.infer<typeof ReportingFilterSchema>;
+export type PatchReportingParams = z.infer<typeof PatchReportingSchema>;
+export type ReportingIdParams = z.infer<typeof ReportingIdParamsSchema>;
+export type Count = z.infer<typeof ReportsCountSchema>;

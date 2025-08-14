@@ -1,17 +1,18 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
 import { equipmentTable } from "../../../database/schema/equipment";
 import { reportingTable } from "../../../database/schema/reporting";
+import { ReportingError } from "../../middleware/error/reportingError";
 import { IReportingRepository } from "./interface/IRepository";
-import { dbReporting, GetReportsQueryParams, Reporting, ReportingFilter } from "./validate";
+import { dbReporting, GetReportsQueryParams, PatchReportingParams, Reporting, ReportingFilter } from "./validate";
 
 @Service()
 export class ReportingRepository implements IReportingRepository {
-  private db: NodePgDatabase<Record<string, never>>;
+  private _db: NodePgDatabase<Record<string, never>>;
   constructor() {
-    this.db = database;
+    this._db = database;
   }
 
   private transformReporting(reporting: dbReporting): Reporting {
@@ -39,7 +40,7 @@ export class ReportingRepository implements IReportingRepository {
   }
 
   async getReports(params: GetReportsQueryParams): Promise<Reporting[]> {
-    const query = this.db.select().from(reportingTable);
+    const query = this._db.select().from(reportingTable);
 
     this.applyFilter({
       status: params.status,
@@ -58,7 +59,7 @@ export class ReportingRepository implements IReportingRepository {
   }
 
   async findAllByRoomId(roomId: string) {
-    return this.db
+    return this._db
       .select()
       .from(reportingTable)
       .leftJoin(
@@ -66,5 +67,63 @@ export class ReportingRepository implements IReportingRepository {
         eq(reportingTable.equipment_id, equipmentTable.id),
       )
       .where(eq(equipmentTable.room_id, roomId));
+  }
+
+  async getReportsCount(filter: ReportingFilter): Promise<number> {
+    const query = this._db
+      .select({ count: sql<number>`count(*)` })
+      .from(reportingTable);
+
+    this.applyFilter(filter, query);
+
+    const result = await query;
+    return Number(result[0].count);
+  }
+
+  async getReporting(id: string): Promise<Reporting | null> {
+    const result = await this._db
+      .select()
+      .from(reportingTable)
+      .where(and(eq(reportingTable.id, id)))
+      .limit(1);
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    return this.transformReporting(result[0]);
+  }
+
+  async patchReporting(id: string, reportingUpdateParams: PatchReportingParams): Promise<Reporting> {
+    try {
+      const updateData: Partial<typeof reportingTable.$inferInsert> = {};
+
+      if (reportingUpdateParams.status !== undefined) {
+        updateData.status = reportingUpdateParams.status;
+      }
+
+      const result = await this._db
+        .update(reportingTable)
+        .set(updateData)
+        .where(and(eq(reportingTable.id, id)))
+        .returning({
+          id: reportingTable.id,
+          equipment_id: reportingTable.equipment_id,
+          description: reportingTable.description,
+          status: reportingTable.status,
+          created_date: reportingTable.created_date,
+        });
+
+      if (result.length === 0) {
+        throw ReportingError.updateFailed(`Failed to update reporting with ID "${id}".`);
+      }
+
+      return this.transformReporting(result[0]);
+    } catch (error: any) {
+      throw ReportingError.updateFailed(
+        "Unexpected error during reporting update",
+        error,
+      );
+    }
   }
 }

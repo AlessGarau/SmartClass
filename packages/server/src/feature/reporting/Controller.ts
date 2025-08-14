@@ -2,7 +2,8 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { Service } from "typedi";
 import { ReportingInteractor } from "./Interactor";
 import { ReportingMapper } from "./Mapper";
-import { GetReportsQuerySchema } from "./validate";
+import { ReportingMessage } from "./message";
+import { GetReportsQuerySchema, PatchReportingSchema, ReportingFilterSchema, ReportingIdParamsSchema } from "./validate";
 
 @Service()
 export class ReportingController {
@@ -18,6 +19,24 @@ export class ReportingController {
 
     return reply.status(200).send({
       data: this._mapper.toGetReportsResponse(reports),
+    });
+  }
+
+  async patchReporting(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = ReportingIdParamsSchema.parse(req.params);
+    const reportingUpdateParams = PatchReportingSchema.parse(req.body);
+    const updatedReporting = await this._interactor.patchReporting(id, reportingUpdateParams);
+    return reply.status(200).send({
+      data: this._mapper.toGetReportingResponse(updatedReporting),
+      message: ReportingMessage.UPDATE_SUCCESS,
+    });
+  }
+
+  async getReportsCount(req: FastifyRequest, reply: FastifyReply) {
+    const filter = ReportingFilterSchema.parse(req.query);
+    const total = await this._interactor.getReportsCount(filter);
+    return reply.status(200).send({
+      data: this._mapper.toGetTotalReportsResponse(total),
     });
   }
 

@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import Container from "typedi";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { ReportingController } from "./Controller";
-import { GetReportsQuerySchema, ReportingByRoomResponseSchema, ReportingSchema } from "./validate";
+import { GetReportsQuerySchema, PatchReportingSchema, ReportingByRoomResponseSchema, ReportingFilterSchema, ReportingIdParamsSchema, ReportingSchema, ReportsCountSchema } from "./validate";
 
 export class ReportingRoutes {
   private controller: ReportingController;
@@ -93,6 +93,81 @@ export class ReportingRoutes {
         },
       },
       this.controller.findAllReportByRoomId.bind(this.controller),
+    );
+
+    this._server.get(
+      "/reporting/count",
+      {
+        schema: {
+          tags: ["Reporting"],
+          summary: "Get total count of reports",
+          description:
+            "Retrieve total number of reports matching optional filter",
+          querystring: zodToJsonSchema(ReportingFilterSchema),
+          response: {
+            200: {
+              description: "Total count",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ReportsCountSchema),
+              },
+            },
+          },
+        },
+      },
+      this.controller.getReportsCount.bind(this.controller),
+    );
+
+    this._server.patch(
+      "/reporting/:id",
+      {
+        schema: {
+          tags: ["Reporting"],
+          summary: "Update reporting by ID",
+          description: "Update one or more fields of a reporting using its ID",
+          params: zodToJsonSchema(ReportingIdParamsSchema),
+          body: zodToJsonSchema(PatchReportingSchema),
+          response: {
+            200: {
+              description: "Reporting updated successfully",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ReportingSchema),
+                message: { type: "string" },
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            404: {
+              description: "Room not found",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            409: {
+              description: "Conflict",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.patchReporting.bind(this.controller),
     );
   }
 }

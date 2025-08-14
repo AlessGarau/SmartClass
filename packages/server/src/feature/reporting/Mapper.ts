@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import { IMapper } from "./interface/IMapper";
-import { Reporting, ReportingByRoomResponse } from "./validate";
+import { Count, Reporting, ReportingByRoomResponse } from "./validate";
 
 @Service()
 export class ReportingMapper implements IMapper {
@@ -12,6 +12,20 @@ export class ReportingMapper implements IMapper {
       status: report.status,
       createdDate: report.createdDate,
     }));
+  }
+
+  toGetReportingResponse(reporting: Reporting): Reporting {
+    return {
+      id: reporting.id,
+      equipmentId: reporting.equipmentId,
+      description: reporting.description,
+      status: reporting.status,
+      createdDate: reporting.createdDate,
+    };
+  }
+
+  toGetTotalReportsResponse(total: number): Count {
+    return { count: total };
   }
 
   toResponse({ reporting, equipment }: { reporting: any; equipment: any }): ReportingByRoomResponse {
