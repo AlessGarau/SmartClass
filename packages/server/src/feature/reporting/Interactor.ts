@@ -4,11 +4,19 @@ import { Report } from "../../../database/schema/reporting";
 import { ReportingError } from "../../middleware/error/reportingError";
 import { IReportingInteractor } from "./interface/IInteractor";
 import { ReportingRepository } from "./Repository";
-import { GetReportsQueryParams, PatchReportingParams, Reporting, ReportingFilter } from "./validate";
+import { CreateReportingParams, GetReportsQueryParams, PatchReportingParams, Reporting, ReportingFilter } from "./validate";
 
 @Service()
 export class ReportingInteractor implements IReportingInteractor {
   constructor(private _repository: ReportingRepository) { }
+
+  async createReporting(CreateReportingParams: CreateReportingParams): Promise<Reporting> {
+    const createdReporting: Reporting = await this._repository.create(CreateReportingParams);
+    if (!createdReporting) {
+      throw ReportingError.creationFailed();
+    }
+    return createdReporting;
+  }
 
   async getReports(params: GetReportsQueryParams): Promise<Reporting[]> {
     return this._repository.getReports(params);

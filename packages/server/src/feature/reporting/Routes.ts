@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import Container from "typedi";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { ReportingController } from "./Controller";
-import { GetReportsQuerySchema, PatchReportingSchema, ReportingByRoomResponseSchema, ReportingFilterSchema, ReportingIdParamsSchema, ReportingSchema, ReportsCountSchema } from "./validate";
+import { CreateReportingSchema, GetReportsQuerySchema, PatchReportingSchema, ReportingByRoomResponseSchema, ReportingFilterSchema, ReportingIdParamsSchema, ReportingSchema, ReportsCountSchema } from "./validate";
 
 export class ReportingRoutes {
   private controller: ReportingController;
@@ -11,6 +11,50 @@ export class ReportingRoutes {
     this.controller = Container.get(ReportingController);
   }
   public registerRoutes() {
+
+    this._server.post(
+      "/reporting",
+      {
+        schema: {
+          tags: ["Reporting"],
+          summary: "Create a new report",
+          description: "Create a new report with the specified details",
+          body: zodToJsonSchema(CreateReportingSchema),
+          response: {
+            201: {
+              description: "Report created successfully",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(ReportingSchema),
+                message: { type: "string" },
+              },
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            409: {
+              description: "Already Exists",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this.controller.createReporting.bind(this.controller),
+    );
 
     this._server.get(
       "/reporting",

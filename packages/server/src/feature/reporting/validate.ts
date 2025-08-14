@@ -24,6 +24,11 @@ export const EquipmentSchema = z.object({
   roomId: z.string(),
 });
 
+export const CreateReportingSchema = z.object({
+  equipmentId: z.string().uuid().nullable(),
+  description: z.string(),
+});
+
 export const ReportingByRoomResponseSchema = z.object({
   reporting: ReportingSchema,
   equipment: EquipmentSchema.nullable(),
@@ -64,6 +69,7 @@ export const ReportsCountSchema = z.object({
 export type dbReporting = z.infer<typeof dbReportingSchema>;
 export type ReportingByRoomResponse = z.infer<typeof ReportingByRoomResponseSchema>;
 export type Reporting = z.infer<typeof ReportingSchema>;
+export type CreateReportingParams = z.infer<typeof CreateReportingSchema>;
 export type GetReportsQueryParams = z.infer<typeof GetReportsQuerySchema>;
 export type ReportingFilter = z.infer<typeof ReportingFilterSchema>;
 export type PatchReportingParams = z.infer<typeof PatchReportingSchema>;

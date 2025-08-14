@@ -6,7 +6,7 @@ import { equipmentTable } from "../../../database/schema/equipment";
 import { reportingTable } from "../../../database/schema/reporting";
 import { ReportingError } from "../../middleware/error/reportingError";
 import { IReportingRepository } from "./interface/IRepository";
-import { dbReporting, GetReportsQueryParams, PatchReportingParams, Reporting, ReportingFilter } from "./validate";
+import { CreateReportingParams, dbReporting, GetReportsQueryParams, PatchReportingParams, Reporting, ReportingFilter } from "./validate";
 
 @Service()
 export class ReportingRepository implements IReportingRepository {
@@ -37,6 +37,24 @@ export class ReportingRepository implements IReportingRepository {
     }
 
     return query;
+  }
+
+  async create(ReportingCreateParams: CreateReportingParams): Promise<Reporting> {
+    try {
+      const result = await this._db
+        .insert(reportingTable)
+        .values({
+          equipment_id: ReportingCreateParams.equipmentId,
+          description: ReportingCreateParams.description,
+        })
+        .returning();
+      return this.transformReporting(result[0]);
+    } catch (error: any) {
+      throw ReportingError.creationFailed(
+        "Unexpected error during reporting creation, check if the equipmentId exists",
+        error,
+      );
+    }
   }
 
   async getReports(params: GetReportsQueryParams): Promise<Reporting[]> {

@@ -1,6 +1,7 @@
-import { GetReportsQueryParams, PatchReportingParams, Reporting, ReportingFilter } from "../validate";
+import { CreateReportingParams, GetReportsQueryParams, PatchReportingParams, Reporting, ReportingFilter } from "../validate";
 
 export interface IReportingRepository {
+  create(ReportingCreateParams: CreateReportingParams): Promise<Reporting>;
   findAllByRoomId(roomId: string): Promise<any>;
   getReports(params: GetReportsQueryParams): Promise<Reporting[]>;
   getReportsCount(filter: ReportingFilter): Promise<number>;

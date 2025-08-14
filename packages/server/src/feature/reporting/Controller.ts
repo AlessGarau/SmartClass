@@ -3,11 +3,22 @@ import { Service } from "typedi";
 import { ReportingInteractor } from "./Interactor";
 import { ReportingMapper } from "./Mapper";
 import { ReportingMessage } from "./message";
-import { GetReportsQuerySchema, PatchReportingSchema, ReportingFilterSchema, ReportingIdParamsSchema } from "./validate";
+import { CreateReportingParams, CreateReportingSchema, GetReportsQuerySchema, PatchReportingSchema, Reporting, ReportingFilterSchema, ReportingIdParamsSchema } from "./validate";
 
 @Service()
 export class ReportingController {
   constructor(private _interactor: ReportingInteractor, private _mapper: ReportingMapper) { }
+
+  async createReporting(req: FastifyRequest, reply: FastifyReply) {
+    const reportingCreateParams: CreateReportingParams = CreateReportingSchema.parse(req.body);
+    const createdReporting: Reporting = await this._interactor.createReporting(
+      reportingCreateParams,
+    );
+    return reply.status(201).send({
+      data: this._mapper.toGetReportingResponse(createdReporting),
+      message: ReportingMessage.CREATION_SUCCESS,
+    });
+  }
 
   async getReports(req: FastifyRequest, reply: FastifyReply) {
     const { limit, offset, status } = GetReportsQuerySchema.parse(req.query);
