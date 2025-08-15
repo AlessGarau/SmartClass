@@ -2,7 +2,7 @@ name: ci/cd
 
 on:
   push:
-    branches: [main, DP-203-add-data-to-ci-cd]
+    branches: [main]
 
 jobs:
   build-and-push:
