@@ -15,6 +15,7 @@ import { PLANNING_LEGEND_ITEMS } from "../constants/planning";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { planningQueryOptions } from "../api/queryOptions";
 import toast from "react-hot-toast";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 
 const PlanningPage = () => {
     const queryClient = useQueryClient()
@@ -22,6 +23,7 @@ const PlanningPage = () => {
     const today = new Date();
     const currentWeekStart = startOfISOWeek(today);
     const currentWeekEnd = addDays(currentWeekStart, 4); // Friday
+    const isMdScreen = useMediaQuery('(min-width: 768px)');
 
     const [filters, setFilters] = useState<PlanningFilters>({
         startDate: formatISO(currentWeekStart, { representation: 'date' }),
@@ -165,26 +167,28 @@ const PlanningPage = () => {
     };
 
     return (
-        <div className="flex flex-col gap-4 p-20">
-            <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-4 p-4 sm:p-8 md:p-12 lg:p-20">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
                 <div>
-                    <h1 className="text-4xl font-bold">Planning</h1>
-                    <div className="text-[20px]">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">Planning</h1>
+                    <div className="text-base sm:text-lg md:text-[20px]">
                         Plannifiez et gérer la réservation des classes
                     </div>
                 </div>
                 <div className="flex gap-2">
                     <Button
+                        label={isMdScreen ? "Télécharger" : undefined}
                         icon={DownloadIcon}
                         onClick={() => downloadTemplateMutation.mutate()}
                         disabled={downloadTemplateMutation.isPending}
-                        tooltip="Télécharger le modèle"
+                        tooltip={!isMdScreen ? "Télécharger le modèle" : undefined}
                     />
                     <Button
-                        label="Importer une feuille"
+                        label={isMdScreen ? "Importer une feuille" : undefined}
                         icon={PlusIcon}
                         onClick={handleImportClick}
                         disabled={uploadLessonsMutation.isPending}
+                        tooltip={!isMdScreen ? "Importer une feuille" : undefined}
                     />
                     <input
                         ref={fileInputRef}
@@ -196,53 +200,55 @@ const PlanningPage = () => {
                 </div>
             </div>
             <FilterContainer>
-                <div className="flex flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-700">Semaine :</label>
-                    <Button
-                        onClick={handlePreviousWeek}
-                        icon={ChevronLeftIcon}
-                        tooltip="Semaine précédente"
-                    />
-                    <Dropdown
-                        options={weekOptions}
-                        value={weekOptions.find(opt => {
-                            const optDateRange = JSON.parse(opt.value);
-                            return optDateRange.startDate === filters.startDate &&
-                                optDateRange.endDate === filters.endDate;
-                        })?.value}
-                        placeholder="Sélectionner une semaine"
-                        onSelect={(option) => handleWeekChange(option.value as string)}
-                        className="min-w-[200px]"
-                    />
-                    <Button
-                        onClick={handleNextWeek}
-                        icon={ChevronRightIcon}
-                        tooltip="Semaine suivante"
-                    />
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
+                    <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Semaine :</label>
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <Button
+                            onClick={handlePreviousWeek}
+                            icon={ChevronLeftIcon}
+                            tooltip="Semaine précédente"
+                        />
+                        <Dropdown
+                            options={weekOptions}
+                            value={weekOptions.find(opt => {
+                                const optDateRange = JSON.parse(opt.value);
+                                return optDateRange.startDate === filters.startDate &&
+                                    optDateRange.endDate === filters.endDate;
+                            })?.value}
+                            placeholder="Sélectionner une semaine"
+                            onSelect={(option) => handleWeekChange(option.value as string)}
+                            className="min-w-0 w-full sm:min-w-[200px]"
+                        />
+                        <Button
+                            onClick={handleNextWeek}
+                            icon={ChevronRightIcon}
+                            tooltip="Semaine suivante"
+                        />
+                    </div>
                 </div>
-                <div className="flex flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-700">Bâtiment :</label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
+                    <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Bâtiment :</label>
                     <Dropdown
                         options={buildingOptions}
                         value={filters.building || ""}
                         placeholder="Tous les bâtiments"
                         onSelect={(option) => handleBuildingChange(option.value as string)}
-                        className="min-w-[200px]"
+                        className="w-full sm:min-w-[200px]"
                         disabled={isLoadingFilters}
                     />
                 </div>
-                <div className="flex flex items-center gap-2">
-                    <label className="text-sm font-medium text-gray-700">Étage :</label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
+                    <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Étage :</label>
                     <Dropdown
                         options={floorOptions}
                         value={filters.floor ? String(filters.floor) : ""}
                         placeholder="Tous les étages"
                         onSelect={(option) => handleFloorChange(option.value as number)}
-                        className="min-w-[200px]"
+                        className="w-full sm:min-w-[200px]"
                         disabled={isLoadingFilters}
                     />
                 </div>
-                <ColorLegend items={PLANNING_LEGEND_ITEMS} className="ml-auto" />
+                <ColorLegend items={PLANNING_LEGEND_ITEMS} className="w-full lg:w-auto lg:ml-auto" />
             </FilterContainer>
             <PlanningContainer
                 startDate={filters.startDate}
