@@ -6,15 +6,19 @@ import {
   WeeklyPlanningQuerySchema,
   FileUploadSchema,
   DeleteLessonParamsSchema,
+  OptimizeNextWeekResponse,
+  SchedulerStatusResponse,
 } from "./validate";
 import { PlanningMessage } from "./message";
 import { PlanningError } from "./../../middleware/error/planningError";
+import { SchedulerService } from "../../services/SchedulerService";
 
 @Service()
 export class PlanningController {
   constructor(
     private planningInteractor: PlanningInteractor,
     private planningMapper: PlanningMapper,
+    private schedulerService: SchedulerService,
   ) { }
 
   async getWeeklyPlanning(request: FastifyRequest, reply: FastifyReply) {
@@ -95,5 +99,21 @@ export class PlanningController {
     return reply.status(200).send({
       message: PlanningMessage.LESSON_DELETED_SUCCESSFULLY,
     });
+  }
+
+  async optimizeNextWeek(_request: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
+    const result = await this.schedulerService.runOptimizationNow();
+    
+    const response: OptimizeNextWeekResponse = result;
+    
+    return reply.status(200).send(response);
+  }
+
+  async getSchedulerStatus(_request: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
+    const status = this.schedulerService.getSchedulerStatus();
+    
+    const response: SchedulerStatusResponse = status;
+    
+    return reply.status(200).send(response);
   }
 }

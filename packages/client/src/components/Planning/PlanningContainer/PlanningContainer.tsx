@@ -117,7 +117,7 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
                                             <div className="flex flex-col gap-2 h-full">
                                                 {timeSlots.map((slot, index) => (
                                                     <PlannedClassSlot
-                                                        key={`${day.day}-${index}`}
+                                                        key={slot.plannedClass ? `${classroom.id}-${day.day}-${slot.plannedClass.id}` : `${classroom.id}-${day.day}-empty-${index}`}
                                                         plannedClass={slot.plannedClass}
                                                         isEmpty={slot.isEmpty}
                                                         startTime={slot.startTime}

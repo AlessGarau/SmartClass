@@ -16,6 +16,8 @@ services:
       - COOKIE_SECRET=secret-cookie-monster
       - MQTT_BROKER_URL=mqtt://admin-hetic.arcplex.tech:8823
       - DATA_API_URL=http://smart-class-data-dev:5001
+      - WEEKLY_OPTIMIZATION_CRON=0 2 * * 0
+      - ENABLE_SCHEDULED_OPTIMIZATION=true
 
   smart-class-db-dev:
     image: postgres:latest
