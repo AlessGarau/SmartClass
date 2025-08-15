@@ -25,6 +25,7 @@ import {
 } from "./middleware/auth.middleware";
 import { ErrorMiddleware } from "./middleware/error/error.handler";
 import { SensorDataCollector } from "./services/SensorDataCollector";
+import { SchedulerService } from "./services/SchedulerService";
 
 dotenv.config();
 
@@ -148,10 +149,23 @@ const start = async () => {
     await sensorDataCollector.start(mqttBrokerUrl);
     console.log("Service de collecte de données MQTT démarré");
 
+    const schedulerService = Container.get(SchedulerService);
+    schedulerService.initialize();
+
     process.on("SIGINT", () => {
       console.log("Arrêt du serveur...");
       sensorDataCollector.stop();
+      schedulerService.shutdown();
       process.exit(0);
+    });
+
+    process.on("SIGTERM", () => {
+      console.log("Arrêt du serveur (SIGTERM)...");
+      sensorDataCollector.stop();
+      schedulerService.shutdown();
+      server.close(() => {
+        process.exit(0);
+      });
     });
   } catch (err) {
     console.error(err);
