@@ -7,12 +7,12 @@ import { CreateTeacherSchema, GetTeachersQuerySchema, PatchTeacherSchema, PutTea
 export class TeacherRoutes {
   private controller: TeacherController;
 
-  constructor(private server: FastifyInstance) {
+  constructor(private _server: FastifyInstance) {
     this.controller = Container.get(TeacherController);
   }
 
   public registerRoutes() {
-    this.server.post(
+    this._server.post(
       "/teacher",
       {
         schema: {
@@ -56,7 +56,7 @@ export class TeacherRoutes {
       this.controller.createTeacher.bind(this.controller),
     );
 
-    this.server.get(
+    this._server.get(
       "/teacher",
       {
         schema: {
@@ -96,7 +96,7 @@ export class TeacherRoutes {
       this.controller.getTeachers.bind(this.controller),
     );
 
-    this.server.get(
+    this._server.get(
       "/teacher/count",
       {
         schema: {
@@ -119,7 +119,7 @@ export class TeacherRoutes {
       this.controller.getTeachersCount.bind(this.controller),
     );
 
-    this.server.get(
+    this._server.get(
       "/teacher/:id",
       {
         schema: {
@@ -162,7 +162,7 @@ export class TeacherRoutes {
       this.controller.getTeacher.bind(this.controller),
     );
 
-    this.server.put(
+    this._server.put(
       "/teacher/:id",
       {
         schema: {
@@ -214,7 +214,7 @@ export class TeacherRoutes {
       this.controller.putTeacher.bind(this.controller),
     );
 
-    this.server.patch(
+    this._server.patch(
       "/teacher/:id",
       {
         schema: {
@@ -266,7 +266,7 @@ export class TeacherRoutes {
       this.controller.patchTeacher.bind(this.controller),
     );
 
-    this.server.delete(
+    this._server.delete(
       "/teacher/:id",
       {
         schema: {

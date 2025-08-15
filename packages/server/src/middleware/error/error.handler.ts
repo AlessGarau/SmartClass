@@ -5,6 +5,7 @@ import { ClassError } from "./classError";
 import { MqttError } from "./mqttError";
 import NotFoundError from "./notFoundError";
 import { PlanningError } from "./planningError";
+import { ReportingError } from "./reportingError";
 import { RoomError } from "./roomError";
 import { TeacherError } from "./teacherError";
 import { UserError } from "./userError";
@@ -17,6 +18,7 @@ export const ErrorMiddleware = (
     | RoomError
     | ClassError
     | TeacherError
+    | ReportingError
     | UserError
     | WeatherError
     | MqttError
@@ -49,6 +51,13 @@ export const ErrorMiddleware = (
   }
 
   if (error instanceof TeacherError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: error.cause,
+    });
+  }
+
+  if (error instanceof ReportingError) {
     return reply.status(error.statusCode).send({
       error: error.message,
       data: error.cause,
