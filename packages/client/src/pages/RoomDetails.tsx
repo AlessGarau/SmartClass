@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { roomQueryOptions } from "../api/queryOptions";
+import { SensorChart } from "../components/SensorChart";
 
 function RoomDetails() {
     const { id } = useParams<{ id: string }>();
@@ -299,6 +300,8 @@ function RoomDetails() {
                     </div>
                 </div>
             </div>
+            
+            <SensorChart roomId={id} />
 
             <div className="bg-white rounded-lg shadow p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">

@@ -85,6 +85,37 @@ export const roomQueryOptions = {
         queryFn: () => roomApi.getMovementData(roomId),
         staleTime: 30 * 1000, // 30 secondes pour les mouvements
     }),
+
+    // Query options pour les données journalières des capteurs (pour graphiques)
+    dailyTemperatureData: (roomId: string, date?: string) => ({
+        queryKey: ["room", roomId, "daily", "temperature", date || new Date().toISOString().split('T')[0]],
+        queryFn: () => roomApi.getDailyTemperatureData(roomId, date),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    }),
+
+    dailyHumidityData: (roomId: string, date?: string) => ({
+        queryKey: ["room", roomId, "daily", "humidity", date || new Date().toISOString().split('T')[0]],
+        queryFn: () => roomApi.getDailyHumidityData(roomId, date),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    }),
+
+    dailyPressureData: (roomId: string, date?: string) => ({
+        queryKey: ["room", roomId, "daily", "pressure", date || new Date().toISOString().split('T')[0]],
+        queryFn: () => roomApi.getDailyPressureData(roomId, date),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    }),
+
+    dailyMovementData: (roomId: string, date?: string) => ({
+        queryKey: ["room", roomId, "daily", "movement", date || new Date().toISOString().split('T')[0]],
+        queryFn: () => roomApi.getDailyMovementData(roomId, date),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    }),
+
+    allDailySensorData: (roomId: string, date?: string) => ({
+        queryKey: ["room", roomId, "daily", "all", date || new Date().toISOString().split('T')[0]],
+        queryFn: () => roomApi.getAllDailySensorData(roomId, date),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    }),
 };
 
 export const planningQueryOptions = {
