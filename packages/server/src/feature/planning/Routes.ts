@@ -116,5 +116,42 @@ export class PlanningRoutes {
       },
       this.controller.deleteLesson.bind(this.controller),
     );
+    this.server.get(
+      "/teacher/planning",
+      {
+        schema: {
+          tags: ["Planning - Teacher"],
+          summary: "Get weekly planning for teacher",
+          description: "Planning accessible aux enseignants",
+          querystring: zodToJsonSchema(WeeklyPlanningQuerySchema),
+          response: {
+            200: {
+              description: "Weekly planning retrieved successfully",
+              ...zodToJsonSchema(WeeklyPlanningResponseSchema),
+            },
+          },
+        },
+        onRequest: [this.server.teacher], // <— IMPORTANT
+      },
+      this.controller.getWeeklyPlanning.bind(this.controller),
+    );
+    this.server.get(
+      "/teacher/planning/filters",
+      {
+        schema: {
+          tags: ["Planning - Teacher"],
+          summary: "Get planning filters for teacher",
+          description: "Filtres accessibles aux enseignants",
+          response: {
+            200: {
+              description: "Filter options retrieved successfully",
+              ...zodToJsonSchema(PlanningFilterOptionsResponseSchema),
+            },
+          },
+        },
+        onRequest: [this.server.teacher], // <— IMPORTANT
+      },
+      this.controller.getFilterOptions.bind(this.controller),
+    );
   }
 }
