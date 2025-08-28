@@ -115,7 +115,7 @@ export class SchedulerService {
   getSchedulerStatus() {
     const tasks = Array.from(this.tasks.entries()).map(([name, _task]) => ({
       name,
-      running: true, // node-cron tasks are always running unless stopped
+      running: true,
     }));
 
     return {
