@@ -116,3 +116,40 @@ export type WeeklyPlanningResponse = z.infer<typeof WeeklyPlanningResponseSchema
 export type PlanningFilterOptions = z.infer<typeof PlanningFilterOptionsSchema>;
 export type PlanningFilterOptionsResponse = z.infer<typeof PlanningFilterOptionsResponseSchema>;
 export type DeleteLessonParams = z.infer<typeof DeleteLessonParamsSchema>;
+
+export const OptimizeNextWeekResponseSchema = z.object({
+  success: z.boolean(),
+  result: z.object({
+    message: z.string(),
+    status: z.enum(["optimal", "feasible", "infeasible"]),
+    dateRange: z.object({
+      start: z.string(),
+      end: z.string(),
+    }),
+    lessonsOptimized: z.number(),
+    totalLessons: z.number(),
+    solverStats: z.record(z.any()).optional(),
+    timestamp: z.string(),
+  }).nullable(),
+  dateRange: z.object({
+    start: z.string().datetime(),
+    end: z.string().datetime(),
+  }),
+  error: z.string().nullable().optional(),
+});
+
+export const SchedulerStatusResponseSchema = z.object({
+  enabled: z.boolean(),
+  cronExpression: z.string(),
+  tasks: z.array(z.object({
+    name: z.string(),
+    running: z.boolean(),
+  })),
+  nextWeekDateRange: z.object({
+    startDate: z.date(),
+    endDate: z.date(),
+  }),
+});
+
+export type OptimizeNextWeekResponse = z.infer<typeof OptimizeNextWeekResponseSchema>;
+export type SchedulerStatusResponse = z.infer<typeof SchedulerStatusResponseSchema>;
