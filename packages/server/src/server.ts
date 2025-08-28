@@ -148,8 +148,13 @@ const start = async () => {
       process.env.MQTT_BROKER_URL || "mqtt://admin-hetic.arcplex.tech:8823";
     const sensorDataCollector = Container.get(SensorDataCollector);
 
-    await sensorDataCollector.start(mqttBrokerUrl);
-    console.log("Service de collecte de données MQTT démarré");
+    try {
+      await sensorDataCollector.start(mqttBrokerUrl);
+      console.log("Service de collecte de données MQTT démarré");
+    } catch (error) {
+      console.error("Échec du démarrage du service de collecte de données MQTT:", error);
+      console.warn("Le serveur continue sans la collecte de données des capteurs");
+    }
 
     process.on("SIGINT", () => {
       console.log("Arrêt du serveur...");
