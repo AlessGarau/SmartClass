@@ -131,7 +131,7 @@ export class PlanningRoutes {
             },
           },
         },
-        onRequest: [this.server.teacher], // <— IMPORTANT
+        onRequest: [this.server.teacher],
       },
       this.controller.getWeeklyPlanning.bind(this.controller),
     );
@@ -149,7 +149,7 @@ export class PlanningRoutes {
             },
           },
         },
-        onRequest: [this.server.teacher], // <— IMPORTANT
+        onRequest: [this.server.teacher],
       },
       this.controller.getFilterOptions.bind(this.controller),
     );
