@@ -77,7 +77,7 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full overflow-x-auto">
 
             {isLoading ? (
                 <div className="flex justify-center items-center p-8">

@@ -1,19 +1,63 @@
+import { FastifyReply, FastifyRequest } from "fastify";
 import { Service } from "typedi";
 import { ReportingInteractor } from "./Interactor";
-import { FastifyReply, FastifyRequest } from "fastify";
 import { ReportingMapper } from "./Mapper";
+import { ReportingMessage } from "./message";
+import { CreateReportingParams, CreateReportingSchema, GetReportsQuerySchema, PatchReportingSchema, Reporting, ReportingFilterSchema, ReportingIdParamsSchema } from "./validate";
 
 @Service()
 export class ReportingController {
-  constructor(private interactor: ReportingInteractor, private mapper: ReportingMapper) {}
+  constructor(private _interactor: ReportingInteractor, private _mapper: ReportingMapper) { }
+
+  async createReporting(req: FastifyRequest, reply: FastifyReply) {
+    const reportingCreateParams: CreateReportingParams = CreateReportingSchema.parse(req.body);
+    const createdReporting: Reporting = await this._interactor.createReporting(
+      reportingCreateParams,
+    );
+    return reply.status(201).send({
+      data: this._mapper.toGetReportingResponse(createdReporting),
+      message: ReportingMessage.CREATION_SUCCESS,
+    });
+  }
+
+  async getReports(req: FastifyRequest, reply: FastifyReply) {
+    const { limit, offset, status } = GetReportsQuerySchema.parse(req.query);
+    const reports = await this._interactor.getReports({
+      limit,
+      offset,
+      status,
+    });
+
+    return reply.status(200).send({
+      data: this._mapper.toGetReportsResponse(reports),
+    });
+  }
+
+  async patchReporting(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = ReportingIdParamsSchema.parse(req.params);
+    const reportingUpdateParams = PatchReportingSchema.parse(req.body);
+    const updatedReporting = await this._interactor.patchReporting(id, reportingUpdateParams);
+    return reply.status(200).send({
+      data: this._mapper.toGetReportingResponse(updatedReporting),
+      message: ReportingMessage.UPDATE_SUCCESS,
+    });
+  }
+
+  async getReportsCount(req: FastifyRequest, reply: FastifyReply) {
+    const filter = ReportingFilterSchema.parse(req.query);
+    const total = await this._interactor.getReportsCount(filter);
+    return reply.status(200).send({
+      data: this._mapper.toGetTotalReportsResponse(total),
+    });
+  }
 
   async findAllReportByRoomId(
     req: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply,
   ) {
     const roomId = req.params.id;
-    const reportings = await this.interactor.findAllByRoomId(roomId);
-    const data = reportings.map(r => this.mapper.toResponse(r));
+    const reportings = await this._interactor.findAllByRoomId(roomId);
+    const data = reportings.map(r => this._mapper.toResponse(r));
     reply.status(200).send({
       data,
       message: "Signalement récupéré avec succès",

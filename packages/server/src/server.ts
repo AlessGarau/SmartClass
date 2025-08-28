@@ -15,6 +15,7 @@ import { LessonRoutes } from "./feature/lesson/Routes";
 import { PlanningRoutes } from "./feature/planning/Routes";
 import { ReportingRoutes } from "./feature/reporting/Routes";
 import { RoomRoutes } from "./feature/room/Routes";
+import { SensorRoutes } from "./feature/sensor/Routes";
 import { TeacherRoutes } from "./feature/teacher/Routes";
 import { UserRoutes } from "./feature/user/Routes";
 import { WeatherRoutes } from "./feature/weather/Routes";
@@ -131,6 +132,8 @@ const setupServer = async () => {
   planningRoutes.registerRoutes();
   const lessonRoutes = new LessonRoutes(server);
   lessonRoutes.registerRoutes();
+  const sensorRoutes = new SensorRoutes(server);
+  sensorRoutes.registerRoutes();
 
   return server;
 };
