@@ -9,6 +9,8 @@ import {
   PlanningFilterOptionsResponseSchema,
   DeleteLessonParamsSchema,
   DeleteLessonParams,
+  OptimizeNextWeekResponseSchema,
+  SchedulerStatusResponseSchema,
 } from "./validate";
 
 export class PlanningRoutes {
@@ -152,6 +154,42 @@ export class PlanningRoutes {
         onRequest: [this.server.teacher],
       },
       this.controller.getFilterOptions.bind(this.controller),
+    );    
+    this.server.post(
+      "/planning/optimize-next-week",
+      {
+        schema: {
+          tags: ["Planning"],
+          summary: "Manually trigger weekly optimization",
+          description: "Manually trigger the optimization for next week (Monday to Friday) (Admin only)",
+          response: {
+            200: {
+              description: "Optimization triggered successfully",
+              ...zodToJsonSchema(OptimizeNextWeekResponseSchema),
+            },
+          },
+        },
+        onRequest: [this.server.admin],
+      },
+      this.controller.optimizeNextWeek.bind(this.controller),
+    );
+    this.server.get(
+      "/planning/scheduler-status",
+      {
+        schema: {
+          tags: ["Planning"],
+          summary: "Get scheduler status",
+          description: "Get the current status of the optimization scheduler (Admin only)",
+          response: {
+            200: {
+              description: "Scheduler status retrieved successfully",
+              ...zodToJsonSchema(SchedulerStatusResponseSchema),
+            },
+          },
+        },
+        onRequest: [this.server.admin],
+      },
+      this.controller.getSchedulerStatus.bind(this.controller),
     );
   }
 }
