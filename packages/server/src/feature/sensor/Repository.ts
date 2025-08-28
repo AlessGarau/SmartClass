@@ -4,13 +4,19 @@ import { and, eq, gte, lt, asc } from "drizzle-orm";
 import { ISensorRepository } from "./interface/IRepository";
 import { DailySensorData, SensorDataPoint } from "./validate";
 import { database } from "../../../database/database";
-import { temperatureTable, humidityTable, pressureTable, movementTable } from "../../../database/schema";
+import {
+  temperatureTable,
+  humidityTable,
+  pressureTable,
+  movementTable,
+} from "../../../database/schema";
 
 @Service()
 export class SensorRepository implements ISensorRepository {
-  
-  async getDailySensorData(roomId: string, date: string): Promise<DailySensorData[]> {
-    
+  async getDailySensorData(
+    roomId: string,
+    date: string,
+  ): Promise<DailySensorData[]> {
     const startDate = new Date(`${date}T00:00:00.000Z`);
     const endDate = new Date(`${date}T23:59:59.999Z`);
 
@@ -32,10 +38,15 @@ export class SensorRepository implements ISensorRepository {
       .orderBy(asc(temperatureTable.saved_at));
 
     if (temperatureData.length > 0) {
-      const data: SensorDataPoint[] = temperatureData.map(item => ({
-        timestamp: item.saved_at.toISOString(),
-        value: parseFloat(item.data),
-      }));
+      const data: SensorDataPoint[] = temperatureData
+        .map((item) => {
+          const value = parseFloat(item.data);
+          return {
+            timestamp: item.saved_at.toISOString(),
+            value: isNaN(value) ? 0 : value,
+          };
+        })
+        .filter((item) => !isNaN(item.value) || item.value === 0);
 
       results.push({
         roomId,
@@ -62,10 +73,15 @@ export class SensorRepository implements ISensorRepository {
       .orderBy(asc(humidityTable.saved_at));
 
     if (humidityData.length > 0) {
-      const data: SensorDataPoint[] = humidityData.map(item => ({
-        timestamp: item.saved_at.toISOString(),
-        value: parseFloat(item.data),
-      }));
+      const data: SensorDataPoint[] = humidityData
+        .map((item) => {
+          const value = parseFloat(item.data);
+          return {
+            timestamp: item.saved_at.toISOString(),
+            value: isNaN(value) ? 0 : value,
+          };
+        })
+        .filter((item) => !isNaN(item.value) || item.value === 0);
 
       results.push({
         roomId,
@@ -92,10 +108,15 @@ export class SensorRepository implements ISensorRepository {
       .orderBy(asc(pressureTable.saved_at));
 
     if (pressureData.length > 0) {
-      const data: SensorDataPoint[] = pressureData.map(item => ({
-        timestamp: item.saved_at.toISOString(),
-        value: parseFloat(item.data),
-      }));
+      const data: SensorDataPoint[] = pressureData
+        .map((item) => {
+          const value = parseFloat(item.data);
+          return {
+            timestamp: item.saved_at.toISOString(),
+            value: isNaN(value) ? 0 : value,
+          };
+        })
+        .filter((item) => !isNaN(item.value) || item.value === 0);
 
       results.push({
         roomId,
@@ -122,10 +143,31 @@ export class SensorRepository implements ISensorRepository {
       .orderBy(asc(movementTable.saved_at));
 
     if (movementData.length > 0) {
-      const data: SensorDataPoint[] = movementData.map(item => ({
-        timestamp: item.saved_at.toISOString(),
-        value: parseFloat(item.data),
-      }));
+      const data: SensorDataPoint[] = movementData.map((item) => {
+        let value: number;
+        const dataStr = item.data.toLowerCase();
+        if (
+          dataStr.includes("detected") ||
+                    dataStr === "true" ||
+                    dataStr === "1"
+        ) {
+          value = 1;
+        } else if (
+          dataStr.includes("no_movement") ||
+                    dataStr === "false" ||
+                    dataStr === "0"
+        ) {
+          value = 0;
+        } else {
+          const numValue = parseFloat(item.data);
+          value = isNaN(numValue) ? 0 : numValue;
+        }
+
+        return {
+          timestamp: item.saved_at.toISOString(),
+          value,
+        };
+      });
 
       results.push({
         roomId,

@@ -8,7 +8,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactDOM from "react-dom/client";
 import Layout from "./layout/Layout.tsx";
 import PlanningPage from "./pages/PlanningPage.tsx";
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
+import RoomDetailsPage from "./pages/RoomDetailsPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
                         ),
                     },
                     {
+                        path: "/salles/:id",
+                        element: <RoomDetailsPage />,
+                    },
+                    {
                         path: "/analytics",
                         element: (
                             <div className="p-6">
@@ -73,10 +78,10 @@ const router = createBrowserRouter([
 const root = document.getElementById("root")!;
 
 ReactDOM.createRoot(root).render(
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <RouterProvider router={router} />
-      <Toaster position="top-right" />
-    </AuthProvider>
-  </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+            <RouterProvider router={router} />
+            <Toaster position="top-right" />
+        </AuthProvider>
+    </QueryClientProvider>
 );
