@@ -4,10 +4,12 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 import { RoomController } from "./Controller";
 import {
   CreateRoomSchema,
+  GetRoomFilterOptionsSchema,
   GetRoomsQuerySchema,
   PatchRoomSchema,
   PutRoomSchema,
   RoomCountSchema,
+  RoomFilterOptionsSchema,
   RoomFilterSchema,
   RoomIdParamsSchema,
   RoomSchema,
@@ -104,6 +106,29 @@ export class RoomRoutes {
         },
       },
       this.controller.getRooms.bind(this.controller),
+    );
+
+    this.server.get(
+      "/room/filters",
+      {
+        schema: {
+          tags: ["Room"],
+          summary: "Get available filter options",
+          description: "Get all available buildings and floors for filtering (Admin only)",
+          querystring: zodToJsonSchema(GetRoomFilterOptionsSchema),
+          response: {
+            200: {
+              description: "Filter options retrieved successfully",
+              type: "object",
+              properties: {
+                data: zodToJsonSchema(RoomFilterOptionsSchema),
+              },
+            },
+          },
+        },
+        onRequest: [this.server.admin],
+      },
+      this.controller.getRoomFilterOptions.bind(this.controller),
     );
 
     this.server.get(

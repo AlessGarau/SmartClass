@@ -17,4 +17,5 @@ export interface IRoomRepository {
   deleteRoom(id: string): Promise<void>;
   getDistinctBuildings(): Promise<string[]>;
   getDistinctFloors(): Promise<number[]>;
+  getDistinctFloorsByBuilding(building: string): Promise<number[]>;
 }

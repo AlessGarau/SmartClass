@@ -4,10 +4,11 @@ import { cn } from "../../utils/cn";
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     label?: string;
     icon?: string;
+    iconTSX?: React.ReactNode;
     tooltip?: string;
 }
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ label = "", className, icon, tooltip, ...rest }, ref) => {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ label = "", className, icon, iconTSX, tooltip, ...rest }, ref) => {
     return (
         <button
             ref={ref}
@@ -19,6 +20,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({ label = "", classNa
             title={tooltip}
         >
             {icon && <img src={icon} alt="icon" className="w-4 h-4" />}
+            {iconTSX}
             {label}
             {tooltip && !label && (
                 <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">

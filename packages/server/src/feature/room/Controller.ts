@@ -6,6 +6,7 @@ import { RoomMessage } from "./message";
 import {
   CreateRoomParams,
   CreateRoomSchema,
+  GetRoomFilterOptionsSchema,
   GetRoomsQuerySchema,
   PatchRoomSchema,
   PutRoomSchema,
@@ -19,7 +20,7 @@ export class RoomController {
   constructor(
     private _interactor: RoomInteractor,
     private _mapper: RoomMapper,
-  ) {}
+  ) { }
 
   async createRoom(req: FastifyRequest, reply: FastifyReply) {
     const roomCreateParams: CreateRoomParams = CreateRoomSchema.parse(req.body);
@@ -73,6 +74,14 @@ export class RoomController {
     return reply.status(200).send({
       data: this._mapper.toGetRoomResponse(updatedRoom),
       message: RoomMessage.UPDATE_SUCCESS,
+    });
+  }
+
+  async getRoomFilterOptions(req: FastifyRequest, reply: FastifyReply) {
+    const { building, floor } = GetRoomFilterOptionsSchema.parse(req.query);
+    const filterOptions = await this._interactor.getRoomFilterOptions({ building, floor });
+    return reply.status(200).send({
+      data: this._mapper.toGetRoomFilterOptionsResponse(filterOptions),
     });
   }
 

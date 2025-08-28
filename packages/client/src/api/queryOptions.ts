@@ -1,8 +1,9 @@
+import type { PlannedClass, PlanningFilters } from "../types/Planning";
 import type { LoginCredentials } from "../types/User";
-import type { PlanningFilters, PlannedClass } from "../types/Planning";
-import { userApi } from "./endpoints/user";
-import { planningApi } from "./endpoints/planning";
 import { lessonApi } from "./endpoints/lesson";
+import { planningApi } from "./endpoints/planning";
+import { roomApi } from "./endpoints/room";
+import { userApi } from "./endpoints/user";
 
 export const userQueryOptions = {
     login: () => ({
@@ -51,6 +52,47 @@ export const planningQueryOptions = {
         queryKey: ['planning', 'filterOptions'],
         queryFn: () => planningApi.getFilterOptions(),
         staleTime: 60 * 60 * 1000,
+    }),
+};
+
+export const roomQueryOptions = {
+    roomCount: (filters = {}) => ({
+        queryKey: ['room', 'count', filters],
+        queryFn: () => roomApi.getRoomsCount(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    buildingOptions: () => ({
+        queryKey: ['room', 'buildingOptions'],
+        queryFn: () => roomApi.getBuildingOptions(),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    floorOptions: (building: string) => ({
+        queryKey: ['room', 'floorOptions', building],
+        queryFn: () => roomApi.getFloorOptions(building),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    getRooms: (filters = {}) => ({
+        queryKey: ['room', 'allRooms', filters],
+        queryFn: () => roomApi.getRooms(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    deleteRoom: () => ({
+        mutationKey: ['room', 'deleteRoom'],
+        mutationFn: (roomId: string) => roomApi.deleteRoom(roomId),
+    }),
+
+    updateRoom: () => ({
+        mutationKey: ['room', 'updateRoom'],
+        mutationFn: ({ roomId, data }: { roomId: string; data: { name: string; building: string; floor: number; capacity: number } }) => roomApi.updateRoom(roomId, data),
+    }),
+
+    createRoom: () => ({
+        mutationKey: ['room', 'createRoom'],
+        mutationFn: (data: { name: string; building: string; floor: number; capacity: number }) => roomApi.createRoom(data),
     }),
 };
 

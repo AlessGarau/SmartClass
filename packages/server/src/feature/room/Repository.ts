@@ -2,6 +2,12 @@ import { and, desc, eq, ilike, sql } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
+import {
+  humidityTable,
+  movementTable,
+  pressureTable,
+  temperatureTable,
+} from "../../../database/schema";
 import { roomTable } from "../../../database/schema/room";
 import { PostgresErrorCode } from "../../middleware/error/PostgresErrorCode";
 import { RoomError } from "../../middleware/error/roomError";
@@ -17,12 +23,6 @@ import {
   dbRoom,
   dbRowWithMetrics,
 } from "./validate";
-import {
-  temperatureTable,
-  humidityTable,
-  pressureTable,
-  movementTable,
-} from "../../../database/schema";
 
 @Service()
 export class RoomRepository implements IRoomRepository {
@@ -156,8 +156,8 @@ export class RoomRepository implements IRoomRepository {
       query,
     );
 
-    if (params.limit !== undefined) {query.limit(params.limit);}
-    if (params.offset !== undefined) {query.offset(params.offset);}
+    if (params.limit !== undefined) { query.limit(params.limit); }
+    if (params.offset !== undefined) { query.offset(params.offset); }
 
     const rows = await query;
     return rows.map((r) => this.transformRoomWithMetrics(r));
@@ -345,6 +345,16 @@ export class RoomRepository implements IRoomRepository {
       .selectDistinct({ floor: roomTable.floor })
       .from(roomTable)
       .where(eq(roomTable.is_enabled, true))
+      .orderBy(roomTable.floor);
+
+    return result.map((row) => row.floor);
+  }
+
+  async getDistinctFloorsByBuilding(building: string): Promise<number[]> {
+    const result = await this._db
+      .selectDistinct({ floor: roomTable.floor })
+      .from(roomTable)
+      .where(and(eq(roomTable.is_enabled, true), eq(roomTable.building, building)))
       .orderBy(roomTable.floor);
 
     return result.map((row) => row.floor);

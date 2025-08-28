@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import { IMapper } from "./interface/IMapper";
-import { Count, Room, RoomWithMetrics } from "./validate";
+import { Count, Room, RoomFilterOptions, RoomWithMetrics } from "./validate";
 @Service()
 export class RoomMapper implements IMapper {
   toGetRoomsResponse(rooms: Room[]): Room[] {
@@ -41,6 +41,7 @@ export class RoomMapper implements IMapper {
       movement: room.movement,
     }));
   }
+
   toGetRoomWithMetricsResponse(room: RoomWithMetrics): RoomWithMetrics {
     return {
       id: room.id,
@@ -55,7 +56,15 @@ export class RoomMapper implements IMapper {
       movement: room.movement,
     };
   }
+
   toGetTotalRoomsResponse(total: number): Count {
     return { count: total };
+  }
+
+  toGetRoomFilterOptionsResponse(filterOptions: RoomFilterOptions): RoomFilterOptions {
+    return {
+      buildings: filterOptions.buildings,
+      floors: filterOptions.floors,
+    };
   }
 }
