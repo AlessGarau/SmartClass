@@ -16,6 +16,9 @@ COPY packages/data/requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install Jupyter kernel for notebook execution
+RUN python -m ipykernel install --user --name python3 --display-name "Python 3"
+
 # Copy the application code
 COPY packages/data/ .
 
