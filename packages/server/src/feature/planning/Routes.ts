@@ -143,7 +143,7 @@ export class PlanningRoutes {
         schema: {
           tags: ["Planning - Teacher"],
           summary: "Get planning filters for teacher",
-          description: "Filtres accessibles aux enseignants",
+          description: "Filtres accessibles aux  enseignants",
           response: {
             200: {
               description: "Filter options retrieved successfully",
