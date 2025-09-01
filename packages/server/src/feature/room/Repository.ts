@@ -45,10 +45,10 @@ export class RoomRepository implements IRoomRepository {
     row: dbRowWithMetrics,
   ): RoomWithMetrics => ({
     ...this.transformRoom(row),
-    temperature: row.temperature,
-    humidity: row.humidity,
-    pressure: row.pressure,
-    movement: row.movement,
+    temperature: row.temperature ? parseFloat(row.temperature) : 0,
+    humidity: row.humidity ? parseFloat(row.humidity) : 0,
+    pressure: row.pressure ? parseFloat(row.pressure) : 0,
+    movement: row.movement || "no_movement",
   });
 
   private latestSources() {
