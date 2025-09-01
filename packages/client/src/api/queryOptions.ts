@@ -84,7 +84,19 @@ export const roomQueryOptions = {
 
     getRooms: (filters = {}) => ({
         queryKey: ["room", "allRooms", filters],
-        queryFn: () => roomApi.getRooms(filters),
+        queryFn: async () => {
+            const response = await roomApi.getRooms(filters);
+            return {
+                ...response,
+                data: response.data.map(room => ({
+                    ...room,
+                    humidity: room.humidity !== null ? Number(room.humidity) : null,
+                    temperature: room.temperature !== null ? Number(room.temperature) : null,
+                    pressure: room.pressure !== null ? Number(room.pressure) : null,
+                    movement: room.movement !== null ? Number(room.movement) : null,
+                }))
+            };
+        },
         staleTime: 60 * 60 * 1000,
     }),
 
