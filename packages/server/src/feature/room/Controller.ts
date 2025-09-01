@@ -6,6 +6,7 @@ import { RoomMessage } from "./message";
 import {
   CreateRoomParams,
   CreateRoomSchema,
+  GetRoomFilterOptionsSchema,
   GetRoomsQuerySchema,
   PatchRoomSchema,
   PutRoomSchema,
@@ -33,7 +34,8 @@ export class RoomController {
   }
 
   async getRooms(req: FastifyRequest, reply: FastifyReply) {
-    const { limit, offset, isEnabled, search, building, floor } = GetRoomsQuerySchema.parse(req.query);
+    const { limit, offset, isEnabled, search, building, floor } =
+      GetRoomsQuerySchema.parse(req.query);
     const rooms = await this._interactor.getRooms({
       limit,
       offset,
@@ -43,7 +45,7 @@ export class RoomController {
       floor,
     });
     return reply.status(200).send({
-      data: this._mapper.toGetRoomsResponse(rooms),
+      data: this._mapper.toGetAllRoomsWithMetricsResponse(rooms),
     });
   }
 
@@ -51,7 +53,7 @@ export class RoomController {
     const { id } = RoomIdParamsSchema.parse(req.params);
     const room = await this._interactor.getRoom(id);
     return reply.status(200).send({
-      data: this._mapper.toGetRoomResponse(room),
+      data: this._mapper.toGetRoomWithMetricsResponse(room),
     });
   }
 
@@ -72,6 +74,14 @@ export class RoomController {
     return reply.status(200).send({
       data: this._mapper.toGetRoomResponse(updatedRoom),
       message: RoomMessage.UPDATE_SUCCESS,
+    });
+  }
+
+  async getRoomFilterOptions(req: FastifyRequest, reply: FastifyReply) {
+    const { building, floor } = GetRoomFilterOptionsSchema.parse(req.query);
+    const filterOptions = await this._interactor.getRoomFilterOptions({ building, floor });
+    return reply.status(200).send({
+      data: this._mapper.toGetRoomFilterOptionsResponse(filterOptions),
     });
   }
 

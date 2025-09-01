@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import { User, UserRegister } from "../../../database/schema/user";
-import { UserFullResponse, UserMeResponse, UserRegisterParams } from "./validate";
+import { UserFullResponse, UserMeResponse, UserRegisterParams, TeacherOption } from "./validate";
 
 @Service()
 export class UserResponseMapper {
@@ -24,6 +24,17 @@ export class UserResponseMapper {
       lastName: user.last_name,
       role: user.role,
     };
+  }
+
+  toTeacherOption(teacher: User): TeacherOption {
+    return {
+      value: teacher.id,
+      label: `${teacher.first_name} ${teacher.last_name}`,
+    };
+  }
+
+  toTeacherOptions(teachers: User[]): TeacherOption[] {
+    return teachers.map(teacher => this.toTeacherOption(teacher));
   }
 }
 

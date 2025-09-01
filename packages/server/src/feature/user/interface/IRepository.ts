@@ -5,4 +5,6 @@ export interface IRepository {
   getUserByEmail(email: string): Promise<User | null>;
   createUser(user: UserRegisterParams, hashedPassword: string): Promise<User>;
   getUserById(id: string): Promise<User | null>;
+  findTeacherByName(firstName: string, lastName: string): Promise<User | null>;
+  getTeachers(): Promise<User[]>;
 }

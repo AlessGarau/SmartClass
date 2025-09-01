@@ -84,7 +84,7 @@ export class UserController {
     });
   }
 
-  async logoutUser(req: FastifyRequest, reply: FastifyReply) {
+  async logoutUser(_req: FastifyRequest, reply: FastifyReply) {
     reply.setCookie("token", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -94,6 +94,17 @@ export class UserController {
     });
     return reply.status(200).send({
       message: "Utilisateur déconnecté avec succès",
+    });
+  }
+
+  async getTeacherOptions(_req: FastifyRequest, reply: FastifyReply) {
+    const teachers = await this.interactor.getUsers({ role: "teacher" });
+    
+    const teacherOptions = this.responseMapper.toTeacherOptions(teachers);
+
+    return reply.status(200).send({
+      data: teacherOptions,
+      message: "Options des professeurs récupérées avec succès",
     });
   }
 }

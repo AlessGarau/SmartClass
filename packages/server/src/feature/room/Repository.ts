@@ -1,8 +1,15 @@
-import { and, eq, ilike, sql } from "drizzle-orm";
+import { and, desc, eq, ilike, sql } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Service } from "typedi";
 import { database } from "../../../database/database";
+import {
+  humidityTable,
+  movementTable,
+  pressureTable,
+  temperatureTable,
+} from "../../../database/schema";
 import { roomTable } from "../../../database/schema/room";
+import { PostgresErrorCode } from "../../middleware/error/PostgresErrorCode";
 import { RoomError } from "../../middleware/error/roomError";
 import { IRoomRepository } from "./interface/IRepository";
 import {
@@ -12,7 +19,9 @@ import {
   PutRoomParams,
   Room,
   RoomFilter,
+  RoomWithMetrics,
   dbRoom,
+  dbRowWithMetrics,
 } from "./validate";
 
 @Service()
@@ -32,9 +41,155 @@ export class RoomRepository implements IRoomRepository {
       isEnabled: room.is_enabled,
     };
   }
+  private transformRoomWithMetrics = (
+    row: dbRowWithMetrics,
+  ): RoomWithMetrics => ({
+    ...this.transformRoom(row),
+    temperature: row.temperature ? parseFloat(row.temperature) : null,
+    humidity: row.humidity ? parseFloat(row.humidity) : null,
+    pressure: row.pressure ? parseFloat(row.pressure) : null,
+    movement: row.movement || null,
+  });
+
+  private latestSources() {
+    const latestTemperature = this._db
+      .selectDistinctOn([temperatureTable.room_id], {
+        room_id: temperatureTable.room_id,
+        data: temperatureTable.data,
+        saved_at: temperatureTable.saved_at,
+      })
+      .from(temperatureTable)
+      .orderBy(temperatureTable.room_id, desc(temperatureTable.saved_at))
+      .as("latest_temperature");
+
+    const latestHumidity = this._db
+      .selectDistinctOn([humidityTable.room_id], {
+        room_id: humidityTable.room_id,
+        data: humidityTable.data,
+        saved_at: humidityTable.saved_at,
+      })
+      .from(humidityTable)
+      .orderBy(humidityTable.room_id, desc(humidityTable.saved_at))
+      .as("latest_humidity");
+
+    const latestPressure = this._db
+      .selectDistinctOn([pressureTable.room_id], {
+        room_id: pressureTable.room_id,
+        data: pressureTable.data,
+        saved_at: pressureTable.saved_at,
+      })
+      .from(pressureTable)
+      .orderBy(pressureTable.room_id, desc(pressureTable.saved_at))
+      .as("latest_pressure");
+
+    const latestMovement = this._db
+      .selectDistinctOn([movementTable.room_id], {
+        room_id: movementTable.room_id,
+        data: movementTable.data,
+        saved_at: movementTable.saved_at,
+      })
+      .from(movementTable)
+      .orderBy(movementTable.room_id, desc(movementTable.saved_at))
+      .as("latest_movement");
+
+    return {
+      latestTemperature,
+      latestHumidity,
+      latestPressure,
+      latestMovement,
+    } as const;
+  }
+
+  private selectedFieldsFrom(src: {
+        latestTemperature: any;
+        latestHumidity: any;
+        latestPressure: any;
+        latestMovement: any;
+    }) {
+    const {
+      latestTemperature,
+      latestHumidity,
+      latestPressure,
+      latestMovement,
+    } = src;
+    return {
+      id: roomTable.id,
+      name: roomTable.name,
+      capacity: roomTable.capacity,
+      building: roomTable.building,
+      floor: roomTable.floor,
+      is_enabled: roomTable.is_enabled,
+      temperature: latestTemperature.data,
+      humidity: latestHumidity.data,
+      pressure: latestPressure.data,
+      movement: latestMovement.data,
+    } as const;
+  }
+
+  private joinLatest(q: any, src: any) {
+    const {
+      latestTemperature,
+      latestHumidity,
+      latestPressure,
+      latestMovement,
+    } = src;
+    return q
+      .leftJoin(
+        latestTemperature,
+        eq(latestTemperature.room_id, roomTable.id),
+      )
+      .leftJoin(latestHumidity, eq(latestHumidity.room_id, roomTable.id))
+      .leftJoin(latestPressure, eq(latestPressure.room_id, roomTable.id))
+      .leftJoin(latestMovement, eq(latestMovement.room_id, roomTable.id));
+  }
+
+  async getRooms(params: GetRoomsQueryParams): Promise<RoomWithMetrics[]> {
+    const src = this.latestSources();
+    const query = this._db
+      .select(this.selectedFieldsFrom(src))
+      .from(roomTable);
+
+    this.joinLatest(query, src);
+
+    this.applyFilter(
+      {
+        search: params.search,
+        isEnabled: params.isEnabled,
+        building: params.building,
+        floor: params.floor,
+      },
+      query,
+    );
+
+    if (params.limit !== undefined) {
+      query.limit(params.limit);
+    }
+    if (params.offset !== undefined) {
+      query.offset(params.offset);
+    }
+
+    const rows = await query;
+    return rows.map((r) => this.transformRoomWithMetrics(r));
+  }
+
+  async getRoom(id: string): Promise<RoomWithMetrics | null> {
+    const src = this.latestSources();
+    const query = this._db
+      .select(this.selectedFieldsFrom(src))
+      .from(roomTable)
+      .where(eq(roomTable.id, id))
+      .limit(1);
+
+    this.joinLatest(query, src);
+
+    const rows = await query;
+    return rows[0] ? this.transformRoomWithMetrics(rows[0]) : null;
+  }
 
   private applyFilter(filter: RoomFilter, query: any): void {
-    if (!filter) { return; }
+    if (!filter) {
+      return;
+    }
 
     const conditions = [];
 
@@ -73,7 +228,7 @@ export class RoomRepository implements IRoomRepository {
         .returning();
       return this.transformRoom(result[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw RoomError.alreadyExists(
           `Room name "${RoomCreateParams.name}" already exists.`,
         );
@@ -85,28 +240,6 @@ export class RoomRepository implements IRoomRepository {
     }
   }
 
-  async getRooms(params: GetRoomsQueryParams): Promise<Room[]> {
-    const query = this._db.select().from(roomTable);
-
-    this.applyFilter({
-      search: params.search,
-      isEnabled: params.isEnabled,
-      building: params.building,
-      floor: params.floor,
-    }, query);
-
-    if (params.limit !== undefined) {
-      query.limit(params.limit);
-    }
-
-    if (params.offset !== undefined) {
-      query.offset(params.offset);
-    }
-
-    const result = await query;
-    return result.map(room => this.transformRoom(room));
-  }
-
   async getRoomsCount(filter: RoomFilter): Promise<number> {
     const query = this._db
       .select({ count: sql<number>`count(*)` })
@@ -116,20 +249,6 @@ export class RoomRepository implements IRoomRepository {
 
     const result = await query;
     return Number(result[0].count);
-  }
-
-  async getRoom(id: string): Promise<Room | null> {
-    const result = await this._db
-      .select()
-      .from(roomTable)
-      .where(eq(roomTable.id, id))
-      .limit(1);
-
-    if (result.length === 0) {
-      return null;
-    }
-
-    return this.transformRoom(result[0]);
   }
 
   async putRoom(id: string, roomUpdateParams: PutRoomParams): Promise<Room> {
@@ -147,11 +266,13 @@ export class RoomRepository implements IRoomRepository {
         .returning();
 
       if (updatedRoom.length === 0) {
-        throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
+        throw RoomError.updateFailed(
+          `Failed to update room with ID "${id}".`,
+        );
       }
       return this.transformRoom(updatedRoom[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw RoomError.alreadyExists(
           `Room name "${roomUpdateParams.name}" already exists.`,
         );
@@ -163,7 +284,10 @@ export class RoomRepository implements IRoomRepository {
     }
   }
 
-  async patchRoom(id: string, roomUpdateParams: PatchRoomParams): Promise<Room> {
+  async patchRoom(
+    id: string,
+    roomUpdateParams: PatchRoomParams,
+  ): Promise<Room> {
     try {
       const updateData: Partial<typeof roomTable.$inferInsert> = {};
 
@@ -190,11 +314,13 @@ export class RoomRepository implements IRoomRepository {
         .returning();
 
       if (result.length === 0) {
-        throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
+        throw RoomError.updateFailed(
+          `Failed to update room with ID "${id}".`,
+        );
       }
       return this.transformRoom(result[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw RoomError.alreadyExists(
           `Room name "${roomUpdateParams.name}" already exists.`,
         );
@@ -215,5 +341,40 @@ export class RoomRepository implements IRoomRepository {
         error,
       );
     }
+  }
+
+  async getDistinctBuildings(): Promise<string[]> {
+    const result = await this._db
+      .selectDistinct({ building: roomTable.building })
+      .from(roomTable)
+      .where(eq(roomTable.is_enabled, true))
+      .orderBy(roomTable.building);
+
+    return result.map((row) => row.building);
+  }
+
+  async getDistinctFloors(): Promise<number[]> {
+    const result = await this._db
+      .selectDistinct({ floor: roomTable.floor })
+      .from(roomTable)
+      .where(eq(roomTable.is_enabled, true))
+      .orderBy(roomTable.floor);
+
+    return result.map((row) => row.floor);
+  }
+
+  async getDistinctFloorsByBuilding(building: string): Promise<number[]> {
+    const result = await this._db
+      .selectDistinct({ floor: roomTable.floor })
+      .from(roomTable)
+      .where(
+        and(
+          eq(roomTable.is_enabled, true),
+          eq(roomTable.building, building),
+        ),
+      )
+      .orderBy(roomTable.floor);
+
+    return result.map((row) => row.floor);
   }
 }

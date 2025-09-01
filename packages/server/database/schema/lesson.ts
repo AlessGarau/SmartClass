@@ -9,4 +9,6 @@ export const lessonTable = pgTable("lesson", {
   end_time: timestamp("end_time").notNull(),
   class_id: uuid().references(() => classTable.id, { onDelete: "cascade" }),
   room_id: uuid().references(() => roomTable.id),
-}); 
+});
+
+export type Lesson = typeof lessonTable.$inferSelect;

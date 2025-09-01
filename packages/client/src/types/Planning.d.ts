@@ -1,11 +1,12 @@
 export interface PlannedClass {
     id: string;
-    subject: string;
+    title: string;
     teacher: string;
     startTime: string;
     endTime: string;
     room: string;
     dayOfWeek: 'LUN' | 'MAR' | 'MER' | 'JEU' | 'VEN';
+    date: string;
 }
 
 export interface Classroom {
@@ -18,7 +19,8 @@ export interface Classroom {
 }
 
 export interface WeekPlanningData {
-    weekNumber: number;
+    startDate: string;
+    endDate: string;
     year: number;
     classrooms: Classroom[];
 }
@@ -42,8 +44,19 @@ export interface DayScheduleConfig {
 }
 
 export interface PlanningFilters {
-    weekNumber: number;
+    startDate: string;
+    endDate: string;
     year: number;
     building?: string;
     floor?: number;
+}
+
+export interface FilterOption {
+    value: string | number;
+    label: string;
+}
+
+export interface PlanningFilterOptions {
+    buildings: FilterOption[];
+    floors: FilterOption[];
 }

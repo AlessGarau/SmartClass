@@ -27,3 +27,6 @@
 **/dist
 **/.env
 makefile-maria
+
+**/packages/data
+

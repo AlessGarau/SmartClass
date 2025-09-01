@@ -72,15 +72,53 @@ export const RoomIdParamsSchema = z.object({
   id: z.string().uuid().describe("Room ID"),
 });
 
+export const GetRoomFilterOptionsSchema = z.object({
+  building: z.boolean().optional().describe("Get distinct buildings"),
+  floor: z.string().optional().describe("Get distinct floor by building"),
+});
+
+export const RoomFilterOptionsSchema = z.object({
+  buildings: z.array(z.object({
+    value: z.string(),
+    label: z.string(),
+  })).optional(),
+  floors: z.array(z.object({
+    value: z.number(),
+    label: z.string(),
+  })).optional(),
+});
+
 export const RoomCountSchema = z.object({
   count: z.number().int().nonnegative(),
 });
 
+export const RoomWithMetricsSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  capacity: z.number(),
+  building: z.string().max(50),
+  floor: z.number().int().nonnegative().default(0),
+  isEnabled: z.boolean(),
+  temperature: z.number().nullable(),
+  humidity: z.number().nullable(),
+  pressure: z.number().nullable(),
+  movement: z.string().nullable(),
+});
+
 export type dbRoom = z.infer<typeof dbRoomSchema>;
+export type dbRowWithMetrics = dbRoom & {
+  temperature: string | null;
+  humidity: string | null;
+  pressure: string | null;
+  movement: string | null;
+};
+export type RoomWithMetrics = z.infer<typeof RoomWithMetricsSchema>;
 export type Room = z.infer<typeof RoomSchema>;
+export type RoomFilterOptions = z.infer<typeof RoomFilterOptionsSchema>;
 export type Count = z.infer<typeof RoomCountSchema>;
 export type CreateRoomParams = z.infer<typeof CreateRoomSchema>;
 export type GetRoomsQueryParams = z.infer<typeof GetRoomsQuerySchema>;
+export type GetRoomFilterOptionsParams = z.infer<typeof GetRoomFilterOptionsSchema>;
 export type RoomFilter = z.infer<typeof RoomFilterSchema>;
 export type RoomIdParams = z.infer<typeof RoomIdParamsSchema>;
 export type PutRoomParams = z.infer<typeof PutRoomSchema>;

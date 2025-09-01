@@ -4,7 +4,10 @@ import { z } from "zod";
 import { ClassError } from "./classError";
 import { MqttError } from "./mqttError";
 import NotFoundError from "./notFoundError";
+import { PlanningError } from "./planningError";
+import { ReportingError } from "./reportingError";
 import { RoomError } from "./roomError";
+import { TeacherError } from "./teacherError";
 import { UserError } from "./userError";
 import { WeatherError } from "./weatherError";
 
@@ -14,9 +17,12 @@ export const ErrorMiddleware = (
     | NotFoundError
     | RoomError
     | ClassError
+    | TeacherError
+    | ReportingError
     | UserError
     | WeatherError
     | MqttError
+    | PlanningError
     | z.ZodError,
   req: FastifyRequest,
   reply: FastifyReply,
@@ -41,6 +47,20 @@ export const ErrorMiddleware = (
     return reply.status(error.statusCode).send({
       error: error.message,
       data: null,
+    });
+  }
+
+  if (error instanceof TeacherError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: error.cause,
+    });
+  }
+
+  if (error instanceof ReportingError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: error.cause,
     });
   }
 
@@ -70,6 +90,13 @@ export const ErrorMiddleware = (
     return reply.status(error.statusCode).send({
       error: error.message,
       data: error.cause,
+    });
+  }
+
+  if (error instanceof PlanningError) {
+    return reply.status(error.statusCode).send({
+      error: error.message,
+      data: null,
     });
   }
 

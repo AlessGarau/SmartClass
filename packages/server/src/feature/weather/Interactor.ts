@@ -4,6 +4,7 @@ import { WeatherRepository } from "./Repository";
 import { WeatherService } from "./WeatherService";
 import { WeatherMapper } from "./Mapper";
 import { WeatherData } from "./types";
+import { WeatherError } from "../../middleware/error/weatherError";
 
 @Service()
 export class WeatherInteractor implements IWeatherInteractor {
@@ -33,13 +34,11 @@ export class WeatherInteractor implements IWeatherInteractor {
       
       return freshData;
     } catch (error) {
-      console.error("Failed to fetch fresh weather data:", error);
-      
       if (cachedData.length > 0) {
         return cachedData.map(weather => this.weatherMapper.toResponse(weather));
       }
       
-      throw error;
+      throw WeatherError.apiFetchFailed();
     }
   }
 

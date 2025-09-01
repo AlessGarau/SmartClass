@@ -23,14 +23,14 @@ async function main() {
   const rooms = await database
     .insert(schema.roomTable)
     .values([
-      { name: "Room 101", capacity: 25, is_enabled: true, building: "batA", floor: 1 },
-      { name: "Room 102", capacity: 30, is_enabled: true, building: "batA", floor: 1 },
-      { name: "Room 103", capacity: 28, is_enabled: false, building: "batA", floor: 1 }, // Under maintenance
-      { name: "Science Lab", capacity: 20, is_enabled: true, building: "batB", floor: 2 },
-      { name: "Computer Lab", capacity: 24, is_enabled: true, building: "batB", floor: 2 },
-      { name: "Library", capacity: 50, is_enabled: true, building: "batC", floor: 0 },
-      { name: "Auditorium", capacity: 100, is_enabled: true, building: "batB", floor: 0 },
-      { name: "Art Studio", capacity: 18, is_enabled: true, building: "batC", floor: 2 },
+      { name: "A010", capacity: 25, is_enabled: true, building: "batA", floor: 1 },
+      { name: "A012", capacity: 30, is_enabled: true, building: "batA", floor: 1 },
+      { name: "A011", capacity: 28, is_enabled: false, building: "batA", floor: 1 }, // Under maintenance
+      { name: "B008", capacity: 20, is_enabled: true, building: "batB", floor: 2 },
+      { name: "B009", capacity: 24, is_enabled: true, building: "batB", floor: 2 },
+      { name: "C012", capacity: 50, is_enabled: true, building: "batC", floor: 0 },
+      { name: "B012", capacity: 100, is_enabled: true, building: "batB", floor: 0 },
+      { id: "c5a3a18c-69ac-4c24-b170-a47613d51435", name: "C013", capacity: 18, is_enabled: true, building: "batC", floor: 2 },
     ])
     .returning();
 
@@ -94,11 +94,11 @@ async function main() {
   const classes = await database
     .insert(schema.classTable)
     .values([
-      { name: "Mathematics", student_count: 28 },
-      { name: "English Literature", student_count: 25 },
-      { name: "Physics", student_count: 22 },
-      { name: "Chemistry", student_count: 20 },
-      { name: "History", student_count: 30 },
+      { name: "WEB1", student_count: 28 },
+      { name: "WEB2", student_count: 25 },
+      { name: "WEB3", student_count: 22 },
+      { name: "DATA1", student_count: 20 },
+      { name: "DATA2", student_count: 30 },
       { name: "Art", student_count: 18 },
       { name: "Computer Science", student_count: 24 },
       { name: "Biology", student_count: 26 },

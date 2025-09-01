@@ -4,6 +4,7 @@ import { Service } from "typedi";
 import { database } from "../../../database/database";
 import { classTable } from "../../../database/schema";
 import { ClassError } from "../../middleware/error/classError";
+import { PostgresErrorCode } from "../../middleware/error/PostgresErrorCode";
 import { IClassRepository } from "./interface/IRepository";
 import { Class, ClassFilter, CreateClassParams, dbClass, GetClassesQueryParams, PatchClassParams, PutClassParams } from "./validate";
 
@@ -47,7 +48,7 @@ export class ClassRepository implements IClassRepository {
         .returning();
       return this.transformClass(result[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw ClassError.alreadyExists(
           `Class name "${ClassCreateParams.name}" already exists.`,
         );
@@ -119,7 +120,7 @@ export class ClassRepository implements IClassRepository {
       }
       return this.transformClass(updatedClass[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw ClassError.alreadyExists(
           `Class name "${classUpdateParams.name}" already exists.`,
         );
@@ -153,7 +154,7 @@ export class ClassRepository implements IClassRepository {
       }
       return this.transformClass(result[0]);
     } catch (error: any) {
-      if (error.cause.code === "23505") {
+      if (error.cause.code === PostgresErrorCode.UNIQUE_VIOLATION) {
         throw ClassError.alreadyExists(
           `Class name "${classUpdateParams.name}" already exists.`,
         );
@@ -167,5 +168,20 @@ export class ClassRepository implements IClassRepository {
 
   async deleteClass(id: string): Promise<void> {
     await this._db.delete(classTable).where(eq(classTable.id, id));
+  }
+
+  async getClassByName(name: string): Promise<Class> {
+    const result = await this._db
+      .select()
+      .from(classTable)
+      .where(eq(classTable.name, name))
+      .limit(1);
+
+    if (result.length === 0) {
+      throw ClassError.notFound(`Class with name "${name}" not found.`);
+    }
+
+    return this.transformClass(result[0]);
+
   }
 }

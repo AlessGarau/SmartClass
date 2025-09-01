@@ -1,6 +1,7 @@
 import fCookie from "@fastify/cookie";
 import fastifyCors from "@fastify/cors";
 import fjwt from "@fastify/jwt";
+import multipart from "@fastify/multipart";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import dotenv from "dotenv";
@@ -10,8 +11,12 @@ import "reflect-metadata";
 import Container from "typedi";
 import { ClassRoutes } from "./feature/class/Routes";
 import { EquipmentRoutes } from "./feature/equipment/Routes";
+import { LessonRoutes } from "./feature/lesson/Routes";
+import { PlanningRoutes } from "./feature/planning/Routes";
 import { ReportingRoutes } from "./feature/reporting/Routes";
 import { RoomRoutes } from "./feature/room/Routes";
+import { SensorRoutes } from "./feature/sensor/Routes";
+import { TeacherRoutes } from "./feature/teacher/Routes";
 import { UserRoutes } from "./feature/user/Routes";
 import { WeatherRoutes } from "./feature/weather/Routes";
 import {
@@ -21,6 +26,7 @@ import {
 } from "./middleware/auth.middleware";
 import { ErrorMiddleware } from "./middleware/error/error.handler";
 import { SensorDataCollector } from "./services/SensorDataCollector";
+import { SchedulerService } from "./services/SchedulerService";
 
 dotenv.config();
 
@@ -30,8 +36,9 @@ const setupServer = async () => {
   });
 
   await server.register(fastifyCors, {
-    origin: ["http://localhost:5173", "http://smart-class-client-dev:5173"],
+    origin: ["http://localhost:5173", "http://smart-class-client-dev:5173", "https://06.hetic.arcplex.dev"],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   });
 
   // Register OpenAPI/Swagger plugins
@@ -95,6 +102,12 @@ const setupServer = async () => {
     secret: process.env.COOKIE_SECRET!,
   });
 
+  await server.register(multipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB max file size
+    },
+  });
+
   server.get("/", async (_request, _reply) => {
     return "Wesh les bgs";
   });
@@ -105,6 +118,8 @@ const setupServer = async () => {
   roomRoutes.registerRoutes();
   const classRoutes = new ClassRoutes(server);
   classRoutes.registerRoutes();
+  const teacherRoutes = new TeacherRoutes(server);
+  teacherRoutes.registerRoutes();
   const reportingRoutes = new ReportingRoutes(server);
   reportingRoutes.registerRoutes();
   const equipmentRoutes = new EquipmentRoutes(server);
@@ -113,6 +128,12 @@ const setupServer = async () => {
   userRoutes.registerRoutes();
   const weatherRoutes = new WeatherRoutes(server);
   weatherRoutes.registerRoutes();
+  const planningRoutes = new PlanningRoutes(server);
+  planningRoutes.registerRoutes();
+  const lessonRoutes = new LessonRoutes(server);
+  lessonRoutes.registerRoutes();
+  const sensorRoutes = new SensorRoutes(server);
+  sensorRoutes.registerRoutes();
 
   return server;
 };
@@ -128,13 +149,31 @@ const start = async () => {
       process.env.MQTT_BROKER_URL || "mqtt://admin-hetic.arcplex.tech:8823";
     const sensorDataCollector = Container.get(SensorDataCollector);
 
-    await sensorDataCollector.start(mqttBrokerUrl);
-    console.log("Service de collecte de données MQTT démarré");
+    try {
+      await sensorDataCollector.start(mqttBrokerUrl);
+      console.log("Service de collecte de données MQTT démarré");
+    } catch (error) {
+      console.error("Échec du démarrage du service de collecte de données MQTT:", error);
+      console.warn("Le serveur continue sans la collecte de données des capteurs");
+    }
+
+    const schedulerService = Container.get(SchedulerService);
+    schedulerService.initialize();
 
     process.on("SIGINT", () => {
       console.log("Arrêt du serveur...");
       sensorDataCollector.stop();
+      schedulerService.shutdown();
       process.exit(0);
+    });
+
+    process.on("SIGTERM", () => {
+      console.log("Arrêt du serveur (SIGTERM)...");
+      sensorDataCollector.stop();
+      schedulerService.shutdown();
+      server.close(() => {
+        process.exit(0);
+      });
     });
   } catch (err) {
     console.error(err);
