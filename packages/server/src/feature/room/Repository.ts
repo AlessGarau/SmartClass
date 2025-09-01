@@ -45,10 +45,10 @@ export class RoomRepository implements IRoomRepository {
     row: dbRowWithMetrics,
   ): RoomWithMetrics => ({
     ...this.transformRoom(row),
-    temperature: row.temperature,
-    humidity: row.humidity,
-    pressure: row.pressure,
-    movement: row.movement,
+    temperature: row.temperature ? parseFloat(row.temperature) : null,
+    humidity: row.humidity ? parseFloat(row.humidity) : null,
+    pressure: row.pressure ? parseFloat(row.pressure) : null,
+    movement: row.movement || null,
   });
 
   private latestSources() {
@@ -101,11 +101,11 @@ export class RoomRepository implements IRoomRepository {
   }
 
   private selectedFieldsFrom(src: {
-    latestTemperature: any;
-    latestHumidity: any;
-    latestPressure: any;
-    latestMovement: any;
-  }) {
+        latestTemperature: any;
+        latestHumidity: any;
+        latestPressure: any;
+        latestMovement: any;
+    }) {
     const {
       latestTemperature,
       latestHumidity,
@@ -134,7 +134,10 @@ export class RoomRepository implements IRoomRepository {
       latestMovement,
     } = src;
     return q
-      .leftJoin(latestTemperature, eq(latestTemperature.room_id, roomTable.id))
+      .leftJoin(
+        latestTemperature,
+        eq(latestTemperature.room_id, roomTable.id),
+      )
       .leftJoin(latestHumidity, eq(latestHumidity.room_id, roomTable.id))
       .leftJoin(latestPressure, eq(latestPressure.room_id, roomTable.id))
       .leftJoin(latestMovement, eq(latestMovement.room_id, roomTable.id));
@@ -142,7 +145,9 @@ export class RoomRepository implements IRoomRepository {
 
   async getRooms(params: GetRoomsQueryParams): Promise<RoomWithMetrics[]> {
     const src = this.latestSources();
-    const query = this._db.select(this.selectedFieldsFrom(src)).from(roomTable);
+    const query = this._db
+      .select(this.selectedFieldsFrom(src))
+      .from(roomTable);
 
     this.joinLatest(query, src);
 
@@ -156,8 +161,12 @@ export class RoomRepository implements IRoomRepository {
       query,
     );
 
-    if (params.limit !== undefined) { query.limit(params.limit); }
-    if (params.offset !== undefined) { query.offset(params.offset); }
+    if (params.limit !== undefined) {
+      query.limit(params.limit);
+    }
+    if (params.offset !== undefined) {
+      query.offset(params.offset);
+    }
 
     const rows = await query;
     return rows.map((r) => this.transformRoomWithMetrics(r));
@@ -257,7 +266,9 @@ export class RoomRepository implements IRoomRepository {
         .returning();
 
       if (updatedRoom.length === 0) {
-        throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
+        throw RoomError.updateFailed(
+          `Failed to update room with ID "${id}".`,
+        );
       }
       return this.transformRoom(updatedRoom[0]);
     } catch (error: any) {
@@ -303,7 +314,9 @@ export class RoomRepository implements IRoomRepository {
         .returning();
 
       if (result.length === 0) {
-        throw RoomError.updateFailed(`Failed to update room with ID "${id}".`);
+        throw RoomError.updateFailed(
+          `Failed to update room with ID "${id}".`,
+        );
       }
       return this.transformRoom(result[0]);
     } catch (error: any) {
@@ -354,7 +367,12 @@ export class RoomRepository implements IRoomRepository {
     const result = await this._db
       .selectDistinct({ floor: roomTable.floor })
       .from(roomTable)
-      .where(and(eq(roomTable.is_enabled, true), eq(roomTable.building, building)))
+      .where(
+        and(
+          eq(roomTable.is_enabled, true),
+          eq(roomTable.building, building),
+        ),
+      )
       .orderBy(roomTable.floor);
 
     return result.map((row) => row.floor);

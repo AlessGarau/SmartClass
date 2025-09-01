@@ -99,9 +99,9 @@ export const RoomWithMetricsSchema = z.object({
   building: z.string().max(50),
   floor: z.number().int().nonnegative().default(0),
   isEnabled: z.boolean(),
-  temperature: z.string().nullable(),
-  humidity: z.string().nullable(),
-  pressure: z.string().nullable(),
+  temperature: z.number().nullable(),
+  humidity: z.number().nullable(),
+  pressure: z.number().nullable(),
   movement: z.string().nullable(),
 });
 

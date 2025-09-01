@@ -29,22 +29,30 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
     const updateMutation = useMutation({
         ...roomQueryOptions.updateRoom(),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['room', 'allRooms'] });
-            queryClient.invalidateQueries({ queryKey: ['room', 'count'] });
-            queryClient.invalidateQueries({ queryKey: ['room', 'buildingOptions'] });
-            queryClient.invalidateQueries({ queryKey: ['room', 'floorOptions'] });
+            queryClient.invalidateQueries({ queryKey: ["room", "allRooms"] });
+            queryClient.invalidateQueries({ queryKey: ["room", "count"] });
+            queryClient.invalidateQueries({
+                queryKey: ["room", "buildingOptions"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["room", "floorOptions"],
+            });
             setEditSectionOpen(false);
-        }
+        },
     });
 
     const deleteMutation = useMutation({
         ...roomQueryOptions.deleteRoom(),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['room', 'allRooms'] });
-            queryClient.invalidateQueries({ queryKey: ['room', 'count'] });
-            queryClient.invalidateQueries({ queryKey: ['room', 'buildingOptions'] });
-            queryClient.invalidateQueries({ queryKey: ['room', 'floorOptions'] });
-        }
+            queryClient.invalidateQueries({ queryKey: ["room", "allRooms"] });
+            queryClient.invalidateQueries({ queryKey: ["room", "count"] });
+            queryClient.invalidateQueries({
+                queryKey: ["room", "buildingOptions"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["room", "floorOptions"],
+            });
+        },
     });
     //#endregion
 
@@ -55,9 +63,12 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
         return { color: "text-teal-700", bg: "bg-teal-50" };
     };
 
-    const hasTemperature = room.temperature !== null && !isNaN(Number(room.temperature));
+    const hasTemperature =
+        room.temperature !== null && !isNaN(Number(room.temperature));
     const temperatureValue = hasTemperature ? String(room.temperature) : "";
-    const temperatureStyle = hasTemperature ? getTemperatureStyle(Number(temperatureValue)) : { color: "text-yellow-700", bg: "bg-yellow-100" };
+    const temperatureStyle = hasTemperature
+        ? getTemperatureStyle(Number(temperatureValue))
+        : { color: "text-yellow-700", bg: "bg-yellow-100" };
     const hasHumidity = room.humidity !== null && !isNaN(Number(room.humidity));
     const humidityValue = hasHumidity ? String(room.humidity) : "";
     //#endregion
@@ -68,12 +79,19 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
     };
 
     const handleEditChange = (field: string, value: string | number) => {
-        setEditData(prev => ({ ...prev, [field]: value }));
+        setEditData((prev) => ({ ...prev, [field]: value }));
     };
 
     const handleEditSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        updateMutation.mutate({ roomId: room.id, data: { ...editData, floor: Number(editData.floor), capacity: Number(editData.capacity) } });
+        updateMutation.mutate({
+            roomId: room.id,
+            data: {
+                ...editData,
+                floor: Number(editData.floor),
+                capacity: Number(editData.capacity),
+            },
+        });
     };
 
     const handleDelete = async () => {
@@ -87,18 +105,25 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
         <div className="bg-white rounded-xl shadow p-4 sm:p-5 flex flex-col gap-4 border border-gray-100">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                 <div>
-                    <div className="font-bold text-base sm:text-lg">{room.name}</div>
+                    <div className="font-bold text-base sm:text-lg">
+                        {room.name}
+                    </div>
                     <div className="text-gray-500 text-xs sm:text-sm">
-                        {room.building + " "}
-                        -
+                        {room.building + " "}-
                         {room.floor === 0 ? " RDC" : ` Étage ${room.floor}`}
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <span
-                        className={`flex items-center gap-1 text-xs sm:text-sm font-semibold ${room.isEnabled ? "text-green-600" : "text-red-600"}`}
+                        className={`flex items-center gap-1 text-xs sm:text-sm font-semibold ${
+                            room.isEnabled ? "text-green-600" : "text-red-600"
+                        }`}
                     >
-                        <span className={`w-2 h-2 rounded-full ${room.isEnabled ? "bg-green-500" : "bg-red-500"}`}></span>
+                        <span
+                            className={`w-2 h-2 rounded-full ${
+                                room.isEnabled ? "bg-green-500" : "bg-red-500"
+                            }`}
+                        ></span>
                         {room.isEnabled ? "Libre" : "Occupée"}
                     </span>
                 </div>
@@ -124,7 +149,9 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div className="flex items-center gap-2 text-gray-700">
                     <img src={UsersIcon} className="text-gray-700 w-4 h-4" />
-                    <span className="text-xs sm:text-base">{room.capacity} personnes maximum</span>
+                    <span className="text-xs sm:text-base">
+                        {room.capacity} personnes maximum
+                    </span>
                 </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 mt-2">
@@ -148,30 +175,102 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
                     onClose={() => setEditSectionOpen(false)}
                     actions={
                         <>
-                            <Button type="submit" label={updateMutation.isPending ? "Enregistrement..." : "Enregistrer"} className="text-white px-6 py-2 rounded-lg font-semibold transition disabled:bg-gray-400 disabled:cursor-not-allowed" disabled={updateMutation.isPending} form={`edit-room-form-${room.id}`} />
-                            <Button type="button" label="Annuler" className="ml-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold transition" onClick={() => setEditSectionOpen(false)} />
+                            <Button
+                                type="submit"
+                                label={
+                                    updateMutation.isPending
+                                        ? "Enregistrement..."
+                                        : "Enregistrer"
+                                }
+                                className="text-white px-6 py-2 rounded-lg font-semibold transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                disabled={updateMutation.isPending}
+                                form={`edit-room-form-${room.id}`}
+                            />
+                            <Button
+                                type="button"
+                                label="Annuler"
+                                className="ml-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold transition"
+                                onClick={() => setEditSectionOpen(false)}
+                            />
                         </>
                     }
                 >
-                    <form id={`edit-room-form-${room.id}`} onSubmit={handleEditSubmit} className="flex flex-col gap-6">
+                    <form
+                        id={`edit-room-form-${room.id}`}
+                        onSubmit={handleEditSubmit}
+                        className="flex flex-col gap-6"
+                    >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-gray-700">Nom de la salle :</label>
-                                <input type="text" value={editData.name} onChange={e => handleEditChange('name', e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Nom de la salle" />
+                                <label className="text-sm font-semibold text-gray-700">
+                                    Nom de la salle :
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editData.name}
+                                    onChange={(e) =>
+                                        handleEditChange("name", e.target.value)
+                                    }
+                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
+                                    required
+                                    placeholder="Nom de la salle"
+                                />
                             </div>
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-gray-700">Bâtiment :</label>
-                                <input type="text" value={editData.building} onChange={e => handleEditChange('building', e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Nom du bâtiment" />
+                                <label className="text-sm font-semibold text-gray-700">
+                                    Bâtiment :
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editData.building}
+                                    onChange={(e) =>
+                                        handleEditChange(
+                                            "building",
+                                            e.target.value
+                                        )
+                                    }
+                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
+                                    required
+                                    placeholder="Nom du bâtiment"
+                                />
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-gray-700">Étage :</label>
-                                <input type="number" value={editData.floor} onChange={e => handleEditChange('floor', Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Numéro d'étage" />
+                                <label className="text-sm font-semibold text-gray-700">
+                                    Étage :
+                                </label>
+                                <input
+                                    type="number"
+                                    value={editData.floor}
+                                    onChange={(e) =>
+                                        handleEditChange(
+                                            "floor",
+                                            Number(e.target.value)
+                                        )
+                                    }
+                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
+                                    required
+                                    placeholder="Numéro d'étage"
+                                />
                             </div>
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-gray-700">Nombre de personnes max :</label>
-                                <input type="number" value={editData.capacity} onChange={e => handleEditChange('capacity', Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Capacité maximale" />
+                                <label className="text-sm font-semibold text-gray-700">
+                                    Nombre de personnes max :
+                                </label>
+                                <input
+                                    type="number"
+                                    value={editData.capacity}
+                                    onChange={(e) =>
+                                        handleEditChange(
+                                            "capacity",
+                                            Number(e.target.value)
+                                        )
+                                    }
+                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
+                                    required
+                                    placeholder="Capacité maximale"
+                                />
                             </div>
                         </div>
                     </form>

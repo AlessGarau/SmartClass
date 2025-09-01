@@ -4,7 +4,7 @@ import { TemperatureIcon } from "../Icon/TemperatureIcon";
 import { WaterIcon } from "../Icon/WaterIcon";
 
 const SensorBlock = ({ label, value, hasValue, icon, color, bg, unit }: RoomSensorBlock) => {
-    let iconColor = color.split("-")[1];
+    const iconColor = color.split("-")[1];
     let iconElement;
     if (!hasValue) {
         iconElement = <img src={WarningIcon} className="w-4 h-4 text-yellow-700" />;
