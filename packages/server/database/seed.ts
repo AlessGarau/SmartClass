@@ -30,7 +30,7 @@ async function main() {
       { name: "B009", capacity: 24, is_enabled: true, building: "batB", floor: 2 },
       { name: "C012", capacity: 50, is_enabled: true, building: "batC", floor: 0 },
       { name: "B012", capacity: 100, is_enabled: true, building: "batB", floor: 0 },
-      { name: "C013", capacity: 18, is_enabled: true, building: "batC", floor: 2 },
+      { id: "c5a3a18c-69ac-4c24-b170-a47613d51435", name: "C013", capacity: 18, is_enabled: true, building: "batC", floor: 2 },
     ])
     .returning();
 
