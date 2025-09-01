@@ -51,7 +51,7 @@ services:
       - data
     build:
       context: ..
-      dockerfile: docker/Dockerfile.data
+      dockerfile: Docker/Dockerfile.data
     ports:
       - "5001:5001"
     volumes:
