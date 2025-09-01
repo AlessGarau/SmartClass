@@ -11,7 +11,6 @@ function Navbar() {
     const navigationItems = [
         { name: "Dashboard", path: "/dashboard" },
         { name: "Salles", path: "/salles" },
-        { name: "Analytics", path: "/analytics" },
         { name: "Planning", path: "/planning" },
         { name: "Alertes", path: "/alertes" },
     ];
@@ -49,11 +48,10 @@ function Navbar() {
                             <Link
                                 key={item.name}
                                 to={item.path}
-                                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
-                                    isActive(item.path)
+                                className={`px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${isActive(item.path)
                                         ? "text-teal-600 bg-teal-50"
                                         : "text-gray-700 hover:text-teal-600 hover:bg-gray-50"
-                                }`}
+                                    }`}
                             >
                                 {item.name}
                             </Link>
@@ -104,11 +102,10 @@ function Navbar() {
                                 <Link
                                     key={item.name}
                                     to={item.path}
-                                    className={`block px-3 py-2 text-base font-medium rounded-md transition-colors duration-200 ${
-                                        isActive(item.path)
+                                    className={`block px-3 py-2 text-base font-medium rounded-md transition-colors duration-200 ${isActive(item.path)
                                             ? "text-teal-600 bg-teal-50"
                                             : "text-gray-700 hover:text-teal-600 hover:bg-gray-50"
-                                    }`}
+                                        }`}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     {item.name}

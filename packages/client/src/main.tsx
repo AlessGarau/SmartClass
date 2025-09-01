@@ -41,17 +41,6 @@ const router = createBrowserRouter([
                         element: <RoomsPage />,
                     },
                     {
-                        path: "/analytics",
-                        element: (
-                            <div className="p-6">
-                                <h1 className="text-2xl font-bold">
-                                    Analytics
-                                </h1>
-                                <p>Page d'analytics en construction...</p>
-                            </div>
-                        ),
-                    },
-                    {
                         path: "/alertes",
                         element: (
                             <div className="p-6">
