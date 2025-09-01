@@ -3,13 +3,12 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { roomQueryOptions } from "../../api/queryOptions";
 import UsersIcon from "../../assets/icons/users.svg";
-import WarningIcon from "../../assets/icons/warning.svg";
-import type { Room, RoomSensorBlock } from "../../types/Room";
+import type { Room } from "../../types/Room";
 import Button from "../Button/Button";
-import DeleteIcon from "../DeleteIcon";
-import PencilIcon from "../PencilIcon";
-import { TemperatureIcon } from "../TemperatureIcon";
-import { WaterIcon } from "../WaterIcon";
+import DeleteIcon from "../Icon/DeleteIcon";
+import PencilIcon from "../Icon/PencilIcon";
+import Popin from "../Popin/Popin";
+import SensorBlock from "./SensorBlock";
 
 interface RoomCardProps {
     room: Room;
@@ -61,31 +60,6 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
     const temperatureStyle = hasTemperature ? getTemperatureStyle(Number(temperatureValue)) : { color: "text-yellow-700", bg: "bg-yellow-100" };
     const hasHumidity = room.humidity !== null && !isNaN(Number(room.humidity));
     const humidityValue = hasHumidity ? String(room.humidity) : "";
-
-    const SensorBlock = ({ label, value, hasValue, icon, color, bg, unit }: RoomSensorBlock) => {
-        let iconColor = color.split("-")[1];
-        let iconElement;
-        if (!hasValue) {
-            iconElement = <img src={WarningIcon} className="w-4 h-4 text-yellow-700" />;
-        } else if (label === "Température") {
-            iconElement = <TemperatureIcon color={iconColor} />;
-        } else if (label === "Humidité") {
-            iconElement = <WaterIcon color={iconColor} />;
-        } else {
-            iconElement = <img src={icon} className={`w-4 h-4`} />;
-        }
-        return (
-            <div className={`flex-1 min-w-0 ${bg} rounded-lg p-2 flex flex-col items-start`}>
-                <div className={`flex items-center gap-1 ${color} text-xs font-semibold truncate overflow-hidden w-full`}>
-                    {iconElement}
-                    {label}
-                </div>
-                <div className={`text-xl sm:text-2xl font-bold ${color} truncate overflow-hidden w-full`}>
-                    {hasValue ? value + unit : `--${unit}`}
-                </div>
-            </div>
-        );
-    }
     //#endregion
 
     //#region Handlers
@@ -167,40 +141,41 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
                     onClick={handleEditClick}
                     tooltip="Modifier la salle"
                 />
-                {isEditSectionOpen && (
-                    <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
-                        <form onSubmit={handleEditSubmit} className="bg-gray-50 rounded-xl border border-gray-200 p-6 w-full max-w-2xl shadow-lg flex flex-col gap-6">
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="bg-green-100 rounded-full p-2 flex items-center justify-center"><PencilIcon color="teal" /></span>
-                                <span className="font-bold text-lg text-gray-800">Modifier la salle</span>
+                <Popin
+                    open={isEditSectionOpen}
+                    title={`Modifier la salle - ${room.name}`}
+                    icon={<PencilIcon color="teal" />}
+                    onClose={() => setEditSectionOpen(false)}
+                    actions={
+                        <>
+                            <Button type="submit" label={updateMutation.isPending ? "Enregistrement..." : "Enregistrer"} className="text-white px-6 py-2 rounded-lg font-semibold transition disabled:bg-gray-400 disabled:cursor-not-allowed" disabled={updateMutation.isPending} form={`edit-room-form-${room.id}`} />
+                            <Button type="button" label="Annuler" className="ml-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold transition" onClick={() => setEditSectionOpen(false)} />
+                        </>
+                    }
+                >
+                    <form id={`edit-room-form-${room.id}`} onSubmit={handleEditSubmit} className="flex flex-col gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-semibold text-gray-700">Nom de la salle :</label>
+                                <input type="text" value={editData.name} onChange={e => handleEditChange('name', e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Nom de la salle" />
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-semibold text-gray-700">Nom de la salle :</label>
-                                    <input type="text" value={editData.name} onChange={e => handleEditChange('name', e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Nom de la salle" />
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-semibold text-gray-700">Bâtiment :</label>
-                                    <input type="text" value={editData.building} onChange={e => handleEditChange('building', e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Nom du bâtiment" />
-                                </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-semibold text-gray-700">Bâtiment :</label>
+                                <input type="text" value={editData.building} onChange={e => handleEditChange('building', e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Nom du bâtiment" />
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-semibold text-gray-700">Étage :</label>
-                                    <input type="number" value={editData.floor} onChange={e => handleEditChange('floor', Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Numéro d'étage" />
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-semibold text-gray-700">Nombre de personnes max :</label>
-                                    <input type="number" value={editData.capacity} onChange={e => handleEditChange('capacity', Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Capacité maximale" />
-                                </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-semibold text-gray-700">Étage :</label>
+                                <input type="number" value={editData.floor} onChange={e => handleEditChange('floor', Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Numéro d'étage" />
                             </div>
-                            <div className="flex justify-end mt-4">
-                                <Button type="submit" label={updateMutation.isPending ? "Enregistrement..." : "Enregistrer"} className="text-white px-6 py-2 rounded-lg font-semibold transition disabled:bg-gray-400 disabled:cursor-not-allowed" disabled={updateMutation.isPending} />
-                                <Button type="button" label="Annuler" className="ml-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold transition" onClick={() => setEditSectionOpen(false)} />
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-semibold text-gray-700">Nombre de personnes max :</label>
+                                <input type="number" value={editData.capacity} onChange={e => handleEditChange('capacity', Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Capacité maximale" />
                             </div>
-                        </form>
-                    </div>
-                )}
+                        </div>
+                    </form>
+                </Popin>
                 <Button
                     className="bg-gray-100 justify-center rounded-lg p-2 text-gray-600 hover:bg-gray-200 transition text-xs sm:text-base"
                     iconTSX={<DeleteIcon />}

@@ -4,10 +4,11 @@ import { roomQueryOptions } from "../api/queryOptions";
 import ChevronLeftIcon from "../assets/icons/chevron_left.svg";
 import ChevronRightIcon from "../assets/icons/chevron_right.svg";
 import FilterIcon from "../assets/icons/filter_icon.svg";
-import { AddIcon } from "../components/AddIcon";
 import Button from "../components/Button/Button";
 import Dropdown from "../components/Dropdown/Dropdown";
 import FilterContainer from "../components/FilterContainer/FilterContainer";
+import { AddIcon } from "../components/Icon/AddIcon";
+import Popin from "../components/Popin/Popin";
 import RoomsContainer from "../components/Room/RoomsContainer";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import type { RoomFilters } from "../types/Room";
@@ -113,40 +114,41 @@ const RoomsPage = () => {
 
     return (
         <div className="flex flex-col gap-4 p-4 sm:p-8 md:p-12 lg:p-20">
-            {isAddRoomSectionVisible && (
-                <div className="fixed inset-0 bg-black/10 flex items-center justify-center z-50">
-                    <form onSubmit={handleNewRoomSubmit} className="bg-gray-50 rounded-xl border border-gray-200 p-6 w-full max-w-2xl shadow-lg flex flex-col gap-6">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="bg-green-100 rounded-full p-2 flex items-center justify-center"><AddIcon bgColor="teal" plusColor="white" /></span>
-                            <span className="font-bold text-lg text-gray-800">Créer une salle</span>
+            <Popin
+                open={isAddRoomSectionVisible}
+                title="Créer une salle"
+                icon={<AddIcon bgColor="teal" plusColor="white" />}
+                onClose={() => setAddRoomSectionVisible(false)}
+                actions={
+                    <>
+                        <Button type="submit" label={createRoomMutation.isPending ? "Création..." : "Créer"} className="text-white px-6 py-2 rounded-lg font-semibold transition disabled:bg-gray-400 disabled:cursor-not-allowed" disabled={createRoomMutation.isPending} form="add-room-form" />
+                        <Button type="button" label="Annuler" className="ml-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold transition" onClick={() => setAddRoomSectionVisible(false)} />
+                    </>
+                }
+            >
+                <form id="add-room-form" onSubmit={handleNewRoomSubmit} className="flex flex-col gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-semibold text-gray-700">Nom de la salle :</label>
+                            <input type="text" value={newRoomData.name} onChange={e => handleNewRoomChange('name', e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Nom de la salle" />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-gray-700">Nom de la salle :</label>
-                                <input type="text" value={newRoomData.name} onChange={e => handleNewRoomChange('name', e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Nom de la salle" />
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-gray-700">Bâtiment :</label>
-                                <input type="text" value={newRoomData.building} onChange={e => handleNewRoomChange('building', e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Nom du bâtiment" />
-                            </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-semibold text-gray-700">Bâtiment :</label>
+                            <input type="text" value={newRoomData.building} onChange={e => handleNewRoomChange('building', e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Nom du bâtiment" />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-gray-700">Étage :</label>
-                                <input type="number" value={newRoomData.floor} onChange={e => handleNewRoomChange('floor', Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Numéro d'étage" />
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-semibold text-gray-700">Nombre de personnes max :</label>
-                                <input type="number" value={newRoomData.capacity} onChange={e => handleNewRoomChange('capacity', Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Capacité maximale" />
-                            </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-semibold text-gray-700">Étage :</label>
+                            <input type="number" value={newRoomData.floor} onChange={e => handleNewRoomChange('floor', Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Numéro d'étage" />
                         </div>
-                        <div className="flex justify-end mt-4">
-                            <Button type="submit" label={createRoomMutation.isPending ? "Création..." : "Créer"} className="text-white px-6 py-2 rounded-lg font-semibold transition disabled:bg-gray-400 disabled:cursor-not-allowed" disabled={createRoomMutation.isPending} />
-                            <Button type="button" label="Annuler" className="ml-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold transition" onClick={() => setAddRoomSectionVisible(false)} />
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-semibold text-gray-700">Nombre de personnes max :</label>
+                            <input type="number" value={newRoomData.capacity} onChange={e => handleNewRoomChange('capacity', Number(e.target.value))} className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" required placeholder="Capacité maximale" />
                         </div>
-                    </form>
-                </div>
-            )}
+                    </div>
+                </form>
+            </Popin>
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
                 <div>
                     <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">Salles</h1>
