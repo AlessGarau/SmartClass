@@ -97,9 +97,13 @@ const DashboardTestPage = () => {
                                           const roomsWithTemp =
                                               roomsResponse.data.filter(
                                                   (room) =>
-                                                      room.temperature !== null &&
-                                                      room.temperature !== "0" &&
-                                                      parseFloat(room.temperature) > 0
+                                                      room.temperature !==
+                                                          null &&
+                                                      room.temperature !==
+                                                          "0" &&
+                                                      parseFloat(
+                                                          room.temperature
+                                                      ) > 0
                                               );
                                           if (roomsWithTemp.length === 0) {
                                               return "--°C";
@@ -265,8 +269,12 @@ const DashboardTestPage = () => {
                                                         : "bg-gray-100 text-gray-700"
                                                 }`}
                                             >
-                                                {room.isEnabled && "Actif"}
-                                                {!room.isEnabled && "Inactif"}
+                                                {room.isEnabled &&
+                                                    room.temperature !== null &&
+                                                    "Actif"}
+                                                {!room.isEnabled &&
+                                                    room.temperature === null &&
+                                                    "Inactif"}
                                             </span>
                                         </div>
                                         <div className="space-y-3">

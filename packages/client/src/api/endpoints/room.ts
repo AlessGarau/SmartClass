@@ -53,9 +53,7 @@ export const roomApi = {
         return response.data;
     },
 
-    getRooms: async (
-        filters: RoomFilters = {}
-    ): Promise<{ data: Room[] }> => {
+    getRooms: async (filters: RoomFilters = {}): Promise<{ data: Room[] }> => {
         const params = new URLSearchParams();
         if (filters.building) params.append("building", filters.building);
         if (filters.floor !== undefined)
