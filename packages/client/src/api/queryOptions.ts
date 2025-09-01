@@ -140,12 +140,3 @@ export const weatherQueryOptions = {
         refetchInterval: 30 * 60 * 1000,
     }),
 };
-
-export const roomQueryOptions = {
-    rooms: () => ({
-        queryKey: ["room"],
-        queryFn: () => roomApi.getRooms(),
-        staleTime: 2 * 60 * 1000,
-        refetchInterval: 5 * 60 * 1000,
-    }),
-};

@@ -17,15 +17,9 @@ const DashboardTestPage = () => {
         weatherQueryOptions.weeklyWeather()
     );
 
-<<<<<<< HEAD
     const { data: roomsResponse } = useQuery(roomQueryOptions.rooms());
 
     console.log(roomsResponse);
-=======
-    const { data: roomsResponse } = useQuery(
-        roomQueryOptions.rooms()
-    );
->>>>>>> 2bd5bd3 (fix status)
 
     const getWeekdayWeather = () => {
         if (!weatherResponse?.data) return [];
@@ -103,7 +97,9 @@ const DashboardTestPage = () => {
                                           const roomsWithTemp =
                                               roomsResponse.data.filter(
                                                   (room) =>
-                                                      room.temperature !== null
+                                                      room.temperature !== null &&
+                                                      room.temperature !== "0" &&
+                                                      parseFloat(room.temperature) > 0
                                               );
                                           if (roomsWithTemp.length === 0) {
                                               return "--°C";
@@ -263,12 +259,8 @@ const DashboardTestPage = () => {
                                             <span
                                                 className={`px-3 py-1 rounded-full text-xs font-medium ${
                                                     room.isEnabled &&
-<<<<<<< HEAD
                                                     room.temperature !== null &&
                                                     room.temperature !== "0"
-=======
-                                                    room.temperature !== 0
->>>>>>> 2bd5bd3 (fix status)
                                                         ? "bg-green-100 text-green-700"
                                                         : "bg-gray-100 text-gray-700"
                                                 }`}
