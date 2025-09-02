@@ -1,28 +1,5 @@
-import type { RoomFilterOptions } from "../../types/Room";
+import type { Room, RoomFilterOptions, RoomFilters } from "../../types/Room";
 import { apiClient } from "../client";
-
-interface RoomFilters {
-    building?: string;
-    floor?: number;
-    isEnabled?: boolean;
-    search?: string;
-    limit?: number;
-    offset?: number;
-}
-
-interface Room {
-    id: string;
-    name: string;
-    building: string;
-    floor: number;
-    capacity: number;
-    isEnabled: boolean;
-    temperature: string | null;
-    humidity: string | null;
-    pressure: string | null;
-    movement: string | null;
-    occupancy?: number;
-}
 
 export const roomApi = {
     getRoomsCount: async (
