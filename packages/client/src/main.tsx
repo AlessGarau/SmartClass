@@ -9,6 +9,7 @@ import Layout from "./layout/Layout.tsx";
 import DashboardTestPage from "./pages/DashboardPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import PlanningPage from "./pages/PlanningPage.tsx";
+import ReportsPage from "./pages/ReportsPage.tsx";
 import RoomsPage from "./pages/RoomsPage.tsx";
 
 const queryClient = new QueryClient();
@@ -42,12 +43,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "/alertes",
-                        element: (
-                            <div className="p-6">
-                                <h1 className="text-2xl font-bold">Alertes</h1>
-                                <p>Page d'alertes en construction...</p>
-                            </div>
-                        ),
+                        element: <ReportsPage />,
                     },
                 ],
             },

@@ -132,6 +132,10 @@ export const roomQueryOptions = {
     }),
 };
 
+export const reportQueryOptions = {
+
+}
+
 export const lessonQueryOptions = {
     deleteLesson: () => ({
         mutationFn: (lessonId: string) => lessonApi.deleteLesson(lessonId),
