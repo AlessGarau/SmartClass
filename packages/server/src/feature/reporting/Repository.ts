@@ -34,6 +34,12 @@ export class ReportingRepository implements IReportingRepository {
     if (filter?.status) {
       conditions.push(eq(reportingTable.status, filter.status));
     }
+    if (filter?.equipmentType) {
+      conditions.push(eq(equipmentTable.type, filter.equipmentType));
+    }
+    if (filter?.roomName) {
+      conditions.push(eq(roomTable.name, filter.roomName));
+    }
 
     if (conditions.length) {
       query.where(and(...conditions));
@@ -89,6 +95,8 @@ export class ReportingRepository implements IReportingRepository {
 
     this.applyFilter({
       status: params.status,
+      equipmentType: params.equipmentType,
+      roomName: params.roomName,
     }, query);
 
     if (params.limit !== undefined) {
@@ -117,7 +125,9 @@ export class ReportingRepository implements IReportingRepository {
   async getReportsCount(filter: ReportingFilter): Promise<number> {
     const query = this._db
       .select({ count: sql<number>`count(*)` })
-      .from(reportingTable);
+      .from(reportingTable)
+      .leftJoin(equipmentTable, eq(reportingTable.equipment_id, equipmentTable.id))
+      .leftJoin(roomTable, eq(equipmentTable.room_id, roomTable.id));
 
     this.applyFilter(filter, query);
 

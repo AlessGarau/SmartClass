@@ -60,6 +60,8 @@ export const GetReportsQuerySchema = z.object({
     .optional()
     .describe("Number of reports to skip"),
   status: z.enum(["pending", "resolved"]).optional().describe("Filter by report status"),
+  equipmentType: z.enum(["ac", "heater"]).optional().describe("Filter by equipment type"),
+  roomName: z.string().optional().describe("Filter by room name"),
 });
 
 export const PatchReportingSchema = z.object({
@@ -72,6 +74,8 @@ export const ReportingIdParamsSchema = z.object({
 
 export const ReportingFilterSchema = GetReportsQuerySchema.pick({
   status: true,
+  equipmentType: true,
+  roomName: true,
 });
 
 export const ReportsCountSchema = z.object({

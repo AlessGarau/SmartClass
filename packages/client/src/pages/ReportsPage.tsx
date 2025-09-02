@@ -69,7 +69,7 @@ const ReportsPage = () => {
             <FilterContainer>
                 {/* TODO ADD ROOM NAME / EQUIPEMENT TYPE */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full lg:w-auto">
-                    <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Bâtiment :</label>
+                    <label className="text-sm font-medium text-gray-700 whitespace-nowrap">État :</label>
                     <Dropdown
                         className="w-full sm:min-w-[200px]"
                         placeholder="Tous les états"
