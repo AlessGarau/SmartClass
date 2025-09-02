@@ -69,6 +69,11 @@ export const roomApi = {
         return response.data;
     },
 
+    getRoom: async (roomId: string): Promise<{ data: Room }> => {
+        const response = await apiClient.get(`/room/${roomId}`);
+        return response.data;
+    },
+
     deleteRoom: async (roomId: string): Promise<void> => {
         await apiClient.delete(`/room/${roomId}`);
     },
