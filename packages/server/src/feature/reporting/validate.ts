@@ -73,6 +73,8 @@ export const ReportingIdParamsSchema = z.object({
 });
 
 export const ReportingFilterSchema = GetReportsQuerySchema.pick({
+  limit: true,
+  offset: true,
   status: true,
   equipmentType: true,
   roomName: true,

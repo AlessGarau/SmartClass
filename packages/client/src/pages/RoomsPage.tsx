@@ -96,7 +96,7 @@ const RoomsPage = () => {
     const handleNext = (): void => setOffset((prev) => prev + limit);
     const showAddRoomSection = (): void => {
         setAddRoomSectionVisible(true);
-    }
+    };
 
     const handleNewRoomChange = (field: string, value: string | number) => {
         setNewRoomData(prev => ({ ...prev, [field]: value }));

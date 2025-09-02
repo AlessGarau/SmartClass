@@ -64,6 +64,7 @@ export class RoomMapper implements IMapper {
   toGetRoomFilterOptionsResponse(filterOptions: RoomFilterOptions): RoomFilterOptions {
     return {
       buildings: filterOptions.buildings,
+      names: filterOptions.names,
       floors: filterOptions.floors,
     };
   }

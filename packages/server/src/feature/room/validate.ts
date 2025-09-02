@@ -74,11 +74,16 @@ export const RoomIdParamsSchema = z.object({
 
 export const GetRoomFilterOptionsSchema = z.object({
   building: z.boolean().optional().describe("Get distinct buildings"),
+  name: z.boolean().optional().describe("Get distinct room names"),
   floor: z.string().optional().describe("Get distinct floor by building"),
 });
 
 export const RoomFilterOptionsSchema = z.object({
   buildings: z.array(z.object({
+    value: z.string(),
+    label: z.string(),
+  })).optional(),
+  names: z.array(z.object({
     value: z.string(),
     label: z.string(),
   })).optional(),

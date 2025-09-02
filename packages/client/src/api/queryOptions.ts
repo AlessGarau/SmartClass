@@ -2,6 +2,7 @@ import type { PlannedClass, PlanningFilters } from "../types/Planning";
 import type { LoginCredentials } from "../types/User";
 import { lessonApi } from "./endpoints/lesson";
 import { planningApi } from "./endpoints/planning";
+import { reportApi } from "./endpoints/report";
 import { roomApi } from "./endpoints/room";
 import { userApi } from "./endpoints/user";
 import { weatherApi } from "./endpoints/weather";
@@ -76,6 +77,12 @@ export const roomQueryOptions = {
         staleTime: 60 * 60 * 1000,
     }),
 
+    roomNameOptions: () => ({
+        queryKey: ["room", "nameOptions"],
+        queryFn: () => roomApi.getRoomNameOptions(),
+        staleTime: 60 * 60 * 1000,
+    }),
+
     floorOptions: (building: string) => ({
         queryKey: ["room", "floorOptions", building],
         queryFn: () => roomApi.getFloorOptions(building),
@@ -133,7 +140,46 @@ export const roomQueryOptions = {
 };
 
 export const reportQueryOptions = {
+    reportCount: (filters = {}) => ({
+        queryKey: ["report", "count", filters],
+        queryFn: () => reportApi.getReportsCount(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
 
+    createReport: () => ({
+        mutationKey: ["report", "createReport"],
+        mutationFn: (data: {
+            equipmentId: string;
+            description: string;
+        }) => reportApi.createReport(data),
+    }),
+
+    getReports: (filters = {}) => ({
+        queryKey: ["report", "allReports", filters],
+        queryFn: async () => {
+            const response = await reportApi.getReports(filters);
+            return response;
+        },
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    deleteReport: () => ({
+        mutationKey: ["report", "deleteReport"],
+        mutationFn: (reportId: string) => reportApi.deleteReport(reportId),
+    }),
+
+    updateReport: () => ({
+        mutationKey: ["report", "updateReport"],
+        mutationFn: ({
+            reportId,
+            data,
+        }: {
+            reportId: string;
+            data: {
+                status: string;
+            };
+        }) => reportApi.updateReport(reportId, data),
+    }),
 }
 
 export const lessonQueryOptions = {
