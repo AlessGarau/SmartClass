@@ -167,6 +167,10 @@ export class ReportingRepository implements IReportingRepository {
         updateData.status = reportingUpdateParams.status;
       }
 
+      if (reportingUpdateParams.description !== undefined) {
+        updateData.description = reportingUpdateParams.description;
+      }
+
       const updateResult = await this._db
         .update(reportingTable)
         .set(updateData)
@@ -187,6 +191,18 @@ export class ReportingRepository implements IReportingRepository {
         "Unexpected error during reporting update",
         error,
       );
+    }
+  }
+
+  async deleteReporting(id: string): Promise<void> {
+    try {
+      await this._db.delete(reportingTable).where(eq(reportingTable.id, id));
+    } catch (error: any) {
+      throw ReportingError.notFound("Oupsi");
+      // throw ReportingError.deletionFailed(
+      //   `Failed to delete reporting with ID "${id}". The reporting is linked to other entities. Please delete all the entities associated with this reporting or change their associated reporting before deleting this reporting.`,
+      //   error,
+      // );
     }
   }
 }

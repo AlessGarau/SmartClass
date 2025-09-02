@@ -5,10 +5,10 @@ import { ReportingController } from "./Controller";
 import { CreateReportingSchema, GetReportsQuerySchema, PatchReportingSchema, ReportingByRoomResponseSchema, ReportingFilterSchema, ReportingIdParamsSchema, ReportingSchema, ReportsCountSchema } from "./validate";
 
 export class ReportingRoutes {
-  private controller: ReportingController;
+  private _controller: ReportingController;
 
   constructor(private _server: FastifyInstance) {
-    this.controller = Container.get(ReportingController);
+    this._controller = Container.get(ReportingController);
   }
   public registerRoutes() {
 
@@ -53,7 +53,7 @@ export class ReportingRoutes {
           },
         },
       },
-      this.controller.createReporting.bind(this.controller),
+      this._controller.createReporting.bind(this._controller),
     );
 
     this._server.get(
@@ -93,7 +93,7 @@ export class ReportingRoutes {
           },
         },
       },
-      this.controller.getReports.bind(this.controller),
+      this._controller.getReports.bind(this._controller),
     );
 
     this._server.get(
@@ -136,7 +136,7 @@ export class ReportingRoutes {
           },
         },
       },
-      this.controller.findAllReportByRoomId.bind(this.controller),
+      this._controller.findAllReportByRoomId.bind(this._controller),
     );
 
     this._server.get(
@@ -159,7 +159,7 @@ export class ReportingRoutes {
           },
         },
       },
-      this.controller.getReportsCount.bind(this.controller),
+      this._controller.getReportsCount.bind(this._controller),
     );
 
     this._server.patch(
@@ -211,7 +211,46 @@ export class ReportingRoutes {
           },
         },
       },
-      this.controller.patchReporting.bind(this.controller),
+      this._controller.patchReporting.bind(this._controller),
+    );
+
+    this._server.delete(
+      "/reporting/:id",
+      {
+        schema: {
+          tags: ["Room"],
+          summary: "Delete a reporting by ID",
+          description: "Delete a reporting using its ID",
+          params: zodToJsonSchema(ReportingIdParamsSchema),
+          response: {
+            204: {
+              description: "Reporting deleted successfully",
+            },
+            400: {
+              description: "Bad request",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            404: {
+              description: "Room not found",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+            500: {
+              description: "Internal server error",
+              type: "object",
+              properties: {
+                error: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      this._controller.deleteReporting.bind(this._controller),
     );
   }
 }

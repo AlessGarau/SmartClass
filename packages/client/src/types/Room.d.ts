@@ -35,3 +35,10 @@ export interface RoomSensorBlock {
     bg: string,
     unit: string,
 }
+
+export interface RoomUpdate {
+    name: string,
+    building: string,
+    floor: number,
+    capacity: number,
+}
