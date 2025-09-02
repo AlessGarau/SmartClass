@@ -8,12 +8,24 @@ export const dbReportingSchema = z.object({
   created_date: z.date(),
 });
 
+export const dbReportingExtendSchema = z.object({
+  id: z.string().uuid(),
+  equipment_id: z.string().uuid().nullable(),
+  description: z.string(),
+  status: z.enum(["pending", "resolved"]),
+  created_date: z.date(),
+  equipment_type: z.string(),
+  room_name: z.string(),
+});
+
 export const ReportingSchema = z.object({
   id: z.string().uuid(),
   equipmentId: z.string().uuid().nullable(),
   description: z.string(),
   status: z.string(),
   createdDate: z.date(),
+  equipmentType: z.string(),
+  roomName: z.string(),
 });
 
 export const EquipmentSchema = z.object({
@@ -67,6 +79,7 @@ export const ReportsCountSchema = z.object({
 });
 
 export type dbReporting = z.infer<typeof dbReportingSchema>;
+export type dbReportingExtend = z.infer<typeof dbReportingExtendSchema>;
 export type ReportingByRoomResponse = z.infer<typeof ReportingByRoomResponseSchema>;
 export type Reporting = z.infer<typeof ReportingSchema>;
 export type CreateReportingParams = z.infer<typeof CreateReportingSchema>;
