@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { roomQueryOptions } from "../../api/queryOptions";
 import UsersIcon from "../../assets/icons/users.svg";
-import type { Room } from "../../types/Room";
+import type { Room, RoomUpdate } from "../../types/Room";
 import Button from "../Button/Button";
 import DeleteIcon from "../Icon/DeleteIcon";
 import PencilIcon from "../Icon/PencilIcon";
@@ -16,7 +16,7 @@ interface RoomCardProps {
 
 const RoomCard = ({ room }: RoomCardProps) => {
     const [isEditSectionOpen, setEditSectionOpen] = useState(false);
-    const [editData, setEditData] = useState({
+    const [editData, setEditData] = useState<RoomUpdate>({
         name: room.name,
         building: room.building,
         floor: room.floor,

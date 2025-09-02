@@ -66,6 +66,7 @@ export const GetReportsQuerySchema = z.object({
 
 export const PatchReportingSchema = z.object({
   status: z.enum(["pending", "resolved"]).optional(),
+  description: z.string().optional(),
 });
 
 export const ReportingIdParamsSchema = z.object({

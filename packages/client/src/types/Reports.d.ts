@@ -15,3 +15,8 @@ export interface Report {
     equipmentType: string;
     roomName: string;
 }
+
+export interface ReportUpdate {
+    status: string,
+    description: string,
+}

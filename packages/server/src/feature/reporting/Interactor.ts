@@ -45,4 +45,12 @@ export class ReportingInteractor implements IReportingInteractor {
 
     return reportings;
   }
+
+  async deleteReporting(id: string): Promise<void> {
+    const reporting = await this._repository.getReporting(id);
+    if (!reporting) {
+      throw ReportingError.notFound(`Reporting with ID "${id}" not found.`);
+    }
+    await this._repository.deleteReporting(id);
+  }
 }

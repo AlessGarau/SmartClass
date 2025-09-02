@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { reportQueryOptions } from "../../api/queryOptions";
-import type { Report } from "../../types/Reports";
+import type { Report, ReportUpdate } from "../../types/Reports";
 import Button from "../Button/Button";
+import DeleteIcon from "../Icon/DeleteIcon";
 import EyeIcon from "../Icon/EyeIcon";
 import PencilIcon from "../Icon/PencilIcon";
 import Popin from "../Popin/Popin";
@@ -13,8 +14,9 @@ interface ReportRowProps {
 
 const ReportRow = ({ report }: ReportRowProps) => {
     const [isEditSectionOpen, setEditSectionOpen] = useState(false);
-    const [editData, setEditData] = useState({
+    const [editData, setEditData] = useState<ReportUpdate>({
         status: report.status,
+        description: report.description,
     });
     const [isDescOpen, setIsDescOpen] = useState(false);
     const [isTruncated, setIsTruncated] = useState(false);
@@ -176,15 +178,27 @@ const ReportRow = ({ report }: ReportRowProps) => {
                                         ))}
                                 </select>
                             </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-semibold text-gray-700">
+                                    Description du signalement:
+                                </label>
+                                <textarea
+                                    value={editData.description}
+                                    onChange={(e) => handleEditChange("description", e.target.value)}
+                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow resize-none min-h-[60px]"
+                                    required
+                                    placeholder="Description du signalement"
+                                />
+                            </div>
                         </div>
                     </form>
                 </Popin>
-                {/* <Button
+                <Button
                     className="bg-gray-100 justify-center rounded-lg p-2 text-gray-600 hover:bg-gray-200 transition text-xs sm:text-base"
                     iconTSX={<DeleteIcon />}
                     onClick={handleDelete}
                     disabled={deleteMutation.isPending}
-                /> */}
+                />
             </td>
         </tr>
     )

@@ -58,4 +58,10 @@ export class ReportingController {
       message: "Signalement récupéré avec succès",
     });
   }
+
+  async deleteReporting(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = ReportingIdParamsSchema.parse(req.params);
+    await this._interactor.deleteReporting(id);
+    return reply.status(204).send();
+  }
 }
