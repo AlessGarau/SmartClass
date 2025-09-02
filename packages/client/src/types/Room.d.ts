@@ -3,6 +3,8 @@ export interface RoomFilters {
     search?: string;
     building?: string;
     floor?: number;
+    limit?: number;
+    offset?: number;
 }
 
 export interface RoomFilterOptions {
