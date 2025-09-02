@@ -275,7 +275,7 @@ async function main() {
   const sensors = await database
     .insert(schema.sensorTable)
     .values([
-      { id: "c4ff9159-eced-4bd9-9f71-527b3bd44fa9", room_id: "c5a3a18c-69ac-4c24-b170-a47613d51435", physical_id: "202481598920718" },
+      { id: "c4ff9159-eced-4bd9-9f71-527b3bd44fa9", room_id: "c5a3a18c-69ac-4c24-b170-a47613d51435", physical_id: "641896457" },
       { room_id: rooms[0].id, physical_id: "TEMP_001" },
       { room_id: rooms[0].id, physical_id: "HUM_001" },
       { room_id: rooms[0].id, physical_id: "PRESS_001" },
