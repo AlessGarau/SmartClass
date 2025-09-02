@@ -99,19 +99,15 @@ const DashboardTestPage = () => {
                                                   (room) =>
                                                       room.temperature !==
                                                           null &&
-                                                      room.temperature !==
-                                                          "0" &&
-                                                      parseFloat(
-                                                          room.temperature
-                                                      ) > 0
+                                                      room.temperature !== 0 &&
+                                                      room.temperature > 0
                                               );
                                           if (roomsWithTemp.length === 0) {
                                               return "--°C";
                                           }
                                           const sum = roomsWithTemp.reduce(
                                               (acc, room) =>
-                                                  acc +
-                                                  parseFloat(room.temperature!),
+                                                  acc + room.temperature!,
                                               0
                                           );
                                           return (
@@ -264,7 +260,7 @@ const DashboardTestPage = () => {
                                                 className={`px-3 py-1 rounded-full text-xs font-medium ${
                                                     room.isEnabled &&
                                                     room.temperature !== null &&
-                                                    room.temperature !== "0"
+                                                    room.temperature !== 0
                                                         ? "bg-green-100 text-green-700"
                                                         : "bg-gray-100 text-gray-700"
                                                 }`}
@@ -272,8 +268,9 @@ const DashboardTestPage = () => {
                                                 {room.isEnabled &&
                                                     room.temperature !== null &&
                                                     "Actif"}
-                                                {!room.isEnabled &&
-                                                    room.temperature === null &&
+                                                {(!room.isEnabled ||
+                                                    room.temperature ===
+                                                        null) &&
                                                     "Inactif"}
                                             </span>
                                         </div>
@@ -293,8 +290,7 @@ const DashboardTestPage = () => {
                                             <div className="flex justify-between items-center text-sm text-gray-600">
                                                 <span>Capacité :</span>
                                                 <span className="font-medium text-gray-800">
-                                                    {room.occupancy || 0}/
-                                                    {room.capacity}
+                                                    {room.capacity} places
                                                 </span>
                                             </div>
                                         </div>
