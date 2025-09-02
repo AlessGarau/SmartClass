@@ -101,11 +101,11 @@ export class RoomRepository implements IRoomRepository {
   }
 
   private selectedFieldsFrom(src: {
-        latestTemperature: any;
-        latestHumidity: any;
-        latestPressure: any;
-        latestMovement: any;
-    }) {
+    latestTemperature: any;
+    latestHumidity: any;
+    latestPressure: any;
+    latestMovement: any;
+  }) {
     const {
       latestTemperature,
       latestHumidity,
@@ -361,6 +361,16 @@ export class RoomRepository implements IRoomRepository {
       .orderBy(roomTable.floor);
 
     return result.map((row) => row.floor);
+  }
+
+  async getDistinctNames(): Promise<string[]> {
+    const result = await this._db
+      .selectDistinct({ name: roomTable.name })
+      .from(roomTable)
+      .where(eq(roomTable.is_enabled, true))
+      .orderBy(roomTable.name);
+
+    return result.map((row) => row.name);
   }
 
   async getDistinctFloorsByBuilding(building: string): Promise<number[]> {

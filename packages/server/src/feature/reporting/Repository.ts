@@ -4,9 +4,10 @@ import { Service } from "typedi";
 import { database } from "../../../database/database";
 import { equipmentTable } from "../../../database/schema/equipment";
 import { reportingTable } from "../../../database/schema/reporting";
+import { roomTable } from "../../../database/schema/room";
 import { ReportingError } from "../../middleware/error/reportingError";
 import { IReportingRepository } from "./interface/IRepository";
-import { CreateReportingParams, dbReporting, GetReportsQueryParams, PatchReportingParams, Reporting, ReportingFilter } from "./validate";
+import { CreateReportingParams, GetReportsQueryParams, PatchReportingParams, Reporting, ReportingFilter } from "./validate";
 
 @Service()
 export class ReportingRepository implements IReportingRepository {
@@ -15,13 +16,15 @@ export class ReportingRepository implements IReportingRepository {
     this._db = database;
   }
 
-  private transformReporting(reporting: dbReporting): Reporting {
+  private transformReporting(reporting: any): Reporting {
     return {
       id: reporting.id,
       equipmentId: reporting.equipment_id,
       description: reporting.description,
       status: reporting.status,
       createdDate: reporting.created_date,
+      equipmentType: reporting.equipment_type,
+      roomName: reporting.room_name,
     };
   }
 
@@ -30,6 +33,12 @@ export class ReportingRepository implements IReportingRepository {
 
     if (filter?.status) {
       conditions.push(eq(reportingTable.status, filter.status));
+    }
+    if (filter?.equipmentType) {
+      conditions.push(eq(equipmentTable.type, filter.equipmentType));
+    }
+    if (filter?.roomName) {
+      conditions.push(eq(roomTable.name, filter.roomName));
     }
 
     if (conditions.length) {
@@ -41,14 +50,26 @@ export class ReportingRepository implements IReportingRepository {
 
   async create(ReportingCreateParams: CreateReportingParams): Promise<Reporting> {
     try {
-      const result = await this._db
+      const insertResult = await this._db
         .insert(reportingTable)
         .values({
           equipment_id: ReportingCreateParams.equipmentId,
           description: ReportingCreateParams.description,
         })
-        .returning();
-      return this.transformReporting(result[0]);
+        .returning({
+          id: reportingTable.id,
+        });
+
+      const newId = insertResult[0]?.id;
+      if (!newId) {
+        throw ReportingError.creationFailed("Failed to create reporting: no ID returned");
+      }
+
+      const reporting = await this.getReporting(newId);
+      if (!reporting) {
+        throw ReportingError.creationFailed("Reporting created but not found afterwards (unexpected)");
+      }
+      return reporting;
     } catch (error: any) {
       throw ReportingError.creationFailed(
         "Unexpected error during reporting creation, check if the equipmentId exists",
@@ -58,10 +79,24 @@ export class ReportingRepository implements IReportingRepository {
   }
 
   async getReports(params: GetReportsQueryParams): Promise<Reporting[]> {
-    const query = this._db.select().from(reportingTable);
+    const query = this._db
+      .select({
+        id: reportingTable.id,
+        equipment_id: reportingTable.equipment_id,
+        description: reportingTable.description,
+        status: reportingTable.status,
+        created_date: reportingTable.created_date,
+        equipment_type: sql<string>`equipment.type`,
+        room_name: sql<string>`room.name`,
+      })
+      .from(reportingTable)
+      .leftJoin(equipmentTable, eq(reportingTable.equipment_id, equipmentTable.id))
+      .leftJoin(roomTable, eq(equipmentTable.room_id, roomTable.id));
 
     this.applyFilter({
       status: params.status,
+      equipmentType: params.equipmentType,
+      roomName: params.roomName,
     }, query);
 
     if (params.limit !== undefined) {
@@ -90,7 +125,9 @@ export class ReportingRepository implements IReportingRepository {
   async getReportsCount(filter: ReportingFilter): Promise<number> {
     const query = this._db
       .select({ count: sql<number>`count(*)` })
-      .from(reportingTable);
+      .from(reportingTable)
+      .leftJoin(equipmentTable, eq(reportingTable.equipment_id, equipmentTable.id))
+      .leftJoin(roomTable, eq(equipmentTable.room_id, roomTable.id));
 
     this.applyFilter(filter, query);
 
@@ -100,8 +137,18 @@ export class ReportingRepository implements IReportingRepository {
 
   async getReporting(id: string): Promise<Reporting | null> {
     const result = await this._db
-      .select()
+      .select({
+        id: reportingTable.id,
+        equipment_id: reportingTable.equipment_id,
+        description: reportingTable.description,
+        status: reportingTable.status,
+        created_date: reportingTable.created_date,
+        equipment_type: sql<string>`equipment.type`,
+        room_name: sql<string>`room.name`,
+      })
       .from(reportingTable)
+      .leftJoin(equipmentTable, eq(reportingTable.equipment_id, equipmentTable.id))
+      .leftJoin(roomTable, eq(equipmentTable.room_id, roomTable.id))
       .where(and(eq(reportingTable.id, id)))
       .limit(1);
 
@@ -120,23 +167,21 @@ export class ReportingRepository implements IReportingRepository {
         updateData.status = reportingUpdateParams.status;
       }
 
-      const result = await this._db
+      const updateResult = await this._db
         .update(reportingTable)
         .set(updateData)
         .where(and(eq(reportingTable.id, id)))
-        .returning({
-          id: reportingTable.id,
-          equipment_id: reportingTable.equipment_id,
-          description: reportingTable.description,
-          status: reportingTable.status,
-          created_date: reportingTable.created_date,
-        });
+        .returning({ id: reportingTable.id });
 
-      if (result.length === 0) {
+      if (updateResult.length === 0) {
         throw ReportingError.updateFailed(`Failed to update reporting with ID "${id}".`);
       }
 
-      return this.transformReporting(result[0]);
+      const reporting = await this.getReporting(id);
+      if (!reporting) {
+        throw ReportingError.updateFailed("Reporting updated but not found afterwards (unexpected)");
+      }
+      return reporting;
     } catch (error: any) {
       throw ReportingError.updateFailed(
         "Unexpected error during reporting update",

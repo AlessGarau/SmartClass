@@ -10,6 +10,7 @@ export interface RoomFilters {
 export interface RoomFilterOptions {
     buildings: FilterOption[],
     floors: FilterOption[],
+    names: FilterOption[],
 }
 
 export interface Room {

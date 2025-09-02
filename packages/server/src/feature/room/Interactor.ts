@@ -41,11 +41,17 @@ export class RoomInteractor implements IRoomInteractor {
 
   async getRoomFilterOptions(params: GetRoomFilterOptionsParams): Promise<RoomFilterOptions> {
     const distinctBuildings = params.building ? await this._repository.getDistinctBuildings() : [];
+    const distinctNames = params.name ? await this._repository.getDistinctNames() : [];
     const distinctFloors = params.floor ? await this._repository.getDistinctFloorsByBuilding(params.floor) : [];
 
     const buildings = distinctBuildings.map(building => ({
       value: building,
       label: this._getBuildingLabel(building),
+    }));
+
+    const names = distinctNames.map(name => ({
+      value: name,
+      label: name,
     }));
 
     const floors = distinctFloors.map(floor => ({
@@ -55,6 +61,7 @@ export class RoomInteractor implements IRoomInteractor {
 
     return {
       buildings,
+      names,
       floors,
     };
   }

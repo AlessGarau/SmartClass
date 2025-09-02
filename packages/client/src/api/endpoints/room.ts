@@ -23,6 +23,11 @@ export const roomApi = {
         return response.data;
     },
 
+    getRoomNameOptions: async (): Promise<{ data: RoomFilterOptions }> => {
+        const response = await apiClient.get("/room/filters?name=true");
+        return response.data;
+    },
+
     getFloorOptions: async (
         building: string
     ): Promise<{ data: RoomFilterOptions }> => {

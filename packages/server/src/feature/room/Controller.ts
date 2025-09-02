@@ -78,8 +78,8 @@ export class RoomController {
   }
 
   async getRoomFilterOptions(req: FastifyRequest, reply: FastifyReply) {
-    const { building, floor } = GetRoomFilterOptionsSchema.parse(req.query);
-    const filterOptions = await this._interactor.getRoomFilterOptions({ building, floor });
+    const { building, name, floor } = GetRoomFilterOptionsSchema.parse(req.query);
+    const filterOptions = await this._interactor.getRoomFilterOptions({ building, name, floor });
     return reply.status(200).send({
       data: this._mapper.toGetRoomFilterOptionsResponse(filterOptions),
     });

@@ -14,7 +14,7 @@ interface RoomCardProps {
     room: Room;
 }
 
-const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
+const RoomCard = ({ room }: RoomCardProps) => {
     const [isEditSectionOpen, setEditSectionOpen] = useState(false);
     const [editData, setEditData] = useState({
         name: room.name,
@@ -115,14 +115,12 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
                 </div>
                 <div className="flex items-center gap-2">
                     <span
-                        className={`flex items-center gap-1 text-xs sm:text-sm font-semibold ${
-                            room.isEnabled ? "text-green-600" : "text-red-600"
-                        }`}
+                        className={`flex items-center gap-1 text-xs sm:text-sm font-semibold ${room.isEnabled ? "text-green-600" : "text-red-600"
+                            }`}
                     >
                         <span
-                            className={`w-2 h-2 rounded-full ${
-                                room.isEnabled ? "bg-green-500" : "bg-red-500"
-                            }`}
+                            className={`w-2 h-2 rounded-full ${room.isEnabled ? "bg-green-500" : "bg-red-500"
+                                }`}
                         ></span>
                         {room.isEnabled ? "Disponible" : "Non disponible"}
                     </span>
