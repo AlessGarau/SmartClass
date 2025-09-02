@@ -275,6 +275,7 @@ async function main() {
   const sensors = await database
     .insert(schema.sensorTable)
     .values([
+      { id: "c4ff9159-eced-4bd9-9f71-527b3bd44fa9", room_id: "c5a3a18c-69ac-4c24-b170-a47613d51435", physical_id: "202481598920718" },
       { room_id: rooms[0].id, physical_id: "TEMP_001" },
       { room_id: rooms[0].id, physical_id: "HUM_001" },
       { room_id: rooms[0].id, physical_id: "PRESS_001" },
@@ -297,8 +298,8 @@ async function main() {
   const temperatures = await database
     .insert(schema.temperatureTable)
     .values([
-      { room_id: rooms[0].id, data: "22.5", sensor_id: sensors[0].id },
-      { room_id: rooms[0].id, data: "23.1", sensor_id: sensors[0].id },
+      { room_id: rooms[0].id, data: "22.5", sensor_id: sensors[1].id },
+      { room_id: rooms[0].id, data: "23.1", sensor_id: sensors[1].id },
       { room_id: rooms[1].id, data: "21.8", sensor_id: sensors[4].id },
       { room_id: rooms[1].id, data: "22.2", sensor_id: sensors[4].id },
       { room_id: rooms[3].id, data: "24.0", sensor_id: sensors[8].id },
