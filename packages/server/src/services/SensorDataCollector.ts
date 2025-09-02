@@ -37,7 +37,7 @@ interface MovementData {
 }
 
 interface PressureData {
-  pressure: number;
+  atmospheric_pressure: number;
 }
 
 @Service()
@@ -151,6 +151,7 @@ export class SensorDataCollector {
         try {
           switch (config.type) {
           case "temperature":
+          {
             const tempData = mqttMessage.data as TemperatureData;
             console.log(`Température: ${tempData.temperature}°C`);
             const tempSensorData = {
@@ -159,7 +160,8 @@ export class SensorDataCollector {
             };
             await this.repository.insertTemperature(tempSensorData);
             break;
-          case "humidity":
+          }
+          case "humidity": {
             const humidityData = mqttMessage.data as HumidityData;
             console.log(`Humidité: ${humidityData.humidity}%`);
             const humiditySensorData = {
@@ -168,16 +170,18 @@ export class SensorDataCollector {
             };
             await this.repository.insertHumidity(humiditySensorData);
             break;
-          case "pressure":
+          }
+          case "pressure": {
             const pressureData = mqttMessage.data as PressureData;
-            console.log(`Pression: ${pressureData.pressure || "N/A"}`);
+            console.log(`Pression: ${pressureData.atmospheric_pressure || "N/A"}`);
             const pressureSensorData = {
               ...sensorData,
-              data: pressureData.pressure?.toString() || "N/A",
+              data: pressureData.atmospheric_pressure?.toString() || "N/A",
             };
             await this.repository.insertPressure(pressureSensorData);
             break;
-          case "movement":
+          }
+          case "movement": {
             const movementData = mqttMessage.data as MovementData;
             console.log(`Mouvement: ${movementData.state} (x:${movementData.x_axis}, y:${movementData.y_axis}, z:${movementData.z_axis})`);
             const movementSensorData = {
@@ -186,6 +190,7 @@ export class SensorDataCollector {
             };
             await this.repository.insertMovement(movementSensorData);
             break;
+          }
           }
           savedCount++;
         } catch (error) {

@@ -11,6 +11,7 @@ import LoginPage from "./pages/LoginPage.tsx";
 import PlanningPage from "./pages/PlanningPage.tsx";
 import ReportsPage from "./pages/ReportsPage.tsx";
 import RoomsPage from "./pages/RoomsPage.tsx";
+import RoomsDetailsPage from "./pages/RoomsDetailsPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
                     {
                         path: "/salles",
                         element: <RoomsPage />,
+                    },
+                    {
+                        path: "/salles/:id",
+                        element: <RoomsDetailsPage />,
                     },
                     {
                         path: "/alertes",

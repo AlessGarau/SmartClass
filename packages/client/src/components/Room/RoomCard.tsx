@@ -122,7 +122,7 @@ const RoomCard = ({ room }: RoomCardProps) => {
                             className={`w-2 h-2 rounded-full ${room.isEnabled ? "bg-green-500" : "bg-red-500"
                                 }`}
                         ></span>
-                        {room.isEnabled ? "Libre" : "Occupée"}
+                        {room.isEnabled ? "Disponible" : "Non disponible"}
                     </span>
                 </div>
             </div>
@@ -155,8 +155,8 @@ const RoomCard = ({ room }: RoomCardProps) => {
             <div className="flex flex-col sm:flex-row gap-2 mt-2">
                 <Link
                     key={room.id}
-                    to={`/rooms/${room.id}`}
-                    className="bg-primary text-white px-4 py-2 rounded-md flex items-center gap-2 cursor-pointer hover:bg-primary/80 relative group flex-1 text-white rounded-lg py-2 font-semibold transition text-xs sm:text-base"
+                    to={`/salles/${room.id}`}
+                    className="bg-primary text-white px-4 py-2 rounded-md flex items-center gap-2 cursor-pointer hover:bg-primary/80 relative group flex-1 rounded-lg font-semibold transition text-xs sm:text-base"
                 >
                     Détails
                 </Link>
