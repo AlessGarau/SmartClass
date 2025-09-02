@@ -3,6 +3,7 @@ import type { LoginCredentials } from "../types/User";
 import { lessonApi } from "./endpoints/lesson";
 import { planningApi } from "./endpoints/planning";
 import { roomApi } from "./endpoints/room";
+import { sensorApi } from "./endpoints/sensor";
 import { userApi } from "./endpoints/user";
 import { weatherApi } from "./endpoints/weather";
 
@@ -88,16 +89,53 @@ export const roomQueryOptions = {
             const response = await roomApi.getRooms(filters);
             return {
                 ...response,
-                data: response.data.map(room => ({
+                data: response.data.map((room) => ({
                     ...room,
-                    humidity: room.humidity !== null ? Number(room.humidity) : null,
-                    temperature: room.temperature !== null ? Number(room.temperature) : null,
-                    pressure: room.pressure !== null ? Number(room.pressure) : null,
-                    movement: room.movement !== null ? Number(room.movement) : null,
-                }))
+                    humidity:
+                        room.humidity !== null ? Number(room.humidity) : null,
+                    temperature:
+                        room.temperature !== null
+                            ? Number(room.temperature)
+                            : null,
+                    pressure:
+                        room.pressure !== null ? Number(room.pressure) : null,
+                    movement:
+                        room.movement !== null ? Number(room.movement) : null,
+                })),
             };
         },
         staleTime: 60 * 60 * 1000,
+    }),
+
+    getRoom: (roomId: string) => ({
+        queryKey: ["room", roomId],
+        queryFn: async () => {
+            const response = await roomApi.getRoom(roomId);
+            return {
+                ...response,
+                data: {
+                    ...response.data,
+                    humidity:
+                        response.data.humidity !== null
+                            ? Number(response.data.humidity)
+                            : null,
+                    temperature:
+                        response.data.temperature !== null
+                            ? Number(response.data.temperature)
+                            : null,
+                    pressure:
+                        response.data.pressure !== null
+                            ? Number(response.data.pressure)
+                            : null,
+                    movement:
+                        response.data.movement !== null
+                            ? Number(response.data.movement)
+                            : null,
+                },
+            };
+        },
+        staleTime: 2 * 60 * 1000,
+        refetchInterval: 5 * 60 * 1000,
     }),
 
     deleteRoom: () => ({
@@ -150,5 +188,15 @@ export const weatherQueryOptions = {
         queryFn: () => weatherApi.getWeeklyWeather(),
         staleTime: 10 * 60 * 1000,
         refetchInterval: 30 * 60 * 1000,
+    }),
+};
+
+export const sensorQueryOptions = {
+    dailySensorData: (roomId: string) => ({
+        queryKey: ["sensor", "daily", roomId],
+        queryFn: () => sensorApi.getDailySensorData(roomId),
+        staleTime: 2 * 60 * 1000, // 2 minutes
+        refetchInterval: 5 * 60 * 1000, // 5 minutes
+        enabled: !!roomId,
     }),
 };
