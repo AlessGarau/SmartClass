@@ -1,5 +1,7 @@
+import type { ClassCreate, ClassFilters, ClassUpdate } from "../types/Class";
 import type { PlannedClass, PlanningFilters } from "../types/Planning";
 import type { LoginCredentials } from "../types/User";
+import { classApi } from "./endpoints/class";
 import { lessonApi } from "./endpoints/lesson";
 import { planningApi } from "./endpoints/planning";
 import { reportApi } from "./endpoints/report";
@@ -194,10 +196,7 @@ export const reportQueryOptions = {
 
     getReports: (filters = {}) => ({
         queryKey: ["report", "allReports", filters],
-        queryFn: async () => {
-            const response = await reportApi.getReports(filters);
-            return response;
-        },
+        queryFn: () => reportApi.getReports(filters),
         staleTime: 60 * 60 * 1000,
     }),
 
@@ -219,6 +218,41 @@ export const reportQueryOptions = {
         }) => reportApi.updateReport(reportId, data),
     }),
 }
+
+export const classQueryOptions = {
+    classCount: (filters: ClassFilters = {}) => ({
+        queryKey: ["class", "count", filters],
+        queryFn: () => classApi.getClassesCount(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    getClasses: (filters: ClassFilters = {}) => ({
+        queryKey: ["class", "allClasses", filters],
+        queryFn: () => classApi.getClasses(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    createClass: () => ({
+        mutationKey: ["class", "createClass"],
+        mutationFn: (data: ClassCreate) => classApi.createClass(data),
+    }),
+
+    updateClass: () => ({
+        mutationKey: ["class", "updateClass"],
+        mutationFn: ({
+            classId,
+            data,
+        }: {
+            classId: string;
+            data: ClassUpdate;
+        }) => classApi.updateClass(classId, data),
+    }),
+
+    deleteClass: () => ({
+        mutationKey: ["class", "deleteClass"],
+        mutationFn: (classId: string) => classApi.deleteClass(classId),
+    }),
+};
 
 export const lessonQueryOptions = {
     deleteLesson: () => ({
