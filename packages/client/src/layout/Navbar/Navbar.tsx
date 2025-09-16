@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useAuth } from "../../contexts/auth/AuthContext";
 import { Link, useLocation } from "react-router";
 import logoSvg from "../../assets/image 7.jpg";
+import { useAuth } from "../../contexts/auth/AuthContext";
 
 function Navbar() {
     const { user, isAuthenticated } = useAuth();
@@ -12,6 +12,8 @@ function Navbar() {
         { name: "Dashboard", path: "/dashboard" },
         { name: "Salles", path: "/salles" },
         { name: "Planning", path: "/planning" },
+        { name: "Intervenants", path: "/teacher" },
+        { name: "Promotions", path: "/class" },
         { name: "Alertes", path: "/alertes" },
     ];
 
@@ -49,8 +51,8 @@ function Navbar() {
                                 key={item.name}
                                 to={item.path}
                                 className={`px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${isActive(item.path)
-                                        ? "text-teal-600 bg-teal-50"
-                                        : "text-gray-700 hover:text-teal-600 hover:bg-gray-50"
+                                    ? "text-teal-600 bg-teal-50"
+                                    : "text-gray-700 hover:text-teal-600 hover:bg-gray-50"
                                     }`}
                             >
                                 {item.name}
@@ -103,8 +105,8 @@ function Navbar() {
                                     key={item.name}
                                     to={item.path}
                                     className={`block px-3 py-2 text-base font-medium rounded-md transition-colors duration-200 ${isActive(item.path)
-                                            ? "text-teal-600 bg-teal-50"
-                                            : "text-gray-700 hover:text-teal-600 hover:bg-gray-50"
+                                        ? "text-teal-600 bg-teal-50"
+                                        : "text-gray-700 hover:text-teal-600 hover:bg-gray-50"
                                         }`}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
