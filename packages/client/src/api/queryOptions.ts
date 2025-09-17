@@ -1,5 +1,6 @@
 import type { ClassCreate, ClassFilters, ClassUpdate } from "../types/Class";
 import type { PlannedClass, PlanningFilters } from "../types/Planning";
+import type { TeacherCreate, TeacherFilters, TeacherUpdate } from "../types/Teacher";
 import type { LoginCredentials } from "../types/User";
 import { classApi } from "./endpoints/class";
 import { lessonApi } from "./endpoints/lesson";
@@ -7,6 +8,7 @@ import { planningApi } from "./endpoints/planning";
 import { reportApi } from "./endpoints/report";
 import { roomApi } from "./endpoints/room";
 import { sensorApi } from "./endpoints/sensor";
+import { teacherApi } from "./endpoints/teacher";
 import { userApi } from "./endpoints/user";
 import { weatherApi } from "./endpoints/weather";
 
@@ -251,6 +253,41 @@ export const classQueryOptions = {
     deleteClass: () => ({
         mutationKey: ["class", "deleteClass"],
         mutationFn: (classId: string) => classApi.deleteClass(classId),
+    }),
+};
+
+export const teacherQueryOptions = {
+    teacherCount: (filters: TeacherFilters = {}) => ({
+        queryKey: ["teacher", "count", filters],
+        queryFn: () => teacherApi.getTeachersCount(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    getTeachers: (filters: TeacherFilters = {}) => ({
+        queryKey: ["teacher", "allTeachers", filters],
+        queryFn: () => teacherApi.getTeachers(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    createTeacher: () => ({
+        mutationKey: ["teacher", "createTeacher"],
+        mutationFn: (data: TeacherCreate) => teacherApi.createTeacher(data),
+    }),
+
+    updateTeacher: () => ({
+        mutationKey: ["teacher", "updateTeacher"],
+        mutationFn: ({
+            teacherId,
+            data,
+        }: {
+            teacherId: string;
+            data: TeacherUpdate;
+        }) => teacherApi.updateTeacher(teacherId, data),
+    }),
+
+    deleteTeacher: () => ({
+        mutationKey: ["teacher", "deleteTeacher"],
+        mutationFn: (teacherId: string) => teacherApi.deleteTeacher(teacherId),
     }),
 };
 
