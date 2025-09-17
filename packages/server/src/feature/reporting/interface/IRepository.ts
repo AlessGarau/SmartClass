@@ -7,4 +7,5 @@ export interface IReportingRepository {
   getReportsCount(filter: ReportingFilter): Promise<number>;
   getReporting(id: string): Promise<Reporting | null>;
   patchReporting(id: string, patchReportingParams: PatchReportingParams): Promise<Reporting | null>;
+  deleteReporting(id: string): Promise<void>;
 }

@@ -1,9 +1,14 @@
+import type { ClassCreate, ClassFilters, ClassUpdate } from "../types/Class";
 import type { PlannedClass, PlanningFilters } from "../types/Planning";
+import type { TeacherCreate, TeacherFilters, TeacherUpdate } from "../types/Teacher";
 import type { LoginCredentials } from "../types/User";
+import { classApi } from "./endpoints/class";
 import { lessonApi } from "./endpoints/lesson";
 import { planningApi } from "./endpoints/planning";
+import { reportApi } from "./endpoints/report";
 import { roomApi } from "./endpoints/room";
 import { sensorApi } from "./endpoints/sensor";
+import { teacherApi } from "./endpoints/teacher";
 import { userApi } from "./endpoints/user";
 import { weatherApi } from "./endpoints/weather";
 
@@ -74,6 +79,12 @@ export const roomQueryOptions = {
     buildingOptions: () => ({
         queryKey: ["room", "buildingOptions"],
         queryFn: () => roomApi.getBuildingOptions(),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    roomNameOptions: () => ({
+        queryKey: ["room", "nameOptions"],
+        queryFn: () => roomApi.getRoomNameOptions(),
         staleTime: 60 * 60 * 1000,
     }),
 
@@ -167,6 +178,116 @@ export const roomQueryOptions = {
             floor: number;
             capacity: number;
         }) => roomApi.createRoom(data),
+    }),
+};
+
+export const reportQueryOptions = {
+    reportCount: (filters = {}) => ({
+        queryKey: ["report", "count", filters],
+        queryFn: () => reportApi.getReportsCount(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    createReport: () => ({
+        mutationKey: ["report", "createReport"],
+        mutationFn: (data: {
+            equipmentId: string;
+            description: string;
+        }) => reportApi.createReport(data),
+    }),
+
+    getReports: (filters = {}) => ({
+        queryKey: ["report", "allReports", filters],
+        queryFn: () => reportApi.getReports(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    deleteReport: () => ({
+        mutationKey: ["report", "deleteReport"],
+        mutationFn: (reportId: string) => reportApi.deleteReport(reportId),
+    }),
+
+    updateReport: () => ({
+        mutationKey: ["report", "updateReport"],
+        mutationFn: ({
+            reportId,
+            data,
+        }: {
+            reportId: string;
+            data: {
+                status: string;
+            };
+        }) => reportApi.updateReport(reportId, data),
+    }),
+}
+
+export const classQueryOptions = {
+    classCount: (filters: ClassFilters = {}) => ({
+        queryKey: ["class", "count", filters],
+        queryFn: () => classApi.getClassesCount(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    getClasses: (filters: ClassFilters = {}) => ({
+        queryKey: ["class", "allClasses", filters],
+        queryFn: () => classApi.getClasses(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    createClass: () => ({
+        mutationKey: ["class", "createClass"],
+        mutationFn: (data: ClassCreate) => classApi.createClass(data),
+    }),
+
+    updateClass: () => ({
+        mutationKey: ["class", "updateClass"],
+        mutationFn: ({
+            classId,
+            data,
+        }: {
+            classId: string;
+            data: ClassUpdate;
+        }) => classApi.updateClass(classId, data),
+    }),
+
+    deleteClass: () => ({
+        mutationKey: ["class", "deleteClass"],
+        mutationFn: (classId: string) => classApi.deleteClass(classId),
+    }),
+};
+
+export const teacherQueryOptions = {
+    teacherCount: (filters: TeacherFilters = {}) => ({
+        queryKey: ["teacher", "count", filters],
+        queryFn: () => teacherApi.getTeachersCount(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    getTeachers: (filters: TeacherFilters = {}) => ({
+        queryKey: ["teacher", "allTeachers", filters],
+        queryFn: () => teacherApi.getTeachers(filters),
+        staleTime: 60 * 60 * 1000,
+    }),
+
+    createTeacher: () => ({
+        mutationKey: ["teacher", "createTeacher"],
+        mutationFn: (data: TeacherCreate) => teacherApi.createTeacher(data),
+    }),
+
+    updateTeacher: () => ({
+        mutationKey: ["teacher", "updateTeacher"],
+        mutationFn: ({
+            teacherId,
+            data,
+        }: {
+            teacherId: string;
+            data: TeacherUpdate;
+        }) => teacherApi.updateTeacher(teacherId, data),
+    }),
+
+    deleteTeacher: () => ({
+        mutationKey: ["teacher", "deleteTeacher"],
+        mutationFn: (teacherId: string) => teacherApi.deleteTeacher(teacherId),
     }),
 };
 

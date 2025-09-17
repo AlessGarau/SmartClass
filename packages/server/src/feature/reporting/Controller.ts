@@ -3,7 +3,7 @@ import { Service } from "typedi";
 import { ReportingInteractor } from "./Interactor";
 import { ReportingMapper } from "./Mapper";
 import { ReportingMessage } from "./message";
-import { CreateReportingParams, CreateReportingSchema, GetReportsQuerySchema, PatchReportingSchema, Reporting, ReportingFilterSchema, ReportingIdParamsSchema } from "./validate";
+import { CreateReportingParams, CreateReportingSchema, PatchReportingSchema, Reporting, ReportingFilterSchema, ReportingIdParamsSchema } from "./validate";
 
 @Service()
 export class ReportingController {
@@ -21,13 +21,8 @@ export class ReportingController {
   }
 
   async getReports(req: FastifyRequest, reply: FastifyReply) {
-    const { limit, offset, status } = GetReportsQuerySchema.parse(req.query);
-    const reports = await this._interactor.getReports({
-      limit,
-      offset,
-      status,
-    });
-
+    const filter = ReportingFilterSchema.parse(req.query);
+    const reports = await this._interactor.getReports(filter);
     return reply.status(200).send({
       data: this._mapper.toGetReportsResponse(reports),
     });
@@ -62,5 +57,11 @@ export class ReportingController {
       data,
       message: "Signalement récupéré avec succès",
     });
+  }
+
+  async deleteReporting(req: FastifyRequest, reply: FastifyReply) {
+    const { id } = ReportingIdParamsSchema.parse(req.params);
+    await this._interactor.deleteReporting(id);
+    return reply.status(204).send();
   }
 }

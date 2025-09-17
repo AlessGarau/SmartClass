@@ -10,6 +10,7 @@ export interface RoomFilters {
 export interface RoomFilterOptions {
     buildings: FilterOption[],
     floors: FilterOption[],
+    names: FilterOption[],
 }
 
 export interface Room {
@@ -33,4 +34,11 @@ export interface RoomSensorBlock {
     color: string,
     bg: string,
     unit: string,
+}
+
+export interface RoomUpdate {
+    name: string,
+    building: string,
+    floor: number,
+    capacity: number,
 }

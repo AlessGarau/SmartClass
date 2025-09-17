@@ -6,11 +6,14 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.tsx";
 import { AuthProvider } from "./contexts/auth/AuthContextProvider.tsx";
 import "./index.css";
 import Layout from "./layout/Layout.tsx";
+import ClassesPage from "./pages/ClassesPage.tsx";
 import DashboardTestPage from "./pages/DashboardPage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import PlanningPage from "./pages/PlanningPage.tsx";
-import RoomsPage from "./pages/RoomsPage.tsx";
+import ReportsPage from "./pages/ReportsPage.tsx";
 import RoomsDetailsPage from "./pages/RoomsDetailsPage.tsx";
+import RoomsPage from "./pages/RoomsPage.tsx";
+import TeachersPage from "./pages/TeachersPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -46,13 +49,16 @@ const router = createBrowserRouter([
                         element: <RoomsDetailsPage />,
                     },
                     {
+                        path: "/teacher",
+                        element: <TeachersPage />,
+                    },
+                    {
+                        path: "/class",
+                        element: <ClassesPage />,
+                    },
+                    {
                         path: "/alertes",
-                        element: (
-                            <div className="p-6">
-                                <h1 className="text-2xl font-bold">Alertes</h1>
-                                <p>Page d'alertes en construction...</p>
-                            </div>
-                        ),
+                        element: <ReportsPage />,
                     },
                 ],
             },

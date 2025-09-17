@@ -6,4 +6,5 @@ export interface IReportingInteractor {
   getReports(params: GetReportsQueryParams): Promise<Reporting[]>;
   getReportsCount(search?: ReportingFilter): Promise<number>;
   patchReporting(id: string, reportingUpdateParams: PatchReportingParams): Promise<Reporting>;
+  deleteReporting(id: string): Promise<void>;
 }

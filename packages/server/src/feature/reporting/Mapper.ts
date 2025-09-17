@@ -11,6 +11,8 @@ export class ReportingMapper implements IMapper {
       description: report.description,
       status: report.status,
       createdDate: report.createdDate,
+      equipmentType: report.equipmentType,
+      roomName: report.roomName,
     }));
   }
 
@@ -21,6 +23,8 @@ export class ReportingMapper implements IMapper {
       description: reporting.description,
       status: reporting.status,
       createdDate: reporting.createdDate,
+      equipmentType: reporting.equipmentType,
+      roomName: reporting.roomName,
     };
   }
 
@@ -36,6 +40,8 @@ export class ReportingMapper implements IMapper {
         description: reporting.description,
         status: reporting.status,
         createdDate: reporting.createdDate,
+        equipmentType: reporting.equipmentType,
+        roomName: reporting.roomName,
       },
       equipment: equipment
         ? {
