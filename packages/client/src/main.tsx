@@ -13,6 +13,7 @@ import PlanningPage from "./pages/PlanningPage.tsx";
 import ReportsPage from "./pages/ReportsPage.tsx";
 import RoomsDetailsPage from "./pages/RoomsDetailsPage.tsx";
 import RoomsPage from "./pages/RoomsPage.tsx";
+import TeachersPage from "./pages/TeachersPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -49,7 +50,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "/teacher",
-                        element: <ReportsPage />,
+                        element: <TeachersPage />,
                     },
                     {
                         path: "/class",
