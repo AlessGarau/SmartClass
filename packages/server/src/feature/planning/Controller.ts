@@ -76,8 +76,10 @@ export class PlanningController {
     return reply.status(200).send({
       message: PlanningMessage.LESSONS_IMPORTED_SUCCESSFULLY,
       importedCount: importResult.importedCount,
+      updatedCount: importResult.updatedCount,
       skippedCount: importResult.skippedCount,
       errors: importResult.errors,
+      optimization: importResult.optimization,
     });
 
   }

@@ -67,6 +67,7 @@ const OptimizationStatusSchema = z.object({
 
 export const ImportResultSchema = z.object({
   importedCount: z.number(),
+  updatedCount: z.number(),
   skippedCount: z.number(),
   errors: z.array(ImportErrorSchema),
   optimization: OptimizationStatusSchema.optional(),
@@ -75,6 +76,7 @@ export const ImportResultSchema = z.object({
 export const ImportLessonResponseSchema = z.object({
   message: z.string(),
   importedCount: z.number(),
+  updatedCount: z.number(),
   skippedCount: z.number(),
   errors: z.array(ImportErrorSchema),
   optimization: OptimizationStatusSchema.optional(),

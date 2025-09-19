@@ -59,11 +59,22 @@ const PlanningPage = () => {
         ...planningQueryOptions.uploadLessons(),
         onSuccess: (data) => {
             let message = `Fichier importé avec succès ! `;
+            const parts: string[] = [];
+
             if (data.importedCount > 0) {
-                message += `${data.importedCount} cours ajoutés`;
+                parts.push(`${data.importedCount} cours ajoutés`);
+            }
+            if (data.updatedCount > 0) {
+                parts.push(`${data.updatedCount} cours mis à jour`);
             }
             if (data.skippedCount > 0) {
-                message += data.importedCount > 0 ? ` et ${data.skippedCount} cours ignorés (déjà existants)` : `${data.skippedCount} cours ignorés (déjà existants)`;
+                parts.push(`${data.skippedCount} cours ignorés (aucun changement car déjà existant)`);
+            }
+
+            if (parts.length > 0) {
+                message += parts.join(', ');
+            } else {
+                message = 'Aucun changement détecté dans le fichier importé.';
             }
 
             toast.success(message);
@@ -177,11 +188,11 @@ const PlanningPage = () => {
                 </div>
                 <div className="flex gap-2">
                     <Button
-                        label={isMdScreen ? "Télécharger" : undefined}
+                        label={isMdScreen ? "Exemple excel" : undefined}
                         icon={DownloadIcon}
                         onClick={() => downloadTemplateMutation.mutate()}
                         disabled={downloadTemplateMutation.isPending}
-                        tooltip={!isMdScreen ? "Télécharger le modèle" : undefined}
+                        tooltip={!isMdScreen ? "Télécharger un exemple d'excel" : undefined}
                     />
                     <Button
                         label={isMdScreen ? "Importer une feuille" : undefined}
