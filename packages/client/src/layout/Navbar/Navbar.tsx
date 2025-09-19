@@ -4,9 +4,13 @@ import logoSvg from "../../assets/image 7.jpg";
 import { useAuth } from "../../contexts/auth/AuthContext";
 
 function Navbar() {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, logoutMutation } = useAuth();
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const handleLogout = () => {
+        logoutMutation.mutate();
+    };
 
     const navigationItems = [
         { name: "Dashboard", path: "/dashboard" },
@@ -61,13 +65,21 @@ function Navbar() {
                     </div>
 
                     <div className="flex items-center space-x-4">
-                        <div className="hidden sm:flex items-center">
-                            <span className="text-sm font-medium text-gray-700">
-                                {user?.firstName} {user?.lastName}
-                            </span>
-                            <span className="ml-2 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                Admin
-                            </span>
+                        <div className="hidden sm:flex items-center space-x-4">
+                            <div className="flex items-center">
+                                <span className="text-sm font-medium text-gray-700">
+                                    {user?.firstName} {user?.lastName}
+                                </span>
+                                <span className="ml-2 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                    Admin
+                                </span>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-gray-50 rounded-md transition-colors duration-200 cursor-pointer"
+                            >
+                                Déconnexion
+                            </button>
                         </div>
 
                         <button
@@ -115,12 +127,22 @@ function Navbar() {
                             ))}
 
                             <div className="px-3 py-2 border-t border-gray-200 mt-3 pt-3 sm:hidden">
-                                <span className="text-sm font-medium text-gray-700">
-                                    {user?.firstName} {user?.lastName}
-                                </span>
-                                <span className="ml-2 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                                    Admin
-                                </span>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="text-sm font-medium text-gray-700">
+                                            {user?.firstName} {user?.lastName}
+                                        </span>
+                                        <span className="ml-2 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                            Admin
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="px-2 pt-2 pb-3 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-gray-50 rounded-md transition-colors duration-200 cursor-pointer"
+                                    >
+                                        Déconnexion
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
