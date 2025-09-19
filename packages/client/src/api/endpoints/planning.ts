@@ -35,6 +35,7 @@ export const planningApi = {
     uploadLessons: async (file: File): Promise<{
         message: string;
         importedCount: number;
+        updatedCount: number;
         skippedCount: number;
         errors: Array<{ row: number; field?: string; message: string }>;
         optimization?: {

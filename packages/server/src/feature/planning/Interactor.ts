@@ -4,6 +4,7 @@ import { PlanningError } from "./../../middleware/error/planningError";
 import { RoomRepository } from "../room/Repository";
 import { LessonRepository } from "../lesson/Repository";
 import { ClassRepository } from "../class/Repository";
+import { UserRepository } from "../user/Repository";
 import { RoomError } from "../../middleware/error/roomError";
 import { LessonError } from "../../middleware/error/lessonError";
 import { WeeklyPlanningData, ImportResult, ImportError, ImportedLesson, ImportedLessonSchema, PlanningFilterOptions } from "./validate";
@@ -19,6 +20,7 @@ export class PlanningInteractor implements IPlanningInteractor {
     private roomRepository: RoomRepository,
     private lessonRepository: LessonRepository,
     private classRepository: ClassRepository,
+    private userRepository: UserRepository,
     private optimizationService: OptimizationService,
   ) { }
 
@@ -66,6 +68,7 @@ export class PlanningInteractor implements IPlanningInteractor {
   async importLessonsFromTemplate(fileBuffer: Buffer): Promise<ImportResult> {
     const errors: ImportError[] = [];
     let importedCount = 0;
+    let updatedCount = 0;
     let skippedCount = 0;
     let earliestDate: Date | null = null;
     let latestDate: Date | null = null;
@@ -157,30 +160,114 @@ export class PlanningInteractor implements IPlanningInteractor {
           continue;
         }
 
-        const existingLesson = await this.lessonRepository.findLessonByDetails(
+        let teacherId: string | null = null;
+        if (validatedLesson.teacherName && validatedLesson.teacherName.trim()) {
+          const nameParts = validatedLesson.teacherName.trim().split(" ");
+          if (nameParts.length >= 2) {
+            const firstName = nameParts[0];
+            const lastName = nameParts.slice(1).join(" ");
+            const teacher = await this.userRepository.findTeacherByName(firstName, lastName);
+            if (teacher) {
+              teacherId = teacher.id;
+            } else {
+              errors.push({
+                row: rowIndex + 1,
+                field: "teacher_name",
+                message: `Teacher "${validatedLesson.teacherName}" not found`,
+              });
+            }
+          }
+        }
+
+        const overlappingLessons = await this.lessonRepository.findOverlappingLessons(
           classEntity.id,
           startDateTime,
           endDateTime,
         );
 
-        if (existingLesson) {
-          skippedCount++;
-        } else {
-          await this.lessonRepository.createLesson({
+        const lessonsToDelete = overlappingLessons.filter(lesson => !lesson.room_id);
+        for (const lessonToDelete of lessonsToDelete) {
+          await this.lessonRepository.deleteLesson(lessonToDelete.id);
+        }
+
+        const lessonsWithRoom = overlappingLessons.filter(lesson => lesson.room_id);
+        
+        let lessonCreated = false;
+        
+        if (lessonsWithRoom.length > 0) {
+          if (lessonsWithRoom.length > 1) {
+            errors.push({
+              row: rowIndex + 1,
+              field: "time",
+              message: "Multiple lessons with rooms overlap this time slot. Using the first one.",
+            });
+          }
+          
+          const lessonToUpdate = lessonsWithRoom[0];
+          
+          // Check if there are actual changes
+          const hasTimeChanged = lessonToUpdate.start_time.getTime() !== startDateTime.getTime() || 
+                                lessonToUpdate.end_time.getTime() !== endDateTime.getTime();
+          const hasTitleChanged = lessonToUpdate.title !== validatedLesson.title;
+          
+          // Get current teacher to check if it changed
+          const lessonWithRelations = await this.lessonRepository.getLessonWithRelations(lessonToUpdate.id);
+          const currentTeacherId = lessonWithRelations?.users?.[0]?.id;
+          const hasTeacherChanged = teacherId && teacherId !== currentTeacherId;
+          
+          if (hasTimeChanged || hasTitleChanged || hasTeacherChanged) {
+            // There are changes - update the lesson
+            const updateData: any = {};
+            if (hasTimeChanged) {
+              updateData.startTime = startDateTime;
+              updateData.endTime = endDateTime;
+            }
+            if (hasTitleChanged) {
+              updateData.title = validatedLesson.title;
+            }
+            
+            if (Object.keys(updateData).length > 0) {
+              await this.lessonRepository.updateLesson(lessonToUpdate.id, updateData);
+            }
+            
+            if (hasTeacherChanged && teacherId) {
+              await this.lessonRepository.updateLessonTeacher(lessonToUpdate.id, teacherId);
+            }
+            
+            updatedCount++;
+            
+            if (!earliestDate || startDateTime < earliestDate) {
+              earliestDate = startDateTime;
+            }
+            if (!latestDate || endDateTime > latestDate) {
+              latestDate = endDateTime;
+            }
+          } else {
+            skippedCount++;
+          }
+          
+          lessonCreated = true;
+        }
+
+        if (!lessonCreated) {
+          const newLesson = await this.lessonRepository.createLesson({
             title: validatedLesson.title,
             startTime: startDateTime,
             endTime: endDateTime,
             classId: classEntity.id,
             roomId: null,
           });
+          if (teacherId) {
+            await this.lessonRepository.updateLessonTeacher(newLesson.id, teacherId);
+          }
           importedCount++;
+        }
 
-          if (!earliestDate || startDateTime < earliestDate) {
-            earliestDate = startDateTime;
-          }
-          if (!latestDate || endDateTime > latestDate) {
-            latestDate = endDateTime;
-          }
+        if (!earliestDate || startDateTime < earliestDate) {
+          earliestDate = startDateTime;
+        }
+        if (!latestDate || endDateTime > latestDate) {
+          latestDate = endDateTime;
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -194,7 +281,7 @@ export class PlanningInteractor implements IPlanningInteractor {
 
     let optimizationStatus = undefined;
     
-    if (importedCount > 0 && earliestDate && latestDate) {
+    if ((importedCount > 0 || updatedCount > 0) && earliestDate && latestDate) {
       try {
         await this.optimizationService.optimizeDateRange(earliestDate, latestDate);
         optimizationStatus = { status: "success" as const };
@@ -209,6 +296,7 @@ export class PlanningInteractor implements IPlanningInteractor {
 
     return {
       importedCount,
+      updatedCount,
       skippedCount,
       errors,
       optimization: optimizationStatus,

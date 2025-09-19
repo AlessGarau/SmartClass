@@ -18,12 +18,12 @@ export interface CreateLessonData {
 }
 
 export interface UpdateLessonData {
-  title: string;
-  roomId: string;
-  startTime: string;
-  endTime: string;
-  dayOfWeek: string;
-  date: string;
+  title?: string;
+  roomId?: string | null;
+  startTime?: string | Date;
+  endTime?: string | Date;
+  dayOfWeek?: string;
+  date?: string;
 }
 
 export interface ILessonRepository {

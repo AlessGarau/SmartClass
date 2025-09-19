@@ -1,6 +1,6 @@
 import { Service } from "typedi";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { between, eq, and, inArray } from "drizzle-orm";
+import { between, eq, and, inArray, lt, gt  } from "drizzle-orm";
 import { database } from "../../../database/database";
 import { lessonTable } from "../../../database/schema/lesson";
 import { roomTable } from "../../../database/schema/room";
@@ -114,6 +114,21 @@ export class LessonRepository implements ILessonRepository {
     return result[0] || null;
   }
 
+  async findOverlappingLessons(classId: string, startTime: Date, endTime: Date): Promise<Lesson[]> {
+    const result = await this.db
+      .select()
+      .from(lessonTable)
+      .where(
+        and(
+          eq(lessonTable.class_id, classId),
+          lt(lessonTable.start_time, endTime),
+          gt(lessonTable.end_time, startTime),
+        ),
+      );
+
+    return result;
+  }
+
   async getLessonById(lessonId: string): Promise<Lesson | null> {
     const result = await this.db
       .select()
@@ -131,23 +146,44 @@ export class LessonRepository implements ILessonRepository {
   }
 
   async updateLesson(lessonId: string, data: UpdateLessonData): Promise<Lesson> {
-    const [startHour, startMinute] = data.startTime.split(":").map(Number);
-    const [endHour, endMinute] = data.endTime.split(":").map(Number);
-
-    const startDate = new Date(data.date);
-    startDate.setHours(startHour, startMinute, 0, 0);
-
-    const endDate = new Date(data.date);
-    endDate.setHours(endHour, endMinute, 0, 0);
+    const updateData: Partial<{
+      title: string;
+      room_id: string | undefined;
+      start_time: Date;
+      end_time: Date;
+    }> = {};
+    
+    if (data.title !== undefined) {
+      updateData.title = data.title;
+    }
+    
+    if (data.roomId !== undefined && data.roomId !== null) {
+      updateData.room_id = data.roomId;
+    }
+    
+    if (data.startTime !== undefined && data.endTime !== undefined) {
+      if (data.startTime instanceof Date) {
+        updateData.start_time = data.startTime;
+      } else if (typeof data.startTime === "string" && data.date) {
+        const [startHour, startMinute] = data.startTime.split(":").map(Number);
+        const startDate = new Date(data.date);
+        startDate.setHours(startHour, startMinute, 0, 0);
+        updateData.start_time = startDate;
+      }
+      
+      if (data.endTime instanceof Date) {
+        updateData.end_time = data.endTime;
+      } else if (typeof data.endTime === "string" && data.date) {
+        const [endHour, endMinute] = data.endTime.split(":").map(Number);
+        const endDate = new Date(data.date);
+        endDate.setHours(endHour, endMinute, 0, 0);
+        updateData.end_time = endDate;
+      }
+    }
 
     const result = await this.db
       .update(lessonTable)
-      .set({
-        title: data.title,
-        room_id: data.roomId,
-        start_time: startDate,
-        end_time: endDate,
-      })
+      .set(updateData)
       .where(eq(lessonTable.id, lessonId))
       .returning();
 
