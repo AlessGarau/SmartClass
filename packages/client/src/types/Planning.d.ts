@@ -1,6 +1,7 @@
 export interface PlannedClass {
     id: string;
     title: string;
+    className: string;
     teacher: string;
     startTime: string;
     endTime: string;

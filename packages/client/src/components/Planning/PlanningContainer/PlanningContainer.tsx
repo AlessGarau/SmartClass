@@ -114,7 +114,7 @@ const PlanningContainer: React.FC<PlanningContainerProps> = ({
                                     const timeSlots = getTimeSlotsForDay(plannedClasses);
                                     return (
                                         <td key={day.day} className={`flex-1 h-96`}>
-                                            <div className="flex flex-col gap-2 h-full">
+                                            <div className="flex flex-col gap-2 h-full overflow-y-auto">
                                                 {timeSlots.map((slot, index) => (
                                                     <PlannedClassSlot
                                                         key={slot.plannedClass ? `${classroom.id}-${day.day}-${slot.plannedClass.id}` : `${classroom.id}-${day.day}-empty-${index}`}

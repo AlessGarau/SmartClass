@@ -71,6 +71,7 @@ const PlannedClassSlot: React.FC<PlannedClassSlotProps> = ({ plannedClass, isEmp
                 X
             </button>
             <div className="font-semibold text-sm text-slotFilled">{plannedClass.title}</div>
+            <div className="text-xs font-medium text-slotFilled">{plannedClass.className}</div>
             <div className="text-xs text-slotFilled">{plannedClass.teacher}</div>
             <div className="text-xs text-slotFilled">
                 {plannedClass.startTime} - {plannedClass.endTime}
