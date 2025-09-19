@@ -16,6 +16,7 @@ export const UpdateLessonBodySchema = z.object({
 export const PlannedLessonSchema = z.object({
   id: z.string().uuid(),
   title: z.string(),
+  className: z.string(),
   teacher: z.string(),
   startTime: z.string(),
   endTime: z.string(),

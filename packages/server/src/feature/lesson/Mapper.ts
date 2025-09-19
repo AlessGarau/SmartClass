@@ -11,6 +11,7 @@ export class LessonMapper {
     return {
       id: lesson.id,
       title: lesson.title,
+      className: lesson.class?.name || "",
       teacher: teacher ? `${teacher.first_name} ${teacher.last_name}` : "TBD",
       startTime: this.formatTime(lesson.start_time),
       endTime: this.formatTime(lesson.end_time),
