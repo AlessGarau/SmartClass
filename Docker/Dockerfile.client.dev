@@ -4,12 +4,11 @@ WORKDIR /app
 FROM base AS deps
 WORKDIR /app/client
 COPY packages/client/package*.json ./
+# Clean install to fix Rollup platform-specific dependencies
 RUN --mount=type=cache,id=npm,target=/root/.npm \
-    if [ -f package-lock.json ]; then \
-        npm ci; \
-    else \
-        npm install; \
-    fi
+    rm -rf node_modules package-lock.json && \
+    npm install && \
+    npm rebuild
 
 FROM base AS dev
 WORKDIR /app/client
