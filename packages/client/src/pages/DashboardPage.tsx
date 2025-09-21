@@ -13,25 +13,37 @@ import { weatherQueryOptions, roomQueryOptions } from "../api/queryOptions";
 const DashboardTestPage = () => {
     const navigate = useNavigate();
 
+    // Récupère les données météo via React Query
     const { data: weatherResponse } = useQuery(
         weatherQueryOptions.weeklyWeather()
     );
 
+    // Récupère les données des salles via React Query
     const { data: roomsResponse } = useQuery(roomQueryOptions.rooms());
 
-    console.log(roomsResponse);
-
+    // Prépare un tableau des 5 jours de la semaine avec les données météo
     const getWeekdayWeather = () => {
         if (!weatherResponse?.data) return [];
 
         const today = new Date();
         const weekdays = [];
 
+        // Calcul du lundi de la semaine actuelle ou suivante si weekend
         const monday = new Date(today);
         const dayOfWeek = today.getDay();
-        const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+        let daysToMonday;
+        if (dayOfWeek === 0) {
+            daysToMonday = 1;
+        } else if (dayOfWeek === 6) {
+            daysToMonday = 2;
+        } else {
+            daysToMonday = 1 - dayOfWeek;
+        }
+
         monday.setDate(today.getDate() + daysToMonday);
 
+        // Boucle pour récupérer les données météo de chaque jour
         for (let i = 0; i < 5; i++) {
             const currentDay = new Date(monday);
             currentDay.setDate(monday.getDate() + i);
@@ -43,6 +55,7 @@ const DashboardTestPage = () => {
             if (weatherData) {
                 weekdays.push({
                     ...weatherData,
+                    // Génère le nom du jour en français, première lettre en majuscule
                     dayName:
                         currentDay
                             .toLocaleDateString("fr-FR", { weekday: "short" })
@@ -62,6 +75,7 @@ const DashboardTestPage = () => {
 
     return (
         <div className="flex flex-col p-8 max-w-7xl mx-auto">
+            {/* Section Salles Actives & Température Moyenne */}
             <div className="flex gap-6 mb-8">
                 <Card className="max-w-auto w-full flex items-center">
                     <div className="flex justify-between items-center">
@@ -94,17 +108,18 @@ const DashboardTestPage = () => {
                             <p className="text-2xl font-extrabold text-gray-800">
                                 {roomsResponse?.data
                                     ? (() => {
+                                          // Filtre les salles avec température valide
                                           const roomsWithTemp =
                                               roomsResponse.data.filter(
                                                   (room) =>
                                                       room.temperature !==
                                                           null &&
-                                                      room.temperature !== 0 &&
-                                                      room.temperature > 0
+                                                      room.temperature !== 0
                                               );
                                           if (roomsWithTemp.length === 0) {
                                               return "--°C";
                                           }
+                                          // Calcul de la moyenne
                                           const sum = roomsWithTemp.reduce(
                                               (acc, room) =>
                                                   acc + room.temperature!,
@@ -122,11 +137,13 @@ const DashboardTestPage = () => {
                         <img
                             className="w-12 h-12"
                             src={temp}
-                            alt="Icône salle active"
+                            alt="Icône température"
                         />
                     </div>
                 </Card>
             </div>
+
+            {/* Section Météo & Planning */}
             <div className="flex gap-6 mb-8 w-full">
                 <Card className="w-[830px]" title="Météo de la semaine">
                     {weatherResponse ? (
@@ -136,9 +153,11 @@ const DashboardTestPage = () => {
                                     key={weather.date}
                                     className="flex flex-col items-center flex-1 px-3 py-8 bg-gray-50 rounded-lg"
                                 >
+                                    {/* Jour */}
                                     <div className="text-sm font-semibold text-gray-700 mb-2">
                                         {weather.dayName}
                                     </div>
+                                    {/* Date */}
                                     <div className="text-xs text-gray-500 mb-2">
                                         {new Date(
                                             weather.date
@@ -147,6 +166,7 @@ const DashboardTestPage = () => {
                                             month: "short",
                                         })}
                                     </div>
+                                    {/* Icône météo */}
                                     <div className="text-2xl mb-1">
                                         {weather.condition === "clear" && "☀️"}
                                         {weather.condition ===
@@ -162,6 +182,7 @@ const DashboardTestPage = () => {
                                             "snowy",
                                         ].includes(weather.condition) && "🌤️"}
                                     </div>
+                                    {/* Température Max/Min */}
                                     <div className="text-center">
                                         <div className="text-lg font-bold text-gray-800">
                                             {weather.temperatureMax}°
@@ -186,7 +207,10 @@ const DashboardTestPage = () => {
                         </div>
                     )}
                 </Card>
+
+                {/* Carte Planning */}
                 <Card className="flex-1" title="Planning">
+                    {/* Salles indisponibles */}
                     <div className="bg-lightRed border-2 border-red flex flex-col justify-center items-center p-3 rounded-lg">
                         <span className="text-sm font-semibold text-red">
                             {roomsResponse?.data
@@ -209,16 +233,18 @@ const DashboardTestPage = () => {
 
                         <span className="text-xs text-red">9:00 - 17:00</span>
                     </div>
+
+                    {/* Salle disponible */}
                     <div className="bg-lightGreen border-2 border-greenBorder flex flex-col justify-center items-center p-3 rounded-lg my-4">
                         <span className="text-sm font-semibold text-greenText">
                             Disponible
                         </span>
-
                         <span className="text-xs text-greenText">
                             9:00 - 17:00
                         </span>
                     </div>
 
+                    {/* Bouton planning */}
                     <Button
                         className="w-full flex justify-center"
                         onClick={() => navigate("/planning")}
@@ -228,11 +254,15 @@ const DashboardTestPage = () => {
                     </Button>
                 </Card>
             </div>
+
+            {/* Section Aperçu des salles & Actions rapides */}
             <div className="flex gap-6 mb-8">
+                {/* Aperçu des salles */}
                 <Card
                     className="w-[830px] relative"
                     title="Aperçu de l'état des classes"
                 >
+                    {/* Bouton "Voir tout" */}
                     <button
                         onClick={() => {
                             navigate("/salles");
@@ -252,6 +282,7 @@ const DashboardTestPage = () => {
                                         key={room.id}
                                         className="min-w-80 w-full bg-white border border-gray-200 rounded-lg p-6"
                                     >
+                                        {/* En-tête salle */}
                                         <div className="flex justify-between items-start mb-4">
                                             <h3 className="text-lg font-semibold text-gray-800">
                                                 {room.name}
@@ -274,6 +305,7 @@ const DashboardTestPage = () => {
                                                     "Inactif"}
                                             </span>
                                         </div>
+                                        {/* Infos salle */}
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-center text-sm text-gray-600">
                                                 <span>Température :</span>
@@ -311,6 +343,8 @@ const DashboardTestPage = () => {
                         </div>
                     )}
                 </Card>
+
+                {/* Actions rapides */}
                 <Card className="w-full max-w-96" title="Actions rapides">
                     <div className="flex items-center gap-4 mb-6 mt-8">
                         <img
